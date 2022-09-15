@@ -1,69 +1,21 @@
-export const jsplumbSetting = {
+export const Option = {
     grid: [10, 10],
-    // 动态锚点、位置自适应
-    Anchors: ['TopCenter', 'RightMiddle', 'BottomCenter', 'LeftMiddle'],
+    //动态锚点、位置自适应
+    Anchors: ['TopCenter', 'BottomCenter'],
     Container: 'context',
-    // 连线的样式 StateMachine、Flowchart,有四种默认类型：Bezier（贝塞尔曲线），Straight（直线），Flowchart（流程图），State machine（状态机）
-    Connector: ['Flowchart', { cornerRadius: 5, alwaysRespectStubs: true, stub: 5 }],
-    // 鼠标不能拖动删除线
-    ConnectionsDetachable: false,
-    // 删除线的时候节点不删除
+    //连线的样式 Bezier(贝塞尔曲线)、Straight(直线)、Flowchart(流程图)、StateMachine(状态机)
+    Connector: ['Flowchart', { gap: 10, cornerRadius: 5, alwaysRespectStubs: true, stub: 30 }],
+    //删除线的时候节点不删除
     DeleteEndpointsOnDetach: false,
-    // 连线的端点
-    // Endpoint: ["Dot", {radius: 5}],
-    Endpoint: [
-        'Rectangle',
-        {
-            height: 10,
-            width: 10
-        }
-    ],
-    // 线端点的样式
-    EndpointStyle: {
-        fill: 'rgba(255,255,255,0)',
-        outlineWidth: 1
-    },
-    LogEnabled: false, //是否打开jsPlumb的内部日志记录
-    // 绘制线
-    PaintStyle: {
-        stroke: '#409eff',
-        strokeWidth: 2
-    },
-    HoverPaintStyle: { stroke: '#ff00cc', strokeWidth: 2 },
-    // 绘制箭头
-    Overlays: [
-        [
-            'Arrow',
-            {
-                width: 8,
-                length: 8,
-                location: 1
-            }
-        ]
-    ],
-    RenderMode: 'svg'
-}
+    //鼠标不能拖动删除线
+    ConnectionsDetachable: false,
+    //连线的叠加组件，如箭头、标签
+    ConnectionOverlays: [['Arrow', { width: 12, length: 12, location: 1 }]],
 
-// jsplumb连接参数
-export const jsplumbConnectOptions = {
-    isSource: true,
-    isTarget: true,
-    // 动态锚点、提供了4个方向 Continuous、AutoDefault
-    anchor: ['TopCenter', 'RightMiddle', 'BottomCenter', 'LeftMiddle']
-}
-
-export const jsplumbSourceOptions = {
-    filter: '.node-anchor', //触发连线的区域
-    /*"span"表示标签，".className"表示类，"#id"表示元素id*/
-    filterExclude: false,
-    anchor: ['TopCenter', 'RightMiddle', 'BottomCenter', 'LeftMiddle'],
-    allowLoopback: false
-}
-
-export const jsplumbTargetOptions = {
-    filter: '.node-anchor',
-    /*"span"表示标签，".className"表示类，"#id"表示元素id*/
-    filterExclude: false,
-    anchor: ['TopCenter', 'RightMiddle', 'BottomCenter', 'LeftMiddle'],
-    allowLoopback: false
+    //端点的默认样式
+    Endpoint: ['Dot', { radius: 8 }],
+    EndpointStyle: { fill: 'rgb(30, 129, 81)' },
+    //连接线样式
+    PaintStyle: { stroke: '#2080F0', radius: 10, strokeWidth: 2 },
+    HoverPaintStyle: { stroke: 'red' }
 }

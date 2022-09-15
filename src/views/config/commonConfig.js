@@ -11,13 +11,13 @@ export const jsplumbSetting = {
     DeleteEndpointsOnDetach: false,
     // 连线的端点
     // Endpoint: ["Dot", {radius: 5}],
-    Endpoint: [
-        'Rectangle',
-        {
-            height: 10,
-            width: 10
-        }
-    ],
+    // Endpoint: [
+    //     'Rectangle',
+    //     {
+    //         height: 10,
+    //         width: 10
+    //     }
+    // ],
     // 线端点的样式
     EndpointStyle: {
         fill: 'rgba(255,255,255,0)',

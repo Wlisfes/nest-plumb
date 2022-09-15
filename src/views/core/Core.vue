@@ -1,8 +1,8 @@
 <script>
-import panzoom from 'panzoom'
-import { jsPlumb } from 'jsplumb'
+import { v4 as only } from 'uuid'
 import { NodeColumn } from '@/views/core/common'
-import * as scope from '@/views/core/common/option'
+import { createSuper, initCoreZoom, useScale } from '@/views/core/common/super'
+import { Option } from '@/views/core/common/option'
 
 export default {
     name: 'Core',
@@ -12,19 +12,21 @@ export default {
             multiple: [1, 2, 3, 4, 5, 6, 7, 8],
             node: {
                 line: [
-                    { form: 1663165831374, to: 1663165844079, id: 1663165891658 },
-                    { form: 1663165844079, to: 1663165854107, id: 1663165928024 }
+                    {
+                        form: '3be2fb6a-6c40-4435-b399-58ac6792e7e4',
+                        to: 'd6b0dfc3-a934-436e-b4da-3c25cf53760d',
+                        id: '75fc1a41-7a86-4f78-b259-8bb36bde3555',
+                        label: '猪头'
+                    }
                 ],
                 column: [
-                    { left: '-195px', top: '655px', id: 1663165831374 },
-                    { left: '-125px', top: '310px', id: 1663165844079 },
-                    { left: '370px', top: '530px', id: 1663165854107 }
+                    { left: '200px', top: '130px', id: '3be2fb6a-6c40-4435-b399-58ac6792e7e4' },
+                    { left: '75px', top: '600px', id: 'd6b0dfc3-a934-436e-b4da-3c25cf53760d' },
+                    { left: '730px', top: '425px', id: '2379c0cc-6bfd-43a5-992b-12dc8d868299' }
                 ]
             },
-            scale: {
-                line: { isX: false, isY: false },
-                location: { width: '100%', height: '100%', offsetX: 0, offsetY: 0, x: 20, y: 20 }
-            },
+            line: { isX: true, isY: true },
+            location: { width: '100%', height: '100%', offsetX: 0, offsetY: 0, x: 20, y: 20 },
 
             /******************************************************************/
             instance: null,
@@ -32,159 +34,70 @@ export default {
         }
     },
     mounted() {
-        this.instance = jsPlumb.getInstance()
-        this.$nextTick(() => {
-            this.initCore()
+        createSuper(Option).then(async instance => {
+            this.instance = instance
+            await initCoreZoom(instance, {
+                onZoom: e => {
+                    const { x, y, scale } = e.getTransform()
+                    this.location.width = (1 / scale) * 100 + '%'
+                    this.location.height = (1 / scale) * 100 + '%'
+                    this.location.offsetX = -(x / scale)
+                    this.location.offsetY = -(y / scale)
+                },
+                onTransform: e => {
+                    const { x, y, scale } = e.getTransform()
+                    this.location.width = (1 / scale) * 100 + '%'
+                    this.location.height = (1 / scale) * 100 + '%'
+                    this.location.offsetX = -(x / scale)
+                    this.location.offsetY = -(y / scale)
+                }
+            })
+
+            instance.ready(() => {
+                //完成连线前的校验
+                instance.bind('beforeDrop', e => {
+                    let res = () => {} //此处可以添加是否创建连接的校验， 返回 false 则不添加；
+                    return res
+                })
+
+                //连线完毕、维护本地数据
+                instance.bind('connection', e => {
+                    console.log(e)
+                })
+
+                instance.setSuspendDrawing(false, true)
+            })
         })
     },
     methods: {
-        initCore() {
-            this.instance.ready(() => {
-                // 导入默认配置
-                this.instance.importDefaults(scope.jsplumbSetting)
-
-                // 会使整个jsPlumb立即重绘。
-                this.instance.setSuspendDrawing(false, true)
-            })
-            this.initCoreZoom()
-        },
-        initCoreZoom() {
-            const mainContainer = this.instance.getContainer()
-            const mainContainerWrap = mainContainer.parentNode
-            const pan = panzoom(mainContainer, {
-                smoothScroll: false,
-                bounds: true,
-                autocenter: true,
-                zoomDoubleClickSpeed: 1,
-                minZoom: 0.5,
-                maxZoom: 2,
-                beforeWheel: e => {
-                    console.log(e)
-                },
-                beforeMouseDown: e => e.ctrlKey
-            })
-
-            this.instance.mainContainerWrap = mainContainerWrap
-            this.instance.pan = pan
-
-            // 缩放时设置jsPlumb的缩放比率
-            pan.on('zoom', e => {
-                const { x, y, scale } = e.getTransform()
-                this.instance.setZoom(scale)
-                //根据缩放比例，缩放对齐辅助线长度和位置
-                this.scale.location = Object.assign(this.scale.location, {
-                    width: (1 / scale) * 100 + '%',
-                    height: (1 / scale) * 100 + '%',
-                    offsetX: -(x / scale),
-                    offsetY: -(y / scale)
-                })
-            })
-            pan.on('panend', e => {
-                const { x, y, scale } = e.getTransform()
-                this.scale.location = Object.assign(this.scale.location, {
-                    width: (1 / scale) * 100 + '%',
-                    height: (1 / scale) * 100 + '%',
-                    offsetX: -(x / scale),
-                    offsetY: -(y / scale)
-                })
-            })
-
-            // 平移时设置鼠标样式
-            mainContainerWrap.style.cursor = 'grab'
-            mainContainerWrap.addEventListener('mousedown', function wrapMousedown() {
-                this.style.cursor = 'grabbing'
-                mainContainerWrap.addEventListener('mouseout', function wrapMouseout() {
-                    this.style.cursor = 'grab'
-                })
-            })
-            mainContainerWrap.addEventListener('mouseup', function wrapMouseup() {
-                this.style.cursor = 'grab'
+        //加载流程图
+        loadEasyFlow() {
+            const { column, line } = this.node
+            // 初始化连线
+            line.forEach(e => {
+                this.instance.connect({ source: e.form, target: e.to, id: e.id, label: e.label })
             })
         },
-        useScale() {
-            if (this.instance.pan) {
-                const { scale } = this.instance.pan.getTransform()
-                this.instance.setZoom(scale)
-                return scale
-            } else {
-                const matrix = window.getComputedStyle(this.instance.getContainer()).transform
-                const scale = matrix.split(', ')[3] * 1
-                this.instance.setZoom(scale)
-                return scale
-            }
-        },
+        //拖动左侧菜单节点 start
         onDragstart(e, item) {
             this.current = item
         },
+        //拖动左侧菜单节点end、添加新的节点
         onDrop(e) {
             const rect = this.instance.getContainer().getBoundingClientRect()
-            const scale = this.useScale()
+            const scale = useScale(this.instance)
             const left = (e.pageX - rect.left - 60) / scale
             const top = (e.pageY - rect.top - 20) / scale
-
             const node = {
-                id: Date.now().toString(),
+                id: only(),
                 top: Math.round(top / 20) * 20 + 'px',
                 left: Math.round(left / 20) * 20 + 'px'
             }
-            //添加新的节点
             this.node.column.push(node)
-            this.$nextTick(() => {
-                this.instance.makeSource(node.id, scope.jsplumbSourceOptions)
-                this.instance.makeTarget(node.id, scope.jsplumbTargetOptions)
-                this.draggableNode(node.id)
-            })
-        },
-        draggableNode(nodeId) {
-            this.instance.draggable(nodeId, {
-                grid: [5, 5],
-                drag: params => {
-                    //移动节点时，动态显示对齐线
-                    let showXLine = false
-                    let showYLine = false
-                    this.node.column.some(el => {
-                        if (el.id !== nodeId && el.left == position[0] + 'px') {
-                            this.scale.location.x = position[0] + 60
-                            showYLine = true
-                        }
-                        if (el.id !== nodeId && el.top == position[1] + 'px') {
-                            this.scale.location.y = position[1] + 20
-                            showXLine = true
-                        }
-                    })
-                    this.scale.line.isX = showXLine
-                    this.scale.line.isY = showYLine
-                },
-                start: () => {},
-                stop: params => {
-                    this.scale.line.isX = false
-                    this.scale.line.isY = false
-
-                    // this.changeNodePosition(nodeId, params.pos)
-                }
-            })
-        },
-        //移动节点时，动态显示对齐线
-        alignForLine(nodeId, position) {
-            let showXLine = false,
-                showYLine = false
-            this.data.nodeList.some(el => {
-                if (el.id !== nodeId && el.left == position[0] + 'px') {
-                    this.auxiliaryLinePos.x = position[0] + 60
-                    showYLine = true
-                }
-                if (el.id !== nodeId && el.top == position[1] + 'px') {
-                    this.auxiliaryLinePos.y = position[1] + 20
-                    showXLine = true
-                }
-            })
-            this.auxiliaryLine.isShowYLine = showYLine
-            this.auxiliaryLine.isShowXLine = showXLine
         }
     },
     render() {
-        const { node, multiple, scale } = this
-        const { line, location } = scale
+        const { node, multiple, line, location } = this
 
         return (
             <div class="app-core">
@@ -199,8 +112,8 @@ export default {
                         </div>
                     </el-scrollbar>
                 </div>
-                <div class="app-core__container">
-                    <div ref="context" id="context" onDragover={e => e.preventDefault()} onDrop={this.onDrop}>
+                <div class="app-core__container" onDragover={e => e.preventDefault()} onDrop={this.onDrop}>
+                    <div ref="context" id="context">
                         <div
                             class="scale-line-x"
                             v-show={line.isX}
@@ -211,10 +124,13 @@ export default {
                             v-show={line.isY}
                             style={{ height: location.height, left: location.x + 'px', top: location.offsetY + 'px' }}
                         ></div>
-
-                        {node.column.map(x => (
-                            <node-column id={x.id} key={x.id} node={x}></node-column>
-                        ))}
+                        {this.instance && (
+                            <div>
+                                {node.column.map(x => (
+                                    <node-column id={x.id} key={x.id} node={x} instance={this.instance}></node-column>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -263,7 +179,12 @@ export default {
     .scale-line-y {
         position: absolute;
         border: 0.5px dashed #2ab1e8;
-        z-index: 9999;
+    }
+
+    ::v-deep {
+        .jtk-endpoint {
+            cursor: crosshair;
+        }
     }
 }
 

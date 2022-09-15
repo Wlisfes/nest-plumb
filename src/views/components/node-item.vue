@@ -77,7 +77,8 @@ export default {
                 minWidth: 180
             })
         },
-        setActive() {
+        setActive(e) {
+            console.log(e)
             if (window.event.ctrlKey) {
                 this.isSelected = !this.isSelected
                 return false
@@ -88,7 +89,8 @@ export default {
                 this.$emit('changeLineState', this.node.id, true)
             }, 0)
         },
-        setNotActive() {
+        setNotActive(e) {
+            console.log(e)
             if (!window.event.ctrlKey) {
                 this.isSelected = false
             }
@@ -162,7 +164,7 @@ export default {
         white-space: nowrap;
     }
     .node-anchor {
-        display: flex !important;
+        display: flex;
         position: absolute;
         width: @nodeSize;
         height: @nodeSize;

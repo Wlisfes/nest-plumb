@@ -17,7 +17,6 @@
         <div id="flowWrap" ref="flowWrap" class="flow-wrap" @drop="drop($event)" @dragover="allowDrop($event)">
             <div id="flow">
                 <div
-                    v-show="auxiliaryLine.isShowXLine"
                     class="auxiliary-line-x"
                     :style="{
                         width: auxiliaryLinePos.width,
@@ -26,7 +25,6 @@
                     }"
                 ></div>
                 <div
-                    v-show="auxiliaryLine.isShowYLine"
                     class="auxiliary-line-y"
                     :style="{
                         height: auxiliaryLinePos.height,
@@ -98,7 +96,7 @@ export default {
         this.jsPlumb = jsPlumb.getInstance()
         this.initNodeTypeObj()
         this.initNode()
-        this.fixNodesPosition()
+        // this.fixNodesPosition()
         this.$nextTick(() => {
             this.init()
         })

@@ -154,7 +154,7 @@ const methods = {
     },
     // dragover默认事件就是不触发drag事件，取消默认事件后，才会触发drag事件
     allowDrop(event) {
-        event.preventDefault()
+        // event.preventDefault()
     },
     getScale() {
         let scale1
@@ -195,7 +195,7 @@ const methods = {
                 // let shouldIgnore = !e.ctrlKey
                 // return shouldIgnore
             },
-            beforeMouseDown: function(e) {
+            beforeMouseDown: function (e) {
                 // allow mouse-down panning only if altKey is down. Otherwise - ignore
                 var shouldIgnore = e.ctrlKey
                 return shouldIgnore
@@ -276,8 +276,8 @@ const methods = {
     //初始化节点位置  （以便对齐,居中）
     fixNodesPosition() {
         if (this.data.nodeList && this.$refs.flowWrap) {
-            const nodeWidth = 120
-            const nodeHeight = 40
+            const nodeWidth = 350
+            const nodeHeight = 120
             let wrapInfo = this.$refs.flowWrap.getBoundingClientRect()
             let maxLeft = 0,
                 minLeft = wrapInfo.width,
