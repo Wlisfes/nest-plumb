@@ -24,9 +24,26 @@ export default {
     },
     methods: {
         onSelecter(e) {
-            this.active = e.target.id === this.node.id
-        },
+            const { node } = this
+            const active = e.target.id === node.id
+            const line = this.instance.getAllConnections()
+            console.log(line)
+            this.active = active
+            line.forEach(el => {
+                // console.log(el)
+                // console.log(el.sourceId, node.id)
+                // console.log(el.targetId, node.id)
+                // if (el.targetId === node.id || el.sourceId === node.id) {
+                //     if (active) {
+                el.canvas.classList.add('is-active')
+                //     } else {
+                //         el.canvas.classList.remove('is-active')
+                //     }
+                // }
 
+                console.log(el.canvas)
+            })
+        },
         /**设置入口**/
         initOneBefore() {
             const { node, instance } = this
@@ -58,11 +75,11 @@ export default {
                 },
                 start: e => {
                     //拖动开始
-                    console.log('拖动开始', e)
+                    // console.log('拖动开始', e)
                 },
                 stop: e => {
                     //拖动结束
-                    console.log(e)
+                    // console.log(e)
                 }
             })
         }

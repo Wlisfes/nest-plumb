@@ -4,26 +4,30 @@ import { NodeColumn } from '@/views/core/common'
 import { createSuper, initCoreZoom, useScale } from '@/views/core/common/super'
 import { Option } from '@/views/core/common/option'
 
+const line = [
+    {
+        form: '3be2fb6a-6c40-4435-b399-58ac6792e7e4',
+        to: 'd6b0dfc3-a934-436e-b4da-3c25cf53760d',
+        id: '75fc1a41-7a86-4f78-b259-8bb36bde3555',
+        label: '猪头'
+    }
+]
+const column = [
+    { left: '200px', top: '130px', id: '3be2fb6a-6c40-4435-b399-58ac6792e7e4' },
+    { left: '75px', top: '600px', id: 'd6b0dfc3-a934-436e-b4da-3c25cf53760d' },
+    { left: '730px', top: '425px', id: '2379c0cc-6bfd-43a5-992b-12dc8d868299' }
+]
+
 export default {
     name: 'Core',
     components: { NodeColumn },
     data() {
         return {
+            loading: true,
             multiple: [1, 2, 3, 4, 5, 6, 7, 8],
             node: {
-                line: [
-                    {
-                        form: '3be2fb6a-6c40-4435-b399-58ac6792e7e4',
-                        to: 'd6b0dfc3-a934-436e-b4da-3c25cf53760d',
-                        id: '75fc1a41-7a86-4f78-b259-8bb36bde3555',
-                        label: '猪头'
-                    }
-                ],
-                column: [
-                    { left: '200px', top: '130px', id: '3be2fb6a-6c40-4435-b399-58ac6792e7e4' },
-                    { left: '75px', top: '600px', id: 'd6b0dfc3-a934-436e-b4da-3c25cf53760d' },
-                    { left: '730px', top: '425px', id: '2379c0cc-6bfd-43a5-992b-12dc8d868299' }
-                ]
+                line: [],
+                column: []
             },
             line: { isX: true, isY: true },
             location: { width: '100%', height: '100%', offsetX: 0, offsetY: 0, x: 20, y: 20 },
@@ -39,6 +43,7 @@ export default {
             await initCoreZoom(instance, {
                 onZoom: e => {
                     const { x, y, scale } = e.getTransform()
+                    instance.setZoom(scale)
                     this.location.width = (1 / scale) * 100 + '%'
                     this.location.height = (1 / scale) * 100 + '%'
                     this.location.offsetX = -(x / scale)
@@ -53,7 +58,9 @@ export default {
                 }
             })
 
-            instance.ready(() => {
+            instance.ready(async () => {
+                await this.fetchNode(instance)
+
                 //完成连线前的校验
                 instance.bind('beforeDrop', e => {
                     let res = () => {} //此处可以添加是否创建连接的校验， 返回 false 则不添加；
@@ -70,13 +77,22 @@ export default {
         })
     },
     methods: {
-        //加载流程图
-        loadEasyFlow() {
-            const { column, line } = this.node
-            // 初始化连线
-            line.forEach(e => {
-                this.instance.connect({ source: e.form, target: e.to, id: e.id, label: e.label })
+        async fetchNode(instance) {
+            await new Promise(resolve => {
+                setTimeout(() => {
+                    this.node = { line, column }
+                    resolve()
+                }, 1000)
             })
+            for (const e of this.node.line) {
+                instance.connect({
+                    source: e.form,
+                    target: e.to,
+                    id: e.id,
+                    label: e.label
+                })
+            }
+            return (this.loading = false)
         },
         //拖动左侧菜单节点 start
         onDragstart(e, item) {
@@ -112,7 +128,12 @@ export default {
                         </div>
                     </el-scrollbar>
                 </div>
-                <div class="app-core__container" onDragover={e => e.preventDefault()} onDrop={this.onDrop}>
+                <div
+                    class="app-core__container"
+                    v-loading={this.loading}
+                    onDragover={e => e.preventDefault()}
+                    onDrop={this.onDrop}
+                >
                     <div ref="context" id="context">
                         <div
                             class="scale-line-x"
@@ -184,6 +205,25 @@ export default {
     ::v-deep {
         .jtk-endpoint {
             cursor: crosshair;
+        }
+        .jtk-connector.is-active {
+            path {
+                stroke: #150042;
+                stroke-width: 1.5;
+                animation: stroke;
+                animation-duration: 3s;
+                animation-timing-function: linear;
+                animation-iteration-count: infinite;
+                stroke-dasharray: 5;
+                @keyframes stroke {
+                    from {
+                        stroke-dashoffset: 50;
+                    }
+                    to {
+                        stroke-dashoffset: 0;
+                    }
+                }
+            }
         }
     }
 }

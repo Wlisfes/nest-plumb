@@ -27,8 +27,6 @@ export async function initCoreZoom(instance, option) {
 
     // 缩放时设置jsPlumb的缩放比率
     pan.on('zoom', e => {
-        const { x, y, scale } = e.getTransform()
-        instance.setZoom(scale)
         option?.onZoom?.(e)
     })
     pan.on('transform', e => {
