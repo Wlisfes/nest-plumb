@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import { v4 as only } from 'uuid'
 
 async function setStore(key, data) {
     return window.localStorage.setItem(key, JSON.stringify(data))
@@ -13,8 +14,8 @@ function useStore(key) {
         line: [],
         column: [],
         multiple: [
-            { primary: 'M-1', name: '身份核实' },
-            { primary: 'M-2', name: '证件号码确认' }
+            { primary: 'M-1', name: '身份核实', id: only() },
+            { primary: 'M-2', name: '证件号码确认', id: only() }
         ],
         axis: { x: true, y: true },
         location: { width: '100%', height: '100%', offsetX: 0, offsetY: 0, x: 0, y: 0 }

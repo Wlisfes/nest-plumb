@@ -21,6 +21,7 @@ export async function initCoreZoom(instance, option) {
         beforeWheel: e => {},
         beforeMouseDown: e => e.ctrlKey
     })
+    pan.moveTo(option.x, option.y)
 
     instance.mainContainerWrap = mainContainerWrap
     instance.pan = pan

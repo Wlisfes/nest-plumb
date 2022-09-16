@@ -20,23 +20,29 @@ export default {
         createSuper(Option).then(async instance => {
             this.instance = instance
             await initCoreZoom(instance, {
+                x: state.location.x,
+                y: state.location.y,
                 onZoom: e => {
                     const { x, y, scale } = e.getTransform()
                     instance.setZoom(scale)
                     setState(e => {
-                        e.location.width = (1 / scale) * 100 + '%'
-                        e.location.height = (1 / scale) * 100 + '%'
+                        e.location.x = x
+                        e.location.y = y
                         e.location.offsetX = -(x / scale)
                         e.location.offsetY = -(y / scale)
+                        e.location.width = (1 / scale) * 100 + '%'
+                        e.location.height = (1 / scale) * 100 + '%'
                     })
                 },
                 onTransform: e => {
                     const { x, y, scale } = e.getTransform()
                     setState(e => {
-                        e.location.width = (1 / scale) * 100 + '%'
-                        e.location.height = (1 / scale) * 100 + '%'
+                        e.location.x = x
+                        e.location.y = y
                         e.location.offsetX = -(x / scale)
                         e.location.offsetY = -(y / scale)
+                        e.location.width = (1 / scale) * 100 + '%'
+                        e.location.height = (1 / scale) * 100 + '%'
                     })
                 }
             })
@@ -128,12 +134,7 @@ export default {
                     <el-scrollbar>
                         <div class="node-multiple">
                             {multiple.map(x => (
-                                <div
-                                    class="node-matter"
-                                    key={x.primary}
-                                    draggable
-                                    onDragstart={e => this.onDragstart(x)}
-                                >
+                                <div class="node-matter" key={x.id} draggable onDragstart={e => this.onDragstart(x)}>
                                     {`${x.primary}：${x.name}`}
                                 </div>
                             ))}
@@ -146,13 +147,7 @@ export default {
                     onDragover={e => e.preventDefault()}
                     onDrop={this.onDrop}
                 >
-                    <div
-                        ref="context"
-                        id="context"
-                        style={{
-                            transformOrigin: '100px 100px 0'
-                        }}
-                    >
+                    <div ref="context" id="context" style={{ transformOrigin: '100px 100px 0' }}>
                         <div
                             class="scale-line-x"
                             v-show={axis.x}
