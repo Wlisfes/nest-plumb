@@ -1,27 +1,23 @@
 <script>
-import ClickOutside from 'vue-click-outside'
-import { v4 as only } from 'uuid'
+import { NodeSource } from '@/views/core/common'
 import { stop } from '@/core/tools'
 import { fetchColumn } from '@/core/hook'
 
 export default {
     name: 'NodeColumn',
+    components: { NodeSource },
     props: {
         node: Object,
         instance: Object
     },
-    directives: { ClickOutside },
     data() {
         return {
-            active: false,
-            column: [],
-            line: []
+            active: false
         }
     },
     mounted() {
         this.$nextTick(() => {
             this.initOneBefore()
-            this.initOneAfter()
             this.draggableNode()
         })
     },
@@ -54,25 +50,9 @@ export default {
             const { node, instance } = this
             instance.addEndpoint(
                 node.id,
-                { anchors: 'Top', cssClass: node.id, uuid: node.id },
+                { anchors: 'Top', uuid: node.id },
                 { isSource: false, isTarget: true, maxConnections: -1 }
             )
-        },
-        /**设置出口**/
-        initOneAfter() {
-            const { node, instance } = this
-            ;(node.line ?? []).forEach(e => {
-                instance.addEndpoint(
-                    e.id,
-                    {
-                        anchors: 'Bottom',
-                        paintStyle: {
-                            fill: 'rgba(0,0,0,0)'
-                        }
-                    },
-                    { isSource: true, isTarget: false, maxConnections: 1 }
-                )
-            })
         },
         /**绑定节点移动事件**/
         draggableNode() {
@@ -126,9 +106,7 @@ export default {
                     {node.line?.length > 0 && (
                         <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }}>
                             {node.line.map(x => (
-                                <el-tag key={x.id} id={x.id} type={x.type} size="medium" style={{ margin: '0 5px' }}>
-                                    {x.content}
-                                </el-tag>
+                                <node-source key={x.id} id={x.id} node={x} instance={this.instance}></node-source>
                             ))}
                         </div>
                     )}

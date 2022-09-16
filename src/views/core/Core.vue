@@ -58,6 +58,17 @@ export default {
                 //连线完毕、维护本地数据
                 instance.bind('connection', e => {
                     console.log(e)
+                    const node = {
+                        id: only(),
+                        source: e.sourceId,
+                        target: e.targetId,
+                        label: '猪头'
+                    }
+                    setState(s => {
+                        s.line.push(node)
+                    }).then(() => {
+                        console.log(state)
+                    })
                 })
 
                 instance.setSuspendDrawing(false, true)
@@ -66,20 +77,10 @@ export default {
     },
     methods: {
         async fetchNode(instance) {
-            await new Promise(resolve => {
-                setTimeout(() => {
-                    // this.node = { line, column }
-                    resolve()
-                }, 1000)
-            })
-            for (const e of state.line) {
-                instance.connect({
-                    source: e.form,
-                    target: e.to,
-                    id: e.id,
-                    label: e.label
-                })
-            }
+            // await new Promise(resolve => {
+            //     setTimeout(() => resolve(), 1000)
+            // })
+            state.line.map(x => instance.connect(x))
             return (this.loading = false)
         },
         //拖动左侧菜单节点 start
@@ -127,6 +128,8 @@ export default {
     },
     render() {
         const { column, multiple, axis, location } = state
+        const styleX = { width: location.width, left: location.offsetX + 'px' }
+        const styleY = { height: location.height, top: location.offsetY + 'px' }
 
         return (
             <div class="app-core">
@@ -148,16 +151,8 @@ export default {
                     onDrop={this.onDrop}
                 >
                     <div ref="context" id="context" style={{ transformOrigin: '100px 100px 0' }}>
-                        <div
-                            class="scale-line-x"
-                            v-show={axis.x}
-                            style={{ width: location.width, top: location.y + 'px', left: location.offsetX + 'px' }}
-                        ></div>
-                        <div
-                            class="scale-line-y"
-                            v-show={axis.y}
-                            style={{ height: location.height, left: location.x + 'px', top: location.offsetY + 'px' }}
-                        ></div>
+                        <div class="axis-x" v-show={axis.x} style={styleX}></div>
+                        <div class="axis-y" v-show={axis.y} style={styleY}></div>
                         {this.instance && (
                             <div>
                                 {column.map(x => (
@@ -217,8 +212,8 @@ export default {
     position: relative;
     width: 100%;
     height: 100%;
-    .scale-line-x,
-    .scale-line-y {
+    .axis-x,
+    .axis-y {
         position: absolute;
         border: 0.5px dashed #2ab1e8;
     }
