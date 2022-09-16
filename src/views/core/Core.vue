@@ -1,22 +1,10 @@
 <script>
 import { v4 as only } from 'uuid'
 import { NodeColumn } from '@/views/core/common'
-import { createSuper, initCoreZoom, useScale } from '@/views/core/common/super'
-import { Option } from '@/views/core/common/option'
-
-const line = [
-    {
-        form: '3be2fb6a-6c40-4435-b399-58ac6792e7e4',
-        to: 'd6b0dfc3-a934-436e-b4da-3c25cf53760d',
-        id: '75fc1a41-7a86-4f78-b259-8bb36bde3555',
-        label: '猪头'
-    }
-]
-const column = [
-    { left: '200px', top: '130px', id: '3be2fb6a-6c40-4435-b399-58ac6792e7e4' },
-    { left: '75px', top: '600px', id: 'd6b0dfc3-a934-436e-b4da-3c25cf53760d' },
-    { left: '730px', top: '425px', id: '2379c0cc-6bfd-43a5-992b-12dc8d868299' }
-]
+import { Option } from '@/core/option'
+import { useState } from '@/core/state'
+import { createSuper, initCoreZoom, useScale } from '@/core/super'
+const { state, setState } = useState()
 
 export default {
     name: 'Core',
@@ -24,15 +12,6 @@ export default {
     data() {
         return {
             loading: true,
-            multiple: [1, 2, 3, 4, 5, 6, 7, 8],
-            node: {
-                line: [],
-                column: []
-            },
-            line: { isX: true, isY: true },
-            location: { width: '100%', height: '100%', offsetX: 0, offsetY: 0, x: 20, y: 20 },
-
-            /******************************************************************/
             instance: null,
             current: null
         }
@@ -44,23 +23,26 @@ export default {
                 onZoom: e => {
                     const { x, y, scale } = e.getTransform()
                     instance.setZoom(scale)
-                    this.location.width = (1 / scale) * 100 + '%'
-                    this.location.height = (1 / scale) * 100 + '%'
-                    this.location.offsetX = -(x / scale)
-                    this.location.offsetY = -(y / scale)
+                    setState(e => {
+                        e.location.width = (1 / scale) * 100 + '%'
+                        e.location.height = (1 / scale) * 100 + '%'
+                        e.location.offsetX = -(x / scale)
+                        e.location.offsetY = -(y / scale)
+                    })
                 },
                 onTransform: e => {
                     const { x, y, scale } = e.getTransform()
-                    this.location.width = (1 / scale) * 100 + '%'
-                    this.location.height = (1 / scale) * 100 + '%'
-                    this.location.offsetX = -(x / scale)
-                    this.location.offsetY = -(y / scale)
+                    setState(e => {
+                        e.location.width = (1 / scale) * 100 + '%'
+                        e.location.height = (1 / scale) * 100 + '%'
+                        e.location.offsetX = -(x / scale)
+                        e.location.offsetY = -(y / scale)
+                    })
                 }
             })
 
+            await this.fetchNode(instance)
             instance.ready(async () => {
-                await this.fetchNode(instance)
-
                 //完成连线前的校验
                 instance.bind('beforeDrop', e => {
                     let res = () => {} //此处可以添加是否创建连接的校验， 返回 false 则不添加；
@@ -80,11 +62,11 @@ export default {
         async fetchNode(instance) {
             await new Promise(resolve => {
                 setTimeout(() => {
-                    this.node = { line, column }
+                    // this.node = { line, column }
                     resolve()
                 }, 1000)
             })
-            for (const e of this.node.line) {
+            for (const e of state.line) {
                 instance.connect({
                     source: e.form,
                     target: e.to,
@@ -95,8 +77,8 @@ export default {
             return (this.loading = false)
         },
         //拖动左侧菜单节点 start
-        onDragstart(e, item) {
-            this.current = item
+        onDragstart(row) {
+            this.current = row
         },
         //拖动左侧菜单节点end、添加新的节点
         onDrop(e) {
@@ -105,15 +87,40 @@ export default {
             const left = (e.pageX - rect.left - 60) / scale
             const top = (e.pageY - rect.top - 20) / scale
             const node = {
+                ...this.current,
                 id: only(),
                 top: Math.round(top / 20) * 20 + 'px',
                 left: Math.round(left / 20) * 20 + 'px'
             }
-            this.node.column.push(node)
+
+            setState(e => e.column.push(node))
+        },
+        /**节点拖动结束**/
+        nodeStop(e) {
+            setState(s => {
+                const node = s.column.find(x => x.id === e.el.id)
+                node.left = e.pos[0] + 'px'
+                node.top = e.pos[1] + 'px'
+            })
+        },
+        /**删除节点**/
+        nodeDelete(e) {
+            this.instance.remove(e.id)
+            setState(s => {
+                s.column = s.column.filter(x => x.id !== e.id)
+            })
+        },
+        /**节点设置**/
+        nodeSubmit(e) {
+            setState(s => {
+                const node = s.column.find(x => x.id === e.node.id)
+                node.content = e.form.content
+                node.line = e.form.line
+            })
         }
     },
     render() {
-        const { node, multiple, line, location } = this
+        const { column, multiple, axis, location } = state
 
         return (
             <div class="app-core">
@@ -121,8 +128,13 @@ export default {
                     <el-scrollbar>
                         <div class="node-multiple">
                             {multiple.map(x => (
-                                <div class="node-matter" key={x} draggable onDragstart={e => this.onDragstart(e, x)}>
-                                    {x}
+                                <div
+                                    class="node-matter"
+                                    key={x.primary}
+                                    draggable
+                                    onDragstart={e => this.onDragstart(x)}
+                                >
+                                    {`${x.primary}：${x.name}`}
                                 </div>
                             ))}
                         </div>
@@ -134,21 +146,35 @@ export default {
                     onDragover={e => e.preventDefault()}
                     onDrop={this.onDrop}
                 >
-                    <div ref="context" id="context">
+                    <div
+                        ref="context"
+                        id="context"
+                        style={{
+                            transformOrigin: '100px 100px 0'
+                        }}
+                    >
                         <div
                             class="scale-line-x"
-                            v-show={line.isX}
+                            v-show={axis.x}
                             style={{ width: location.width, top: location.y + 'px', left: location.offsetX + 'px' }}
                         ></div>
                         <div
                             class="scale-line-y"
-                            v-show={line.isY}
+                            v-show={axis.y}
                             style={{ height: location.height, left: location.x + 'px', top: location.offsetY + 'px' }}
                         ></div>
                         {this.instance && (
                             <div>
-                                {node.column.map(x => (
-                                    <node-column id={x.id} key={x.id} node={x} instance={this.instance}></node-column>
+                                {column.map(x => (
+                                    <node-column
+                                        id={x.id}
+                                        key={x.id}
+                                        node={x}
+                                        instance={this.instance}
+                                        onNode-stop={this.nodeStop}
+                                        onNode-delete={this.nodeDelete}
+                                        onNode-submit={this.nodeSubmit}
+                                    ></node-column>
                                 ))}
                             </div>
                         )}
@@ -239,5 +265,9 @@ export default {
         box-sizing: border-box;
         box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
     }
+}
+
+.form-column {
+    background-color: red;
 }
 </style>

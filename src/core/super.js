@@ -17,7 +17,7 @@ export async function initCoreZoom(instance, option) {
         bounds: true,
         zoomDoubleClickSpeed: 1,
         minZoom: 0.5, //最小缩放0.5倍
-        maxZoom: 5, //最大2倍
+        maxZoom: 5, //最大5倍
         beforeWheel: e => {},
         beforeMouseDown: e => e.ctrlKey
     })
@@ -31,18 +31,6 @@ export async function initCoreZoom(instance, option) {
     })
     pan.on('transform', e => {
         option?.onTransform?.(e)
-    })
-
-    // 平移时设置鼠标样式
-    mainContainerWrap.style.cursor = 'grab'
-    mainContainerWrap.addEventListener('mousedown', function wrapMousedown() {
-        this.style.cursor = 'grabbing'
-        mainContainerWrap.addEventListener('mouseout', function wrapMouseout() {
-            this.style.cursor = 'grab'
-        })
-    })
-    mainContainerWrap.addEventListener('mouseup', function wrapMouseup() {
-        this.style.cursor = 'grab'
     })
 
     return instance
@@ -61,3 +49,5 @@ export function useScale(instance) {
         return scale
     }
 }
+
+export function fetchConnect() {}
