@@ -12,7 +12,7 @@ export default {
         /**设置出口**/
         initOneAfter() {
             const { node, instance } = this
-            instance.addEndpoint(node.id, { anchors: 'Bottom' }, { isSource: true, isTarget: false, maxConnections: 1 })
+            instance.addEndpoint(node.id, { anchor: 'Bottom' }, { isSource: true, isTarget: false, maxConnections: 1 })
         }
     },
     render() {

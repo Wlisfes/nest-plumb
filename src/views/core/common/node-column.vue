@@ -50,7 +50,7 @@ export default {
             const { node, instance } = this
             instance.addEndpoint(
                 node.id,
-                { anchors: 'Top', uuid: node.id },
+                { anchor: 'Top', uuid: node.id },
                 { isSource: false, isTarget: true, maxConnections: -1 }
             )
         },

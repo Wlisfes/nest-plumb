@@ -1,14 +1,14 @@
 export const Option = {
     grid: [10, 10],
     //动态锚点、位置自适应
-    Anchors: ['TopCenter', 'BottomCenter'],
+    Anchor: ['TopCenter', 'BottomCenter'],
     Container: 'context',
     //连线的样式 Bezier(贝塞尔曲线)、Straight(直线)、Flowchart(流程图)、StateMachine(状态机)
     Connector: ['Flowchart', { gap: 10, cornerRadius: 5, alwaysRespectStubs: true, stub: 50 }],
     //删除线的时候节点不删除
     DeleteEndpointsOnDetach: false,
     //鼠标不能拖动删除线
-    ConnectionsDetachable: false,
+    ConnectionsDetachable: true,
     //连线的叠加组件，如箭头、标签
     ConnectionOverlays: [['Arrow', { width: 12, length: 12, location: 1 }]],
 
