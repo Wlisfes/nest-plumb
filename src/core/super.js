@@ -1,10 +1,11 @@
 import panzoom from 'panzoom'
 import { jsPlumb } from 'jsplumb'
-import { v4 as only } from 'uuid'
 
 /**创建实例**/
 export async function createSuper(option) {
-    return jsPlumb.getInstance(option)
+    const instance = jsPlumb.getInstance()
+    instance.importDefaults(option)
+    return instance
 }
 
 //缩放监听
@@ -16,22 +17,41 @@ export async function initCoreZoom(instance, option) {
         smoothScroll: false,
         bounds: true,
         zoomDoubleClickSpeed: 1,
-        minZoom: 0.5, //最小缩放0.5倍
-        maxZoom: 5, //最大5倍
+        minZoom: 0.5,
+        maxZoom: 5,
+        initialZoom: option.scale ?? 1,
         beforeWheel: e => {},
         beforeMouseDown: e => e.ctrlKey
     })
-    pan.moveTo(option.x, option.y)
+    pan.moveTo(option.x ?? 0, option.y ?? 0)
 
     instance.mainContainerWrap = mainContainerWrap
     instance.pan = pan
 
+    const useTransform = e => {
+        const { x, y, scale } = e.getTransform()
+        return {
+            e,
+            scale,
+            x,
+            y,
+            offsetX: -(x / scale),
+            offsetY: -(y / scale),
+            width: (1 / scale) * 100 + '%',
+            height: (1 / scale) * 100 + '%'
+        }
+    }
+
     // 缩放时设置jsPlumb的缩放比率
     pan.on('zoom', e => {
-        option?.onZoom?.(e)
+        const response = useTransform(e)
+        instance.setZoom(response.scale)
+        option?.onZoom?.(response)
     })
     pan.on('transform', e => {
-        option?.onTransform?.(e)
+        const response = useTransform(e)
+        instance.setZoom(response.scale)
+        option?.onTransform?.(response)
     })
 
     return instance

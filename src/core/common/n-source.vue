@@ -1,6 +1,6 @@
 <script>
 export default {
-    name: 'NodeSource',
+    name: 'NSource',
     props: {
         node: Object,
         instance: Object
@@ -12,11 +12,16 @@ export default {
         /**设置出口**/
         initOneAfter() {
             const { node, instance } = this
-            instance.addEndpoint(node.id, { anchor: 'Bottom' }, { isSource: true, isTarget: false, maxConnections: 1 })
+            instance.makeSource(node.id, {
+                maxConnections: 1,
+                anchor: 'BottomCenter',
+                endpointStyle: { fill: 'transparent', outlineStroke: 'transparent' }
+            })
         }
     },
     render() {
         const { node } = this
+
         return (
             <el-tag type={node.type} size="medium" style={{ margin: '0 5px' }}>
                 {node.content}

@@ -4,7 +4,6 @@ export function stop(e, handler) {
     handler?.()
 }
 
-/**自执行函数**/
 export async function initMounte(handler) {
     return handler?.()
 }

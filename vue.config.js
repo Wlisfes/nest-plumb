@@ -13,12 +13,12 @@ module.exports = {
         }
     },
     devServer: {
-        port: 3080,
+        port: 4080,
         open: true
     },
     chainWebpack: config => {
         config.plugin('html').tap(args => {
-            args[0].title = 'js-plumb'
+            args[0].title = '流程图'
             return args
         })
     }
