@@ -120,7 +120,13 @@ export default {
                     {node.line?.length > 0 && (
                         <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }}>
                             {node.line.map(x => (
-                                <n-source key={x.id} id={x.id} node={x} instance={this.instance}></n-source>
+                                <n-source
+                                    data-parent={node.id}
+                                    key={x.id}
+                                    id={x.id}
+                                    node={x}
+                                    instance={this.instance}
+                                ></n-source>
                             ))}
                         </div>
                     )}

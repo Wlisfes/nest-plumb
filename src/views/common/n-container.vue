@@ -46,7 +46,8 @@ export default {
 
                 //完成连线前的校验
                 instance.bind('beforeDrop', e => {
-                    return e.sourceId !== e.targetId
+                    const parent = document.getElementById(e.sourceId)?.getAttribute('data-parent')
+                    return e.sourceId !== e.targetId && e.targetId !== parent
                 })
 
                 //连线完毕、维护本地数据
@@ -57,12 +58,12 @@ export default {
                         target: e.targetId,
                         label: '猪头'
                     }
-                    this.$store
-                        .dispatch('setLine', {
-                            command: 'CREATE',
-                            node
-                        })
-                        .then(() => instance.setSuspendDrawing(false, true))
+                    this.$store.dispatch('setLine', { command: 'CREATE', node })
+                })
+
+                //双击连线
+                instance.bind('dblclick', e => {
+                    console.log('删除线', e)
                 })
 
                 instance.setSuspendDrawing(false, true)
@@ -86,6 +87,7 @@ export default {
             }
             return false
         },
+
         onMounte(e) {
             const rect = this.instance.getContainer().getBoundingClientRect()
             const scale = useScale(this.instance)
