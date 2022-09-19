@@ -14,7 +14,17 @@ module.exports = {
     },
     devServer: {
         port: 3080,
-        open: true
+        open: true,
+        proxy: {
+            [`/api`]: {
+                target: 'http://localhost:3081',
+                ws: true,
+                changeOrigin: true,
+                pathRewrite: {
+                    [`^/api`]: ''
+                }
+            }
+        }
     },
     chainWebpack: config => {
         config.plugin('html').tap(args => {
