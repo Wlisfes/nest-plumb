@@ -22,7 +22,7 @@ export default {
                 maxConnections: 1,
                 anchor: 'BottomCenter',
                 endpointStyle: { fill: 'transparent', outlineStroke: 'transparent' },
-                connectorStyle: { stroke: this.stroke }
+                connectorStyle: { stroke: this.stroke, strokeWidth: 3 }
             })
         }
     },
