@@ -1,10 +1,10 @@
 <script>
 import { v4 as only } from 'uuid'
-import { NAside, NContainer } from '@/views/common'
+import { NAside, NChart, NContainer } from '@/views/common'
 
 export default {
     name: 'Home',
-    components: { NAside, NContainer },
+    components: { NAside, NChart, NContainer },
     data() {
         return {
             current: null,
@@ -24,6 +24,7 @@ export default {
             <div class="n-naive">
                 <n-aside data-column={this.multiple} onSelecter={this.onSelecter}></n-aside>
                 <n-container current={this.current}></n-container>
+                {/**<n-chart data-column={this.multiple}></n-chart>**/}
             </div>
         )
     }

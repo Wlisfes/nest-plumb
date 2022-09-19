@@ -42,7 +42,7 @@ export default {
                 }
             })
             instance.ready(async () => {
-                this.loading = await this.fetchConnect()
+                await this.fetchConnect().then(() => (this.loading = false))
 
                 //完成连线前的校验
                 instance.bind('beforeDrop', e => {
@@ -76,7 +76,7 @@ export default {
             await new Promise(resolve => {
                 setTimeout(() => resolve(), 1500)
             })
-            for (const x of line) {
+            return line.map(x =>
                 instance.connect({
                     source: x.source,
                     target: x.target,
@@ -84,8 +84,7 @@ export default {
                     anchor: ['TopCenter', 'BottomCenter'],
                     endpointStyle: { fill: 'transparent', outlineStroke: 'transparent' }
                 })
-            }
-            return false
+            )
         },
 
         onMounte(e) {
