@@ -5,6 +5,12 @@ export default {
         node: Object,
         instance: Object
     },
+    computed: {
+        stroke() {
+            const colors = { success: '#67c23a', danger: '#f56c6c', info: '#909399' }
+            return colors[this.node.type]
+        }
+    },
     mounted() {
         this.$nextTick(() => this.initOneAfter())
     },
@@ -12,10 +18,12 @@ export default {
         /**设置出口**/
         initOneAfter() {
             const { node, instance } = this
+            console.log(node)
             instance.makeSource(node.id, {
                 maxConnections: 1,
                 anchor: 'BottomCenter',
-                endpointStyle: { fill: 'transparent', outlineStroke: 'transparent' }
+                endpointStyle: { fill: 'transparent', outlineStroke: 'transparent' },
+                connectorStyle: { stroke: this.stroke }
             })
         }
     },
