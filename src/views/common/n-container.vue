@@ -61,9 +61,18 @@ export default {
                     this.$store.dispatch('setLine', { command: 'CREATE', node })
                 })
 
+                //删除线完毕、维护本地数据
+                instance.bind('connectionDetached', e => {
+                    const node = this.line.find(x => x.source === e.sourceId && x.target === e.targetId)
+                    this.$store.commit('SET_LINE', {
+                        command: 'DELETE',
+                        node
+                    })
+                })
+
                 //双击连线
                 instance.bind('dblclick', e => {
-                    console.log('删除线', e)
+                    instance.deleteConnection(e)
                 })
 
                 instance.setSuspendDrawing(false, true)
@@ -78,6 +87,7 @@ export default {
             })
             return line.map(x =>
                 instance.connect({
+                    id: x.id,
                     source: x.source,
                     target: x.target,
                     uuids: [x.source, x.target],

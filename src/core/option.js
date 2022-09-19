@@ -16,6 +16,6 @@ export const Option = {
     Endpoint: ['Dot', { radius: 8 }],
     EndpointStyle: { fill: 'rgb(30, 129, 81)' },
     //连接线样式
-    PaintStyle: { stroke: '#2080F0', radius: 10, strokeWidth: 2 },
+    PaintStyle: { stroke: '#2080F0', radius: 10, strokeWidth: 3 },
     HoverPaintStyle: { stroke: 'red' }
 }

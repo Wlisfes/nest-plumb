@@ -18,7 +18,6 @@ export default {
         /**设置出口**/
         initOneAfter() {
             const { node, instance } = this
-            console.log(node)
             instance.makeSource(node.id, {
                 maxConnections: 1,
                 anchor: 'BottomCenter',
