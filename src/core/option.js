@@ -8,9 +8,9 @@ export const Option = {
     //删除线的时候节点不删除
     DeleteEndpointsOnDetach: false,
     //鼠标不能拖动删除线
-    ConnectionsDetachable: true,
+    ConnectionsDetachable: false,
     //连线的叠加组件，如箭头、标签
-    ConnectionOverlays: [['Arrow', { width: 15, length: 15, location: 1 }]],
+    ConnectionOverlays: [['Arrow', { width: 20, length: 20, location: 1 }]],
 
     //端点的默认样式
     Endpoint: ['Dot', { radius: 8 }],

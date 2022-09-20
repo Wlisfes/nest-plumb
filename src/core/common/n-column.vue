@@ -1,4 +1,5 @@
 <script>
+import ClickOutside from 'vue-click-outside'
 import NSource from '@/core/common/n-source'
 import { stop } from '@/utils/utils-common'
 import { fetchColumn } from '@/core/hook/fetch-column'
@@ -6,8 +7,10 @@ import { fetchColumn } from '@/core/hook/fetch-column'
 export default {
     name: 'NColumn',
     components: { NSource },
+    directives: { ClickOutside },
     props: {
         node: Object,
+        current: [String, Object],
         instance: Object
     },
     data() {
@@ -22,7 +25,26 @@ export default {
         })
     },
     methods: {
-        onSelecter(e) {},
+        onSelecter(active) {
+            this.active = active
+            this.initConnect(active)
+        },
+        /**切换连接线状态**/
+        initConnect(active) {
+            const { node, instance } = this
+            const line = (node.line ?? []).map(x => x.id)
+            const bezier = instance.getAllConnections()
+
+            bezier.forEach(x => {
+                if (x.targetId === node.id || line.includes(x.sourceId)) {
+                    if (active) {
+                        x.canvas.classList.add('is-active')
+                    } else {
+                        x.canvas.classList.remove('is-active')
+                    }
+                }
+            })
+        },
         /**设置入口**/
         initOneBefore() {
             const { node, instance } = this
@@ -101,14 +123,15 @@ export default {
         }
     },
     render() {
-        const { node } = this
+        const { node, current } = this
 
         return (
             <div
                 ref="node"
                 class={{ 'n-column': true, 'is-active': this.active }}
                 style={{ top: node.top, left: node.left }}
-                onClick={this.onSelecter}
+                onClick={e => this.onSelecter(true)}
+                v-click-outside={e => this.onSelecter(false)}
             >
                 <div class="node-column">
                     <div class="row-matter">

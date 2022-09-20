@@ -12,18 +12,17 @@ export async function createSuper(option) {
 export async function initCoreZoom(instance, option) {
     const mainContainer = instance.getContainer()
     const mainContainerWrap = mainContainer.parentNode
-
     const pan = panzoom(mainContainer, {
         smoothScroll: false,
         bounds: true,
         zoomDoubleClickSpeed: 1,
-        minZoom: 0.5,
+        minZoom: 0.1,
         maxZoom: 5,
-        initialZoom: option.scale ?? 1,
+        initialZoom: option.core?.scale ?? 1,
         beforeWheel: e => {},
         beforeMouseDown: e => e.ctrlKey
     })
-    pan.moveTo(option.x ?? 0, option.y ?? 0)
+    pan.moveTo(option.core?.x ?? 0, option.core?.y ?? 0)
 
     instance.mainContainerWrap = mainContainerWrap
     instance.pan = pan

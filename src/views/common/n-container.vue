@@ -29,9 +29,7 @@ export default {
         createSuper(Option).then(async instance => {
             this.instance = instance
             await initCoreZoom(instance, {
-                x: this.core.x,
-                y: this.core.y,
-                scale: this.core.scale,
+                core: this.core,
                 onZoom: response => {
                     const { x, y, offsetX, offsetY, width, height, scale } = response
                     this.$store.commit('SET_CORE', { x, y, offsetX, offsetY, width, height, scale })
@@ -83,7 +81,7 @@ export default {
         async fetchConnect() {
             const { instance, line } = this
             await new Promise(resolve => {
-                setTimeout(() => resolve(), 1500)
+                setTimeout(() => resolve(), 1000)
             })
             return line.map(x =>
                 instance.connect({
@@ -153,6 +151,28 @@ export default {
     }
     &:active {
         cursor: grabbing;
+    }
+    ::v-deep {
+        .el-loading-mask {
+            background-color: rgba(255, 255, 255, 1);
+        }
+        .jtk-connector.is-active {
+            z-index: 9999;
+            path {
+                stroke: #150042;
+                stroke-width: 3;
+                animation: rotate 3s linear infinite;
+                stroke-dasharray: 10;
+            }
+        }
+        @keyframes rotate {
+            from {
+                stroke-dashoffset: 100;
+            }
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
     }
 }
 #context {

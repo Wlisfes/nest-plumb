@@ -22,7 +22,7 @@ export default {
                 maxConnections: 1,
                 anchor: 'BottomCenter',
                 endpointStyle: { fill: 'transparent', outlineStroke: 'transparent' },
-                connectorStyle: { stroke: this.stroke, strokeWidth: 3 }
+                connectorStyle: { stroke: this.stroke, strokeWidth: 5 }
             })
         }
     },
@@ -30,7 +30,7 @@ export default {
         const { node } = this
 
         return (
-            <el-tag type={node.type} size="medium" style={{ margin: '0 5px' }}>
+            <el-tag type={node.type} size="medium" style={{ margin: '0 5px', cursor: 'crosshair' }}>
                 {node.content}
             </el-tag>
         )
