@@ -1,7 +1,7 @@
 <script>
-import ClickOutside from 'vue-click-outside'
 import NSource from '@/core/common/n-source'
 import { stop } from '@/utils/utils-common'
+import { ClickOutside } from '@/utils/utils-click-outside'
 import { fetchColumn } from '@/core/hook/fetch-column'
 
 export default {
