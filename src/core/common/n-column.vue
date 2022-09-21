@@ -101,24 +101,33 @@ export default {
         /**删除节点**/
         fetchOneDelete() {
             const { node } = this
-            this.$confirm(` <div>确定要删除<a style="color: red;margin: 0 3px">${node.name}</a>吗？</div> `, '提示', {
-                distinguishCancelAndClose: true,
-                dangerouslyUseHTMLString: true,
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'error',
-                beforeClose: (action, instance, done) => {
-                    if (['cancel', 'close'].includes(action)) {
-                        return done()
+            this.$confirm(
+                ` <div>确定要删除<a style="color: red;margin: 0 3px">${node.props.name}</a>吗？</div> `,
+                '提示',
+                {
+                    distinguishCancelAndClose: true,
+                    dangerouslyUseHTMLString: true,
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'error',
+                    beforeClose: (action, instance, done) => {
+                        if (['cancel', 'close'].includes(action)) {
+                            return done()
+                        }
+                        instance.confirmButtonLoading = true
+
+                        //删除节点
+                        node.line.map(x => this.instance.remove(x.id))
+                        this.instance.remove(node.id)
+
+                        this.$store.dispatch('setColumn', { command: 'DELETE', node }).then(() => {
+                            this.$message.success({ message: '删除成功', duration: 1500 })
+                            instance.confirmButtonLoading = false
+                            done()
+                        })
                     }
-                    instance.confirmButtonLoading = true
-                    this.$store.dispatch('setColumn', { command: 'DELETE', node }).then(() => {
-                        this.$message.success({ message: '删除成功', duration: 1500 })
-                        instance.confirmButtonLoading = false
-                        done()
-                    })
                 }
-            }).catch(e => {})
+            ).catch(e => {})
         }
     },
     render() {

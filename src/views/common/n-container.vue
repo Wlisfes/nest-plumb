@@ -4,7 +4,6 @@ import { NColumn } from '@/core/common'
 import { createSuper, initCoreZoom, useScale } from '@/core/super'
 import { Option } from '@/core/option'
 import { v4 as only } from 'uuid'
-import * as data from './data'
 
 export default {
     name: 'NContainer',
@@ -27,71 +26,62 @@ export default {
         }
     },
     mounted() {
-        const { line, column, core } = data
-        this.$store
-            .dispatch('setInit', {
-                line,
-                column,
-                core
+        createSuper(Option).then(async instance => {
+            this.instance = instance
+            await initCoreZoom(instance, {
+                core: this.core,
+                onPanstart: response => {
+                    this.$store.commit('SET_AXIS', { x: true, y: true })
+                },
+                onPanend: response => {
+                    this.$store.commit('SET_AXIS', { x: false, y: false })
+                },
+                onZoom: response => {
+                    const { x, y, offsetX, offsetY, width, height, scale } = response
+                    this.$store.commit('SET_CORE', { x, y, offsetX, offsetY, width, height, scale })
+                },
+                onTransform: response => {
+                    const { x, y, offsetX, offsetY, width, height, scale } = response
+                    this.$store.commit('SET_CORE', { x, y, offsetX, offsetY, width, height, scale })
+                }
             })
-            .finally(() => {
-                createSuper(Option).then(async instance => {
-                    this.instance = instance
-                    await initCoreZoom(instance, {
-                        core: this.core,
-                        onPanstart: response => {
-                            this.$store.commit('SET_AXIS', { x: true, y: true })
-                        },
-                        onPanend: response => {
-                            this.$store.commit('SET_AXIS', { x: false, y: false })
-                        },
-                        onZoom: response => {
-                            const { x, y, offsetX, offsetY, width, height, scale } = response
-                            this.$store.commit('SET_CORE', { x, y, offsetX, offsetY, width, height, scale })
-                        },
-                        onTransform: response => {
-                            const { x, y, offsetX, offsetY, width, height, scale } = response
-                            this.$store.commit('SET_CORE', { x, y, offsetX, offsetY, width, height, scale })
-                        }
-                    })
-                    instance.ready(async () => {
-                        await this.fetchConnect().then(() => (this.loading = false))
+            instance.ready(async () => {
+                await this.fetchConnect().then(() => (this.loading = false))
 
-                        //完成连线前的校验
-                        instance.bind('beforeDrop', e => {
-                            const parent = document.getElementById(e.sourceId)?.getAttribute('data-parent')
-                            return e.sourceId !== e.targetId && e.targetId !== parent
-                        })
+                //完成连线前的校验
+                instance.bind('beforeDrop', e => {
+                    const parent = document.getElementById(e.sourceId)?.getAttribute('data-parent')
+                    return e.sourceId !== e.targetId && e.targetId !== parent
+                })
 
-                        //连线完毕、维护本地数据
-                        instance.bind('connection', e => {
-                            const node = {
-                                id: only(),
-                                source: e.sourceId,
-                                target: e.targetId,
-                                label: '猪头'
-                            }
-                            this.$store.dispatch('setLine', { command: 'CREATE', node })
-                        })
+                //连线完毕、维护本地数据
+                instance.bind('connection', e => {
+                    const node = {
+                        id: only(),
+                        source: e.sourceId,
+                        target: e.targetId,
+                        label: '猪头'
+                    }
+                    this.$store.dispatch('setLine', { command: 'CREATE', node })
+                })
 
-                        //删除线完毕、维护本地数据
-                        instance.bind('connectionDetached', e => {
-                            const node = this.line.find(x => x.source === e.sourceId && x.target === e.targetId)
-                            this.$store.commit('SET_LINE', {
-                                command: 'DELETE',
-                                node
-                            })
-                        })
-
-                        //双击连线
-                        instance.bind('dblclick', e => {
-                            instance.deleteConnection(e)
-                        })
-
-                        instance.setSuspendDrawing(false, true)
+                //删除线完毕、维护本地数据
+                instance.bind('connectionDetached', e => {
+                    const node = this.line.find(x => x.source === e.sourceId && x.target === e.targetId)
+                    this.$store.commit('SET_LINE', {
+                        command: 'DELETE',
+                        node
                     })
                 })
+
+                //双击连线
+                instance.bind('dblclick', e => {
+                    instance.deleteConnection(e)
+                })
+
+                instance.setSuspendDrawing(false, true)
             })
+        })
     },
     methods: {
         async fetchConnect() {

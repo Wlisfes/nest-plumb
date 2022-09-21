@@ -44,7 +44,7 @@ export const ClickOutside = {
 
             if (el.contains(e.target) || isPopup(vNode.context.popupItem, elements)) return
 
-            el.__vueClickOutside__.callback(e)
+            el?.__vueClickOutside__?.callback?.(e)
         }
 
         // add Event Listeners
