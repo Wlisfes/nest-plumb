@@ -4,6 +4,7 @@ import { NColumn } from '@/core/common'
 import { createSuper, createCoreZoom, useScale } from '@/core/super'
 import { Option } from '@/core/option'
 import { v4 as only } from 'uuid'
+import * as data from './data'
 
 export default {
     name: 'NContainer',
@@ -26,7 +27,17 @@ export default {
         }
     },
     mounted() {
-        this.$nextTick(() => this.initSuper())
+        this.$nextTick(() => {
+            this.$store
+                .dispatch('setInit', {
+                    column: data.column,
+                    line: data.line,
+                    core: data.core
+                })
+                .finally(() => this.initSuper())
+
+            // this.initSuper()
+        })
     },
     methods: {
         /**初始化实例**/
