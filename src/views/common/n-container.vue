@@ -28,15 +28,15 @@ export default {
     },
     mounted() {
         this.$nextTick(() => {
-            this.$store
-                .dispatch('setInit', {
-                    column: data.column,
-                    line: data.line,
-                    core: data.core
-                })
-                .finally(() => this.initSuper())
+            // this.$store
+            //     .dispatch('setInit', {
+            //         column: data.column,
+            //         line: data.line,
+            //         core: data.core
+            //     })
+            //     .finally(() => this.initSuper())
 
-            // this.initSuper()
+            this.initSuper()
         })
     },
     methods: {
@@ -88,7 +88,7 @@ export default {
                             }
                             instance.confirmButtonLoading = true
                             setTimeout(() => {
-                                instance.deleteConnection(e)
+                                this.instance.deleteConnection(e)
                                 instance.confirmButtonLoading = false
                                 done()
                             }, 500)

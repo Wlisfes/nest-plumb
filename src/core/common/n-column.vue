@@ -4,6 +4,19 @@ import { stop } from '@/utils/utils-common'
 import { ClickOutside } from '@/utils/utils-click-outside'
 import { fetchColumn } from '@/core/hook/fetch-column'
 
+const node = [
+    { name: '我是节点1', id: 1 },
+    { name: '我是节点2', id: 2 },
+    { name: '我是节点3', id: 3 },
+    { name: '我是节点4', id: 4 }
+]
+
+const line = [
+    { name: '我是连接线1', id: 1, source: 1, target: 2 },
+    { name: '我是连接线2', id: 2, source: 2, target: 4 },
+    { name: '我是连接线3', id: 3, source: 2, target: 3 }
+]
+
 export default {
     name: 'NColumn',
     components: { NSource },
