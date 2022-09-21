@@ -1,15 +1,24 @@
 import panzoom from 'panzoom'
 import { jsPlumb } from 'jsplumb'
 
-/**创建实例**/
+/**
+ * 创建实例
+ * @param { Object } option
+ * @returns Super
+ */
 export async function createSuper(option) {
     const instance = jsPlumb.getInstance()
     instance.importDefaults(option)
     return instance
 }
 
-//缩放监听
-export async function initCoreZoom(instance, option) {
+/**
+ * 创建画布实例
+ * @param { Super } instance
+ * @param { Object } option
+ * @returns Super
+ */
+export async function createCoreZoom(instance, option) {
     const mainContainer = instance.getContainer()
     const mainContainerWrap = mainContainer.parentNode
     const pan = panzoom(mainContainer, {

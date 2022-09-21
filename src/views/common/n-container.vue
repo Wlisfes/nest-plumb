@@ -1,7 +1,7 @@
 <script>
 import { mapState } from 'vuex'
 import { NColumn } from '@/core/common'
-import { createSuper, initCoreZoom, useScale } from '@/core/super'
+import { createSuper, createCoreZoom, useScale } from '@/core/super'
 import { Option } from '@/core/option'
 import { v4 as only } from 'uuid'
 
@@ -26,25 +26,14 @@ export default {
         }
     },
     mounted() {
-        createSuper(Option).then(async instance => {
-            this.instance = instance
-            await initCoreZoom(instance, {
-                core: this.core,
-                onPanstart: response => {
-                    this.$store.commit('SET_AXIS', { x: true, y: true })
-                },
-                onPanend: response => {
-                    this.$store.commit('SET_AXIS', { x: false, y: false })
-                },
-                onZoom: response => {
-                    const { x, y, offsetX, offsetY, width, height, scale } = response
-                    this.$store.commit('SET_CORE', { x, y, offsetX, offsetY, width, height, scale })
-                },
-                onTransform: response => {
-                    const { x, y, offsetX, offsetY, width, height, scale } = response
-                    this.$store.commit('SET_CORE', { x, y, offsetX, offsetY, width, height, scale })
-                }
-            })
+        this.$nextTick(() => this.initSuper())
+    },
+    methods: {
+        /**初始化实例**/
+        async initSuper() {
+            const instance = await createSuper(Option)
+            this.instance = await this.initCoreZoom(instance)
+
             instance.ready(async () => {
                 await this.fetchConnect().then(() => (this.loading = false))
 
@@ -76,14 +65,50 @@ export default {
 
                 //双击连线
                 instance.bind('dblclick', e => {
-                    instance.deleteConnection(e)
+                    this.$confirm(`确定要删除连接线吗？`, '提示', {
+                        distinguishCancelAndClose: true,
+                        dangerouslyUseHTMLString: true,
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'error',
+                        beforeClose: (action, instance, done) => {
+                            if (['cancel', 'close'].includes(action)) {
+                                return done()
+                            }
+                            instance.confirmButtonLoading = true
+                            setTimeout(() => {
+                                instance.deleteConnection(e)
+                                instance.confirmButtonLoading = false
+                                done()
+                            }, 500)
+                        }
+                    }).catch(e => {})
                 })
 
                 instance.setSuspendDrawing(false, true)
             })
-        })
-    },
-    methods: {
+        },
+        /**创建画布实例**/
+        async initCoreZoom(instance) {
+            return await createCoreZoom(instance, {
+                core: this.core,
+                onPanstart: response => {
+                    this.$store.commit('SET_AXIS', { x: true, y: true })
+                },
+                onPanend: response => {
+                    this.$store.commit('SET_AXIS', { x: false, y: false })
+                },
+                onZoom: response => {
+                    const { x, y, offsetX, offsetY, width, height, scale } = response
+                    this.$store.commit('SET_CORE', { x, y, offsetX, offsetY, width, height, scale })
+                },
+                onTransform: response => {
+                    const { x, y, offsetX, offsetY, width, height, scale } = response
+                    this.$store.commit('SET_CORE', { x, y, offsetX, offsetY, width, height, scale })
+                }
+            })
+        },
+        /**绘制连接线**/
         async fetchConnect() {
             const { instance, line } = this
             await new Promise(resolve => {
@@ -100,7 +125,7 @@ export default {
                 })
             )
         },
-
+        /**拖拽添加节点**/
         onMounte(e) {
             const rect = this.instance.getContainer().getBoundingClientRect()
             const scale = useScale(this.instance)
