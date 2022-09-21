@@ -10,7 +10,6 @@ export default {
     directives: { ClickOutside },
     props: {
         node: Object,
-        current: [String, Object],
         instance: Object
     },
     data() {
@@ -123,7 +122,7 @@ export default {
         }
     },
     render() {
-        const { node, current } = this
+        const { node } = this
 
         return (
             <div
@@ -134,12 +133,17 @@ export default {
                 v-click-outside={e => this.onSelecter(false)}
             >
                 <div class="node-column">
-                    <div class="row-matter">
-                        <div class="row-matter__name">{`${node.primary}：${node.name}`}</div>
-                        <i class="el-icon-setting" title="编辑" onClick={e => stop(e, this.fetchOneColumn)}></i>
-                        <i class="el-icon-delete" title="删除" onClick={e => stop(e, this.fetchOneDelete)}></i>
+                    <div class="column-content">
+                        <el-image src={node.props.cover} fit="cover"></el-image>
+                        <div style={{ flex: 1 }}>
+                            <div class="row-matter">
+                                <div class="row-matter__name">{node.props.name}</div>
+                                <i class="el-icon-setting" title="编辑" onClick={e => stop(e, this.fetchOneColumn)}></i>
+                                <i class="el-icon-delete" title="删除" onClick={e => stop(e, this.fetchOneDelete)}></i>
+                            </div>
+                            <div class="row-content">{node.content ?? '空占位符'}</div>
+                        </div>
                     </div>
-                    <div class="row-content">{node.content ?? '空占位符'}</div>
                     {node.line?.length > 0 && (
                         <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }}>
                             {node.line.map(x => (
@@ -181,38 +185,48 @@ export default {
     width: 100%;
     height: 100%;
     position: relative;
-    .row-matter {
-        height: 24px;
+    .column-content {
         display: flex;
-        align-items: center;
-        &__name {
-            flex: 1;
-            line-height: 24px;
-            margin-right: 20px;
-            font-size: 16px;
-            color: #3b3d44;
-        }
-        i {
-            font-size: 20px;
+        overflow: hidden;
+        .el-image {
+            width: 54px;
+            height: 54px;
+            display: block;
             margin-right: 10px;
-            cursor: pointer;
-            transition: color 300ms;
-            &:last-child {
-                margin: 0;
+        }
+        .row-matter {
+            height: 24px;
+            display: flex;
+            align-items: center;
+            &__name {
+                flex: 1;
+                line-height: 24px;
+                margin-right: 20px;
+                font-size: 16px;
+                color: #3b3d44;
             }
-            &.el-icon-setting:hover {
-                color: #409eff;
-            }
-            &.el-icon-delete:hover {
-                color: #ff0000;
+            i {
+                font-size: 20px;
+                margin-right: 10px;
+                cursor: pointer;
+                transition: color 300ms;
+                &:last-child {
+                    margin: 0;
+                }
+                &.el-icon-setting:hover {
+                    color: #409eff;
+                }
+                &.el-icon-delete:hover {
+                    color: #ff0000;
+                }
             }
         }
-    }
-    .row-content {
-        font-size: 14px;
-        color: #999b9e;
-        line-height: 20px;
-        margin-top: 10px;
+        .row-content {
+            font-size: 14px;
+            color: #999b9e;
+            line-height: 20px;
+            margin-top: 10px;
+        }
     }
 }
 </style>

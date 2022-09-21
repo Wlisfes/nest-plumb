@@ -13,6 +13,11 @@ export default new Vuex.Store({
         core: { width: '100%', height: '100%', scale: 1, offsetX: 0, offsetY: 0, x: 0, y: 0 }
     },
     mutations: {
+        SET_INIT: (state, props) => {
+            state.column = props.column ?? []
+            state.line = props.line ?? []
+            state.core = props.core ?? { width: '100%', height: '100%', scale: 1, offsetX: 0, offsetY: 0, x: 0, y: 0 }
+        },
         SET_AXIS: (state, axis) => {
             state.axis = axis
         },
@@ -39,6 +44,9 @@ export default new Vuex.Store({
         }
     },
     actions: {
+        setInit: async ({ commit }, props) => {
+            return commit('SET_INIT', props)
+        },
         setAxis: async ({ commit }, props) => {
             return commit('SET_AXIS', props)
         },

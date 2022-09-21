@@ -19,7 +19,8 @@ export default {
                     <div class="n-multiple">
                         {this.dataColumn.map(x => (
                             <div class="n-multiple__row" key={x.id} draggable onDragstart={e => this.onDragstart(x)}>
-                                {`${x.primary}：${x.name}`}
+                                <el-image src={x.cover} fit="cover"></el-image>
+                                <div class="el-content">{x.name}</div>
                             </div>
                         ))}
                     </div>
@@ -50,15 +51,33 @@ export default {
         &__row {
             margin: 15px;
             padding: 10px;
-            height: 80px;
             border-radius: 6px;
             box-sizing: border-box;
             box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
             &:hover {
                 cursor: grab;
             }
             &:active {
                 cursor: grabbing;
+            }
+            .el-image {
+                width: 40px;
+                height: 40px;
+                display: block;
+                margin-right: 10px;
+            }
+            .el-content {
+                flex: 1;
+                font-size: 14px;
+                color: #686868;
+                line-height: 20px;
+                display: -webkit-box;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
             }
         }
     }

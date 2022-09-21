@@ -14,10 +14,10 @@ export async function initCoreZoom(instance, option) {
     const mainContainerWrap = mainContainer.parentNode
     const pan = panzoom(mainContainer, {
         smoothScroll: false,
-        bounds: true,
+        bounds: false,
         zoomDoubleClickSpeed: 1,
         minZoom: 0.1,
-        maxZoom: 5,
+        maxZoom: 10,
         initialZoom: option.core?.scale ?? 1,
         beforeWheel: e => {},
         beforeMouseDown: e => e.ctrlKey
@@ -41,12 +41,26 @@ export async function initCoreZoom(instance, option) {
         }
     }
 
-    // 缩放时设置jsPlumb的缩放比率
+    //拖动开始
+    pan.on('panstart', e => {
+        const response = useTransform(e)
+        option?.onPanstart?.(response)
+    })
+
+    //拖动结束
+    pan.on('panend', function (e) {
+        const response = useTransform(e)
+        option?.onPanend?.(response)
+    })
+
+    //缩放事件
     pan.on('zoom', e => {
         const response = useTransform(e)
         instance.setZoom(response.scale)
         option?.onZoom?.(response)
     })
+
+    //拖动事件
     pan.on('transform', e => {
         const response = useTransform(e)
         instance.setZoom(response.scale)
