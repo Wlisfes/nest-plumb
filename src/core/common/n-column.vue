@@ -21,6 +21,12 @@ export default {
         this.$nextTick(() => {
             this.initOneBefore()
             this.draggableNode()
+
+            const fetchDelete = e => e.key === 'Delete' && this.active && this.fetchOneDelete()
+            window.addEventListener('keydown', fetchDelete, true)
+            this.$once('hook:beforeDestroy', () => {
+                window.removeEventListener('keydown', fetchDelete)
+            })
         })
     },
     methods: {
