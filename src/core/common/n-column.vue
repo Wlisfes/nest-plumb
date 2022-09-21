@@ -137,7 +137,7 @@ export default {
                 const bezier = this.instance.getAllConnections()
                 //获取当前节点为终点的线条
                 const iter = bezier.filter(x => x.targetId === node.id)
-                //判断当前节点是否为多个节点的子节点
+                //false == 当前节点不是多个节点的子节点
                 const itnc = iter.every(x => x.targetId === node.id && ine.includes(x.sourceId))
 
                 iter.forEach(x => {
@@ -150,8 +150,6 @@ export default {
                         })
                     }
                 })
-                if (!itnc) {
-                }
             }
         },
         /**删除节点**/

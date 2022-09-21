@@ -53,7 +53,7 @@ export const column = [
             name: '述说',
             id: '28932798-4c27-4332-9082-8daffff41aa6'
         },
-        line: [],
+        line: [{ id: '9825f78c-95fa-4102-9707-65922a6deb6c', type: 'success', content: '测试' }],
         id: '88d8c2a0-3e45-4aa1-b601-b7b183925cea',
         top: '345px',
         left: '1095px'
@@ -538,6 +538,13 @@ export const line = [
         source: '36be72a6-6306-4a42-8c64-170aa0701afe',
         target: 'd2c0d910-04bc-4dd8-97c3-60647b42f88c',
         label: '猪头'
+    },
+    {
+        id: '7e301b90-7330-4175-a17c-f5b36faf5248',
+        label: '猪头',
+        parent: '88d8c2a0-3e45-4aa1-b601-b7b183925cea',
+        source: '9825f78c-95fa-4102-9707-65922a6deb6c',
+        target: '2944fbb6-daa9-41a5-882a-ce1a42800d4b'
     }
 ]
 
