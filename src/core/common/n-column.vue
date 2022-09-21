@@ -23,7 +23,8 @@ export default {
     directives: { ClickOutside },
     props: {
         node: Object,
-        instance: Object
+        instance: Object,
+        observer: Object
     },
     data() {
         return {
@@ -34,7 +35,16 @@ export default {
         this.$nextTick(() => {
             this.initOneBefore()
             this.draggableNode()
-
+            // const done = this.observer.on('delete', props => {
+            //     // if (props.line.some(x => x.id === this.node.id)) {
+            //     //     console.log('子节点')
+            //     // }
+            //     console.log(this.line.filter(x => x.parent === 'ea374349-dcfc-45e8-9dfe-a2d08154142e'))
+            //     // console.log(props)
+            // })
+            const done = this.observer.on('delete', response => {
+                this.fetchSubscribe(response, () => done())
+            })
             const fetchDelete = e => e.key === 'Delete' && this.active && this.fetchOneDelete()
             window.addEventListener('keydown', fetchDelete, true)
             this.$once('hook:beforeDestroy', () => {
@@ -108,14 +118,41 @@ export default {
             }).then(response => {
                 response.instance.$once('close', ({ done }) => done())
                 response.instance.$once('submit', ({ done, form }) => {
-                    this.$store
-                        .dispatch('setColumn', {
-                            command: 'UPDATE',
-                            node: Object.assign(node, { content: form.content, line: form.line })
-                        })
-                        .then(() => done())
+                    //prettier-ignore
+                    this.$store.dispatch('setColumn', {
+                        command: 'UPDATE',
+                        node: Object.assign(node, { content: form.content, line: form.line })
+                    }).finally(() => done())
                 })
             })
+        },
+        /**监听来自父级的订阅事件**/
+        fetchSubscribe(response, done) {
+            const { node } = this
+            if (response.id === node.id) {
+                //来至当前节点的订阅事件
+                return
+            } else {
+                const ine = response.line.map(x => x.id)
+                const bezier = this.instance.getAllConnections()
+                //获取当前节点为终点的线条
+                const iter = bezier.filter(x => x.targetId === node.id)
+                //判断当前节点是否为多个节点的子节点
+                const itnc = iter.every(x => x.targetId === node.id && ine.includes(x.sourceId))
+
+                iter.forEach(x => {
+                    if (x.targetId === node.id && ine.includes(x.sourceId)) {
+                        //向子节点发送delete事件
+                        this.observer.emit('delete', node)
+                        this.$store.dispatch('setColumn', { command: 'DELETE', node }).then(() => {
+                            this.instance.deleteConnection(x)
+                            done()
+                        })
+                    }
+                })
+                if (!itnc) {
+                }
+            }
         },
         /**删除节点**/
         fetchOneDelete() {
@@ -135,9 +172,26 @@ export default {
                         }
                         instance.confirmButtonLoading = true
 
+                        //向子节点发送delete事件
+                        this.observer.emit('delete', node)
+                        // this.instance.toggleDraggable(node.id)
                         //删除节点
-                        node.line.map(x => this.instance.remove(x.id))
-                        this.instance.remove(node.id)
+                        // this.instance.remove(node.id)
+                        // node.line.map(x => this.instance.remove(x.id))
+
+                        //删除节点线条
+                        const bezier = this.instance.getAllConnections()
+                        // prettier-ignore
+                        bezier.filter(x => x.targetId === node.id).map(x => this.instance.deleteConnection(x))
+
+                        // bezier.forEach(x => {
+                        //     if (x.targetId === node.id) {
+                        //         this.instance.deleteConnection(x)
+                        //     } else {
+                        //         const parent = x.source.getAttribute('data-parent')
+                        //         console.log(parent, node.id)
+                        //     }
+                        // })
 
                         this.$store.dispatch('setColumn', { command: 'DELETE', node }).then(() => {
                             this.$message.success({ message: '删除成功', duration: 1500 })

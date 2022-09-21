@@ -1,9 +1,10 @@
 <script>
 import { mapState } from 'vuex'
+import { v4 as only } from 'uuid'
 import { NColumn } from '@/core/common'
 import { createSuper, createCoreZoom, useScale } from '@/core/super'
 import { Option } from '@/core/option'
-import { v4 as only } from 'uuid'
+import { Observer } from '@/utils/utils-observer'
 import * as data from './data'
 
 export default {
@@ -23,20 +24,21 @@ export default {
     data() {
         return {
             loading: true,
-            instance: null
+            instance: null,
+            observer: new Observer()
         }
     },
     mounted() {
         this.$nextTick(() => {
-            // this.$store
-            //     .dispatch('setInit', {
-            //         column: data.column,
-            //         line: data.line,
-            //         core: data.core
-            //     })
-            //     .finally(() => this.initSuper())
+            this.$store
+                .dispatch('setInit', {
+                    column: data.column,
+                    line: data.line,
+                    core: data.core
+                })
+                .finally(() => this.initSuper())
 
-            this.initSuper()
+            // this.initSuper()
         })
     },
     methods: {
@@ -56,13 +58,17 @@ export default {
 
                 //连线完毕、维护本地数据
                 instance.bind('connection', e => {
-                    const node = {
-                        id: only(),
-                        source: e.sourceId,
-                        target: e.targetId,
-                        label: '猪头'
-                    }
-                    this.$store.dispatch('setLine', { command: 'CREATE', node })
+                    const parent = document.getElementById(e.sourceId)?.getAttribute('data-parent')
+                    this.$store.dispatch('setLine', {
+                        command: 'CREATE',
+                        node: {
+                            id: only(),
+                            parent,
+                            source: e.sourceId,
+                            target: e.targetId,
+                            label: '猪头'
+                        }
+                    })
                 })
 
                 //删除线完毕、维护本地数据
@@ -170,7 +176,13 @@ export default {
                     {this.instance && (
                         <div>
                             {column.map(x => (
-                                <n-column id={x.id} key={x.id} node={x} instance={this.instance}></n-column>
+                                <n-column
+                                    id={x.id}
+                                    key={x.id}
+                                    node={x}
+                                    instance={this.instance}
+                                    observer={this.observer}
+                                ></n-column>
                             ))}
                         </div>
                     )}
