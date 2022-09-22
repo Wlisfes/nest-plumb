@@ -88,14 +88,14 @@ export default {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
                         type: 'error',
-                        beforeClose: (action, instance, done) => {
+                        beforeClose: (action, el, done) => {
                             if (['cancel', 'close'].includes(action)) {
                                 return done()
                             }
-                            instance.confirmButtonLoading = true
+                            el.confirmButtonLoading = true
                             setTimeout(() => {
-                                this.instance.deleteConnection(e)
-                                instance.confirmButtonLoading = false
+                                instance.deleteConnection(e)
+                                el.confirmButtonLoading = false
                                 done()
                             }, 500)
                         }

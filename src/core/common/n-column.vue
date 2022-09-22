@@ -35,10 +35,10 @@ export default {
     methods: {
         onSelecter(active) {
             this.active = active
-            this.initConnect(active)
+            this.inConnect(active)
         },
         /**切换连接线状态**/
-        initConnect(active) {
+        inConnect(active) {
             const { node, instance } = this
             const rules = node.rules.map(x => x.id)
             const bezier = instance.getAllConnections()
@@ -145,7 +145,7 @@ export default {
         },
         /**删除节点**/
         fetchOneDelete() {
-            const { node } = this
+            const { node, instance, observer } = this
             this.$confirm(
                 ` <div>确定要删除<a style="color: red;margin: 0 3px">${node.props.name}</a>吗？</div> `,
                 '提示',
@@ -155,28 +155,28 @@ export default {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'error',
-                    beforeClose: (action, instance, done) => {
+                    beforeClose: (action, el, done) => {
                         if (['cancel', 'close'].includes(action)) {
                             return done()
                         }
-                        instance.confirmButtonLoading = true
+                        el.confirmButtonLoading = true
 
-                        const bezier = this.instance.getAllConnections()
+                        const bezier = instance.getAllConnections()
                         //删除节点线条
                         bezier.forEach(x => {
                             if (x.targetId === node.id) {
-                                this.instance.deleteConnection(x)
+                                instance.deleteConnection(x)
                             }
                         })
                         //向子节点发送delete事件
-                        this.observer.emit('delete', {
+                        observer.emit('delete', {
                             id: node.id,
                             source: bezier.filter(x => node.rules.some(k => k.id === x.sourceId)).map(x => x.sourceId),
                             target: bezier.filter(x => node.rules.some(k => k.id === x.sourceId)).map(x => x.targetId)
                         })
                         this.$store.dispatch('setColumn', { command: 'DELETE', node }).then(() => {
                             this.$message.success({ message: '删除成功', duration: 1500 })
-                            instance.confirmButtonLoading = false
+                            el.confirmButtonLoading = false
                             done()
                         })
                     }
