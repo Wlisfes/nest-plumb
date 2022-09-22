@@ -5,7 +5,7 @@ export const column = [
             name: '古奥林匹亚的赫拉神庙',
             id: '5c1e6de8-4ead-482c-a728-b58b09d86eef'
         },
-        line: [
+        rules: [
             { id: 'b8aec7bc-5900-47b6-8c47-d7cf164e0bfc', type: 'info', content: '开幕式' },
             { id: '6916b6d6-3bc4-4333-9513-7e3c9b13f88b', type: 'success', content: '项目开始' },
             { id: 'c3a156c7-0689-4ca4-b4e7-06be79a9f7cb', type: 'danger', content: '闭幕式' }
@@ -22,7 +22,7 @@ export const column = [
             name: '述说',
             id: '28932798-4c27-4332-9082-8daffff41aa6'
         },
-        line: [],
+        rules: [],
         id: 'ec078292-c76c-47a0-8d1c-4f335c593400',
         top: '260px',
         left: '-75px',
@@ -35,7 +35,7 @@ export const column = [
             name: '奥林匹亚-跳水',
             id: '2ee2c41d-1c21-4256-b5d4-eae2eb801135'
         },
-        line: [
+        rules: [
             { id: '289d9a17-86f5-4791-ac7e-e35067375615', type: 'danger', content: '结果' },
             { id: '78b43974-2799-4db9-af43-9078fd8bb7e4', type: 'success', content: '举重' },
             { id: '0d9a0dd5-a263-4acb-ac22-ab34a1ca0e7b', type: 'success', content: '击剑' },
@@ -53,7 +53,7 @@ export const column = [
             name: '述说',
             id: '28932798-4c27-4332-9082-8daffff41aa6'
         },
-        line: [{ id: '9825f78c-95fa-4102-9707-65922a6deb6c', type: 'success', content: '测试' }],
+        rules: [],
         id: '88d8c2a0-3e45-4aa1-b601-b7b183925cea',
         top: '345px',
         left: '1095px'
@@ -64,7 +64,7 @@ export const column = [
             name: '奥林匹亚-举重',
             id: 'c678f065-cb5e-4f90-a01b-525797ac8ea1'
         },
-        line: [
+        rules: [
             { id: 'a8ec7bda-b7a8-46ef-8905-477f779e7155', type: 'danger', content: '结果' },
             { id: '46d7d364-b916-4d1c-a457-b61494797470', type: 'success', content: '蓝球' },
             { id: '67d0e959-5911-4998-afe6-838ca1256c1f', type: 'success', content: '排球' }
@@ -80,7 +80,7 @@ export const column = [
             name: '奥林匹亚-击剑',
             id: '26d7b8fe-35c6-4e82-b052-0b860eac3757'
         },
-        line: [
+        rules: [
             { id: '92d58919-c2d7-441f-a313-a4022b54a161', type: 'danger', content: '结果' },
             { id: '04a5c81e-8a6e-47de-8eac-e7d3292e0152', type: 'success', content: '体操' }
         ],
@@ -95,7 +95,7 @@ export const column = [
             name: '奥林匹亚-游泳',
             id: 'c199b112-c3a4-401e-ae5b-de60948ee002'
         },
-        line: [
+        rules: [
             { id: 'b903c77c-bf7f-4ad9-bc9e-c1b7935b8af7', type: 'danger', content: '结果' },
             { id: '070b9d60-a0a8-4974-b819-609e03b56b60', type: 'success', content: '射箭' },
             { id: 'e9202759-ac57-429a-8347-24c2ee7c7ee1', type: 'success', content: '高尔夫' }
@@ -112,7 +112,7 @@ export const column = [
             name: '述说',
             id: '28932798-4c27-4332-9082-8daffff41aa6'
         },
-        line: [],
+        rules: [],
         id: '4dc9000d-15c0-4243-942d-3d6ad8ac6596',
         top: '760px',
         left: '-730px'
@@ -123,7 +123,7 @@ export const column = [
             name: '奥林匹亚-篮球',
             id: '3e51bede-acf1-452a-a19c-7f4f1205b111'
         },
-        line: [{ id: '81589366-5b9a-4a82-b7ea-79d72cd15eb9', type: 'danger', content: '结果' }],
+        rules: [{ id: '81589366-5b9a-4a82-b7ea-79d72cd15eb9', type: 'danger', content: '结果' }],
         id: '4dd4ec22-a20b-4665-8085-381524020dbf',
         top: '1345px',
         left: '-975px',
@@ -136,7 +136,7 @@ export const column = [
             name: '述说',
             id: 'a2075561-3207-47c4-9ad0-dfb9fc9a5328'
         },
-        line: [],
+        rules: [],
         id: '8972f755-9c1a-4fe7-97ab-4f5924098dd9',
         top: '965px',
         left: '-740px'
@@ -147,7 +147,7 @@ export const column = [
             name: '奥林匹亚-排球',
             id: 'd189a7c3-fa8d-4da9-850d-61f09c4e2d91'
         },
-        line: [
+        rules: [
             { id: 'b154034d-7354-4e26-b44e-0335777c0999', type: 'danger', content: '结果' },
             { id: 'd5774d9f-3297-421d-a22f-03e992a6cb7a', type: 'success', content: '足球' }
         ],
@@ -162,7 +162,7 @@ export const column = [
             name: '奥林匹亚-体操',
             id: '306ed12c-d1c3-44ab-b612-87d9ed0d26b8'
         },
-        line: [{ id: '4924e37b-1f8f-4c99-84cb-7c8b263379e0', type: 'danger', content: '结果' }],
+        rules: [{ id: '4924e37b-1f8f-4c99-84cb-7c8b263379e0', type: 'danger', content: '结果' }],
         id: 'c945ebbb-545e-43ae-b99e-1c780627c637',
         top: '1405px',
         left: '200px',
@@ -175,7 +175,7 @@ export const column = [
             name: '述说',
             id: 'ddd075e1-c740-4e65-9d40-751ea4697e78'
         },
-        line: [],
+        rules: [],
         id: '05b7db97-108c-4550-940b-8abd605b3313',
         top: '1255px',
         left: '-50px'
@@ -187,7 +187,7 @@ export const column = [
             name: '述说',
             id: 'ddd075e1-c740-4e65-9d40-751ea4697e78'
         },
-        line: [],
+        rules: [],
         id: '220fe6fe-2da0-4a14-afd5-3f1662331cd7',
         top: '1705px',
         left: '-765px'
@@ -199,7 +199,7 @@ export const column = [
             name: '述说',
             id: 'ddd075e1-c740-4e65-9d40-751ea4697e78'
         },
-        line: [],
+        rules: [],
         id: 'fa571727-e49a-4b86-bcef-95fab7f59c2a',
         top: '1680px',
         left: '115px'
@@ -210,7 +210,7 @@ export const column = [
             name: '奥林匹亚-足球',
             id: '7c07c410-4f53-406a-ba2e-864397388e14'
         },
-        line: [{ id: '8c8ae6e7-930e-4641-a8f0-4166ee7d2e17', type: 'danger', content: '结果' }],
+        rules: [{ id: '8c8ae6e7-930e-4641-a8f0-4166ee7d2e17', type: 'danger', content: '结果' }],
         id: '0f4beb6b-2358-4384-b4ae-59f3a7f3bb6b',
         top: '1675px',
         left: '-315px',
@@ -222,7 +222,7 @@ export const column = [
             name: '奥林匹亚-射箭',
             id: 'c55dc8ad-bb1a-4700-8df4-6945f54c3dfe'
         },
-        line: [
+        rules: [
             { id: 'de9e1835-9925-41c1-9bf2-379e8dec216d', type: 'danger', content: '结果' },
             { id: 'bfc1f82d-a8ab-4aea-9ac2-8d7a2629eea1', type: 'success', content: '曲棍球' }
         ],
@@ -238,7 +238,7 @@ export const column = [
             name: '述说',
             id: '037dafc3-72d5-4e34-a7d1-89caff295c21'
         },
-        line: [],
+        rules: [],
         id: '1e18b9aa-7d0a-414a-ab84-1d4d2596e73f',
         top: '1075px',
         left: '680px'
@@ -249,7 +249,7 @@ export const column = [
             name: '奥林匹亚-高尔夫',
             id: 'fc04d0e7-3041-4cfa-96d8-b207e97b5be7'
         },
-        line: [
+        rules: [
             { id: '3981defd-85cc-4f4c-a835-17a9a498f643', type: 'danger', content: '结果' },
             { id: '4e4e6f8a-9929-4056-b528-7b5af7fb6f02', content: '网球', type: 'success' }
         ],
@@ -264,7 +264,7 @@ export const column = [
             name: '奥林匹亚-曲棍球',
             id: '639d84c8-dbf2-4ea0-9d85-b47bf289b162'
         },
-        line: [{ id: '36be72a6-6306-4a42-8c64-170aa0701afe', type: 'danger', content: '结果' }],
+        rules: [{ id: '36be72a6-6306-4a42-8c64-170aa0701afe', type: 'danger', content: '结果' }],
         id: 'd167004f-3b67-4fac-8099-71731e77d7c6',
         top: '1545px',
         left: '985px',
@@ -276,7 +276,7 @@ export const column = [
             name: '奥林匹亚-网球',
             id: '2b0d159d-7b8b-4cdc-8705-1c91542a8dbe'
         },
-        line: [{ id: 'da4b87fb-d961-43ef-8e8a-ea21c6456569', type: 'danger', content: '结果' }],
+        rules: [{ id: 'da4b87fb-d961-43ef-8e8a-ea21c6456569', type: 'danger', content: '结果' }],
         id: 'ea374349-dcfc-45e8-9dfe-a2d08154142e',
         top: '1555px',
         left: '1750px',
@@ -289,7 +289,7 @@ export const column = [
             name: '述说',
             id: '037dafc3-72d5-4e34-a7d1-89caff295c21'
         },
-        line: [],
+        rules: [],
         id: '9761dff5-951e-4300-b837-5a0801449d87',
         top: '1410px',
         left: '670px'
@@ -301,7 +301,7 @@ export const column = [
             name: '述说',
             id: '7927144d-c6e0-4375-8c99-f3486b7c3c4e'
         },
-        line: [],
+        rules: [],
         id: '43cf6dbd-4cf5-41d9-a72c-cf81a00b5a84',
         top: '1425px',
         left: '1375px'
@@ -313,7 +313,7 @@ export const column = [
             name: '述说',
             id: '7927144d-c6e0-4375-8c99-f3486b7c3c4e'
         },
-        line: [],
+        rules: [],
         id: 'd4a337f9-7baa-4048-844f-e8f12f3fdddd',
         top: '1915px',
         left: '25px'
@@ -325,7 +325,7 @@ export const column = [
             name: '述说',
             id: '7927144d-c6e0-4375-8c99-f3486b7c3c4e'
         },
-        line: [],
+        rules: [],
         id: 'b00da8c2-a87a-4943-aec8-9742ae1a3136',
         top: '1575px',
         left: '-1150px'
@@ -337,7 +337,7 @@ export const column = [
             name: '述说',
             id: '726058ff-6617-43fc-b00d-286e14da853a'
         },
-        line: [],
+        rules: [],
         id: 'd2c0d910-04bc-4dd8-97c3-60647b42f88c',
         top: '1815px',
         left: '875px'
@@ -349,7 +349,7 @@ export const column = [
             name: '述说',
             id: '726058ff-6617-43fc-b00d-286e14da853a'
         },
-        line: [],
+        rules: [],
         id: 'a186406b-bcf4-4434-bff5-51462461d83e',
         top: '1785px',
         left: '1545px'
@@ -538,13 +538,6 @@ export const line = [
         source: '36be72a6-6306-4a42-8c64-170aa0701afe',
         target: 'd2c0d910-04bc-4dd8-97c3-60647b42f88c',
         label: '猪头'
-    },
-    {
-        id: '7e301b90-7330-4175-a17c-f5b36faf5248',
-        label: '猪头',
-        parent: '88d8c2a0-3e45-4aa1-b601-b7b183925cea',
-        source: '9825f78c-95fa-4102-9707-65922a6deb6c',
-        target: '2944fbb6-daa9-41a5-882a-ce1a42800d4b'
     }
 ]
 

@@ -11,7 +11,7 @@ export function fetchColumn(props) {
                     visible: false,
                     form: {
                         content: props.content ?? '',
-                        line: props.line ?? []
+                        rules: props.rules ?? []
                     },
                     rules: {}
                 }
@@ -24,7 +24,7 @@ export function fetchColumn(props) {
             methods: {
                 /**添加节点**/
                 initNode() {
-                    this.form.line.push({ id: only(), type: undefined, content: '' })
+                    this.form.rules.push({ id: only(), type: undefined, content: '' })
                 },
                 onClose() {
                     this.visible = false
@@ -61,7 +61,7 @@ export function fetchColumn(props) {
                                 <el-input v-model={form.content} placeholder="节点内容"></el-input>
                             </el-form-item>
                             <el-form-item label="规则列表">
-                                {form.line.map(x => (
+                                {form.rules.map(x => (
                                     <div style={{ display: 'flex', margin: '0 0 10px', alignItems: 'center' }}>
                                         <el-select v-model={x.type} placeholder="请选择" style={{ width: '150px' }}>
                                             <el-option label="success" value="success"></el-option>

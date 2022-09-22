@@ -4,19 +4,6 @@ import { stop } from '@/utils/utils-common'
 import { ClickOutside } from '@/utils/utils-click-outside'
 import { fetchColumn } from '@/core/hook/fetch-column'
 
-const node = [
-    { name: '我是节点1', id: 1 },
-    { name: '我是节点2', id: 2 },
-    { name: '我是节点3', id: 3 },
-    { name: '我是节点4', id: 4 }
-]
-
-const line = [
-    { name: '我是连接线1', id: 1, source: 1, target: 2 },
-    { name: '我是连接线2', id: 2, source: 2, target: 4 },
-    { name: '我是连接线3', id: 3, source: 2, target: 3 }
-]
-
 export default {
     name: 'NColumn',
     components: { NSource },
@@ -35,13 +22,6 @@ export default {
         this.$nextTick(() => {
             this.initOneBefore()
             this.draggableNode()
-            // const done = this.observer.on('delete', props => {
-            //     // if (props.line.some(x => x.id === this.node.id)) {
-            //     //     console.log('子节点')
-            //     // }
-            //     console.log(this.line.filter(x => x.parent === 'ea374349-dcfc-45e8-9dfe-a2d08154142e'))
-            //     // console.log(props)
-            // })
             const done = this.observer.on('delete', response => {
                 this.fetchSubscribe(response, () => done())
             })
@@ -60,11 +40,11 @@ export default {
         /**切换连接线状态**/
         initConnect(active) {
             const { node, instance } = this
-            const line = (node.line ?? []).map(x => x.id)
+            const rules = node.rules.map(x => x.id)
             const bezier = instance.getAllConnections()
 
             bezier.forEach(x => {
-                if (x.targetId === node.id || line.includes(x.sourceId)) {
+                if (x.targetId === node.id || rules.includes(x.sourceId)) {
                     if (active) {
                         x.canvas.classList.add('is-active')
                     } else {
@@ -121,7 +101,7 @@ export default {
                     //prettier-ignore
                     this.$store.dispatch('setColumn', {
                         command: 'UPDATE',
-                        node: Object.assign(node, { content: form.content, line: form.line })
+                        node: Object.assign(node, { content: form.content, rules: form.rules })
                     }).finally(() => done())
                 })
             })
@@ -131,25 +111,36 @@ export default {
             const { node } = this
             if (response.id === node.id) {
                 //来至当前节点的订阅事件
-                return
-            } else {
-                const ine = response.line.map(x => x.id)
+                return false
+            } else if (response.target.includes(node.id)) {
+                //来自父级的订阅事件
                 const bezier = this.instance.getAllConnections()
                 //获取当前节点为终点的线条
-                const iter = bezier.filter(x => x.targetId === node.id)
-                //false == 当前节点不是多个节点的子节点
-                const itnc = iter.every(x => x.targetId === node.id && ine.includes(x.sourceId))
-
-                iter.forEach(x => {
-                    if (x.targetId === node.id && ine.includes(x.sourceId)) {
-                        //向子节点发送delete事件
-                        this.observer.emit('delete', node)
-                        this.$store.dispatch('setColumn', { command: 'DELETE', node }).then(() => {
+                const gter = bezier.filter(x => x.targetId === node.id)
+                //检查当前节点是否存在多个父级
+                const itnc = gter.some(x => x.targetId === node.id && !response.source.includes(x.sourceId))
+                if (itnc) {
+                    //存在多个父级，不可以删除当前节点，只删除连接线
+                    gter.forEach(x => {
+                        if (!(x.targetId === node.id && !response.source.includes(x.sourceId))) {
                             this.instance.deleteConnection(x)
-                            done()
-                        })
-                    }
-                })
+                        }
+                    })
+                } else {
+                    //不存在多个父级，可以删除当前节点、连接线
+                    bezier.forEach(x => {
+                        if (x.targetId === node.id) {
+                            this.instance.deleteConnection(x)
+                        }
+                    })
+                    //向子节点发送delete事件
+                    this.observer.emit('delete', {
+                        id: node.id,
+                        source: bezier.filter(x => node.rules.some(k => k.id === x.sourceId)).map(x => x.sourceId),
+                        target: bezier.filter(x => node.rules.some(k => k.id === x.sourceId)).map(x => x.targetId)
+                    })
+                    this.$store.dispatch('setColumn', { command: 'DELETE', node }).then(() => done())
+                }
             }
         },
         /**删除节点**/
@@ -170,27 +161,19 @@ export default {
                         }
                         instance.confirmButtonLoading = true
 
-                        //向子节点发送delete事件
-                        this.observer.emit('delete', node)
-                        // this.instance.toggleDraggable(node.id)
-                        //删除节点
-                        // this.instance.remove(node.id)
-                        // node.line.map(x => this.instance.remove(x.id))
-
-                        //删除节点线条
                         const bezier = this.instance.getAllConnections()
-                        // prettier-ignore
-                        bezier.filter(x => x.targetId === node.id).map(x => this.instance.deleteConnection(x))
-
-                        // bezier.forEach(x => {
-                        //     if (x.targetId === node.id) {
-                        //         this.instance.deleteConnection(x)
-                        //     } else {
-                        //         const parent = x.source.getAttribute('data-parent')
-                        //         console.log(parent, node.id)
-                        //     }
-                        // })
-
+                        //删除节点线条
+                        bezier.forEach(x => {
+                            if (x.targetId === node.id) {
+                                this.instance.deleteConnection(x)
+                            }
+                        })
+                        //向子节点发送delete事件
+                        this.observer.emit('delete', {
+                            id: node.id,
+                            source: bezier.filter(x => node.rules.some(k => k.id === x.sourceId)).map(x => x.sourceId),
+                            target: bezier.filter(x => node.rules.some(k => k.id === x.sourceId)).map(x => x.targetId)
+                        })
                         this.$store.dispatch('setColumn', { command: 'DELETE', node }).then(() => {
                             this.$message.success({ message: '删除成功', duration: 1500 })
                             instance.confirmButtonLoading = false
@@ -224,9 +207,9 @@ export default {
                             <div class="row-content">{node.content ?? '空占位符'}</div>
                         </div>
                     </div>
-                    {node.line?.length > 0 && (
+                    {node.rules.length > 0 && (
                         <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }}>
-                            {node.line.map(x => (
+                            {node.rules.map(x => (
                                 <n-source
                                     data-parent={node.id}
                                     key={x.id}

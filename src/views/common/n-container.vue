@@ -151,7 +151,7 @@ export default {
 
             const node = {
                 props: this.current,
-                line: [],
+                rules: [],
                 id: only(),
                 top: Math.round(top / 100) * 100 + 'px',
                 left: Math.round(left / 100) * 100 + 'px'
