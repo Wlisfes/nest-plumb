@@ -2,7 +2,7 @@ export const column = [
     {
         props: {
             cover: '/static/img/1663727660730.317c1e89.png',
-            name: '古奥林匹亚的赫拉神庙',
+            name: '古奥林匹克的赫拉神庙',
             id: '5c1e6de8-4ead-482c-a728-b58b09d86eef'
         },
         rules: [
@@ -32,7 +32,7 @@ export const column = [
     {
         props: {
             cover: '/static/img/1663728991519.00eea0d3.png',
-            name: '奥林匹亚-跳水',
+            name: '奥林匹克-跳水',
             id: '2ee2c41d-1c21-4256-b5d4-eae2eb801135'
         },
         rules: [
@@ -61,7 +61,7 @@ export const column = [
     {
         props: {
             cover: '/static/img/1663728552914.64324514.png',
-            name: '奥林匹亚-举重',
+            name: '奥林匹克-举重',
             id: 'c678f065-cb5e-4f90-a01b-525797ac8ea1'
         },
         rules: [
@@ -77,7 +77,7 @@ export const column = [
     {
         props: {
             cover: '/static/img/1663728536494.5c753d34.png',
-            name: '奥林匹亚-击剑',
+            name: '奥林匹克-击剑',
             id: '26d7b8fe-35c6-4e82-b052-0b860eac3757'
         },
         rules: [
@@ -92,7 +92,7 @@ export const column = [
     {
         props: {
             cover: '/static/img/1663728531396.e2f14aa9.png',
-            name: '奥林匹亚-游泳',
+            name: '奥林匹克-游泳',
             id: 'c199b112-c3a4-401e-ae5b-de60948ee002'
         },
         rules: [
@@ -120,7 +120,7 @@ export const column = [
     {
         props: {
             cover: '/static/img/1663728520978.e6f4949c.png',
-            name: '奥林匹亚-篮球',
+            name: '奥林匹克-篮球',
             id: '3e51bede-acf1-452a-a19c-7f4f1205b111'
         },
         rules: [{ id: '81589366-5b9a-4a82-b7ea-79d72cd15eb9', type: 'danger', content: '结果' }],
@@ -144,7 +144,7 @@ export const column = [
     {
         props: {
             cover: '/static/img/1663728569332.b384c1c0.png',
-            name: '奥林匹亚-排球',
+            name: '奥林匹克-排球',
             id: 'd189a7c3-fa8d-4da9-850d-61f09c4e2d91'
         },
         rules: [
@@ -159,7 +159,7 @@ export const column = [
     {
         props: {
             cover: '/static/img/1663728547283.c4642d91.png',
-            name: '奥林匹亚-体操',
+            name: '奥林匹克-体操',
             id: '306ed12c-d1c3-44ab-b612-87d9ed0d26b8'
         },
         rules: [{ id: '4924e37b-1f8f-4c99-84cb-7c8b263379e0', type: 'danger', content: '结果' }],
@@ -207,7 +207,7 @@ export const column = [
     {
         props: {
             cover: '/static/img/1663728542321.bbcc88bf.png',
-            name: '奥林匹亚-足球',
+            name: '奥林匹克-足球',
             id: '7c07c410-4f53-406a-ba2e-864397388e14'
         },
         rules: [{ id: '8c8ae6e7-930e-4641-a8f0-4166ee7d2e17', type: 'danger', content: '结果' }],
@@ -219,7 +219,7 @@ export const column = [
     {
         props: {
             cover: '/static/img/1663728563798.656f92d9.png',
-            name: '奥林匹亚-射箭',
+            name: '奥林匹克-射箭',
             id: 'c55dc8ad-bb1a-4700-8df4-6945f54c3dfe'
         },
         rules: [
@@ -246,7 +246,7 @@ export const column = [
     {
         props: {
             cover: '/static/img/1663728999455.ed78f45a.png',
-            name: '奥林匹亚-高尔夫',
+            name: '奥林匹克-高尔夫',
             id: 'fc04d0e7-3041-4cfa-96d8-b207e97b5be7'
         },
         rules: [
@@ -261,7 +261,7 @@ export const column = [
     {
         props: {
             cover: '/static/img/1663729006251.651e74cf.png',
-            name: '奥林匹亚-曲棍球',
+            name: '奥林匹克-曲棍球',
             id: '639d84c8-dbf2-4ea0-9d85-b47bf289b162'
         },
         rules: [{ id: '36be72a6-6306-4a42-8c64-170aa0701afe', type: 'danger', content: '结果' }],
@@ -273,7 +273,7 @@ export const column = [
     {
         props: {
             cover: '/static/img/1663729012847.d4d39b1b.png',
-            name: '奥林匹亚-网球',
+            name: '奥林匹克-网球',
             id: '2b0d159d-7b8b-4cdc-8705-1c91542a8dbe'
         },
         rules: [{ id: 'da4b87fb-d961-43ef-8e8a-ea21c6456569', type: 'danger', content: '结果' }],
