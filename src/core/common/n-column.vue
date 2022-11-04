@@ -6,6 +6,7 @@ import { stop, useClientRect, throttle } from '@/utils/utils-common'
 import { ClickOutside } from '@/utils/utils-click-outside'
 import { fetchColumn } from '@/core/hook/fetch-column'
 import NSource from '@/core/common/n-source'
+const COLORS = { success: '#52c41a', danger: '#ff3d68', info: '#1b73fa' }
 
 export default {
     name: 'NColumn',
@@ -76,13 +77,14 @@ export default {
                 const el = document.getElementById(x.id)
                 const offsetLeft = el.offsetLeft + 22
                 const offsetTop = el.offsetTop + 28
-
+                console.log(x)
                 instance.addEndpoint(node.id, {
                     uuid: x.id,
                     anchor: [0, 0, 0, 1, offsetLeft, offsetTop],
                     isSource: true,
                     maxConnections: 1,
-                    connectorStyle: { stroke: '#67c23a', strokeWidth: 5 }
+                    endpointStyle: { fill: COLORS[x.type] },
+                    connectorStyle: { stroke: COLORS[x.type], strokeWidth: 5 }
                 })
             })
         },

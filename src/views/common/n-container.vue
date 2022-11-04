@@ -154,7 +154,8 @@ export default {
                 props: this.current,
                 rules: [
                     { content: '猪头', id: v4(), type: 'success' },
-                    { content: '笨蛋', id: v4(), type: 'danger' }
+                    { content: '笨蛋', id: v4(), type: 'danger' },
+                    { content: '蠢货', id: v4(), type: 'info' }
                 ],
                 id: v4(),
                 top: Math.round(top / 100) * 100 + 'px',
