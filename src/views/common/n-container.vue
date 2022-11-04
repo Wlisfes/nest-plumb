@@ -5,7 +5,7 @@ import { NColumn } from '@/core/common'
 import { createSuper, createCoreZoom, useScale } from '@/core/super'
 import { Option } from '@/core/option'
 import { Observer } from '@/utils/utils-observer'
-import { useClientRect, throttle } from '@/utils/utils-common'
+import { useAwait, throttle } from '@/utils/utils-common'
 import * as data from './data'
 
 export default {
@@ -104,7 +104,7 @@ export default {
                     }).catch(e => {})
                 })
 
-                instance.setSuspendDrawing(false, true)
+                // instance.setSuspendDrawing(false, true)
             })
         },
         /**创建画布实例**/
@@ -130,10 +130,8 @@ export default {
         /**绘制连接线**/
         async fetchConnect() {
             const { instance, line } = this
-            await new Promise(resolve => {
-                setTimeout(() => resolve(), 1000)
-            })
-            return line.map(x =>
+            await useAwait(1000)
+            line.forEach(x => {
                 instance.connect({
                     id: x.id,
                     source: x.source,
@@ -142,7 +140,8 @@ export default {
                     anchor: ['TopCenter', 'BottomCenter'],
                     endpointStyle: { fill: 'transparent', outlineStroke: 'transparent' }
                 })
-            )
+            })
+            return await useAwait(100)
         },
         /**拖拽添加节点**/
         onMounte(e) {

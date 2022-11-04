@@ -16,6 +16,17 @@ export function done(el, delay) {
 }
 
 /**
+ * 延时函数
+ * @param { Number } delay = 500
+ * @returns
+ */
+export function useAwait(delay = 500) {
+    return new Promise(resolve => {
+        setTimeout(() => resolve(), delay)
+    })
+}
+
+/**
  * 获取dom位置
  * @param { Element } el
  */
