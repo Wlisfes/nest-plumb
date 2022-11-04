@@ -1,8 +1,11 @@
 <script>
-import NSource from '@/core/common/n-source'
-import { stop } from '@/utils/utils-common'
+import { mapState } from 'vuex'
+import { v4 } from 'uuid'
+import { useScale } from '@/core/super'
+import { stop, useClientRect } from '@/utils/utils-common'
 import { ClickOutside } from '@/utils/utils-click-outside'
 import { fetchColumn } from '@/core/hook/fetch-column'
+import NSource from '@/core/common/n-source'
 
 export default {
     name: 'NColumn',
@@ -18,10 +21,19 @@ export default {
             active: false
         }
     },
+    computed: {
+        ...mapState({
+            axis: state => state.axis,
+            core: state => state.core,
+            line: state => state.line,
+            column: state => state.column
+        })
+    },
     mounted() {
         this.$nextTick(() => {
             this.initOneBefore()
             this.draggableNode()
+
             const done = this.observer.on('delete', response => {
                 this.fetchSubscribe(response, () => done())
             })
@@ -71,20 +83,69 @@ export default {
                 endpointStyle: { fill: 'transparent', outlineStroke: 'transparent' }
             })
         },
+        /**获取最近的出口点**/
+        onRules(element) {
+            const { instance, node, column, line } = this
+            const scale = useScale(instance)
+            const current = useClientRect(element, scale)
+            const rules = column
+                .filter(x => x.id !== node.id && x.rules.length > 0)
+                .reduce((curr, next) => {
+                    curr = curr.concat(next.rules)
+                    return curr
+                }, [])
+                .filter(x => {
+                    return !line.some(n => n.source === x.id)
+                })
+                .map(x => {
+                    const rect = useClientRect(document.getElementById(x.id))
+                    const a = rect.left + rect.width / 2 - (current.left + current.width / 2)
+                    const b = rect.top - rect.height - current.top
+
+                    return {
+                        ...x,
+                        ...rect,
+                        distance: Math.sqrt(a * a + b * b) / scale
+                    }
+                })
+                .sort((a, b) => (a.distance ?? 0) - (b.distance ?? 0))
+            const option = rules?.shift()
+
+            if (option?.distance < 200) {
+                return option
+            }
+            return null
+        },
         /**绑定节点移动事件**/
         draggableNode() {
-            const { node } = this
-            this.instance.draggable(node.id, {
+            const { instance, node, column } = this
+            instance.draggable(node.id, {
                 grid: [5, 5], //节点移动最小距离
-                drag: e => {},
+                drag: e => {
+                    this.observer.emit('drag', this.onRules(e.el))
+                },
                 start: e => {},
                 stop: e => {
-                    this.$store.commit('SET_COLUMN', {
+                    //prettier-ignore
+                    this.$store.dispatch('setColumn', {
                         command: 'UPDATE',
                         node: Object.assign(node, {
                             left: e.pos[0] + 'px',
                             top: e.pos[1] + 'px'
                         })
+                    }).then(() => {
+                        //此处添加连接线
+                        const rule = this.onRules(e.el)
+                        if (rule) {
+                            instance.connect({
+                                id: v4(),
+                                source: rule.id,
+                                target: node.id,
+                                uuids: [rule.id, node.id],
+                                anchor: ['TopCenter', 'BottomCenter'],
+                                endpointStyle: { fill: 'transparent', outlineStroke: 'transparent' }
+                            })
+                        }
                     })
                 }
             })
@@ -185,7 +246,7 @@ export default {
         }
     },
     render() {
-        const { node } = this
+        const { node, response } = this
 
         return (
             <div
@@ -201,7 +262,7 @@ export default {
                         <div style={{ flex: 1 }}>
                             <div class="row-matter">
                                 <div class="row-matter__name">{node.props.name}</div>
-                                <i class="el-icon-setting" title="编辑" onClick={e => stop(e, this.fetchOneColumn)}></i>
+                                {/**<i class="el-icon-setting" title="编辑" onClick={e => stop(e, this.fetchOneColumn)}></i>**/}
                                 <i class="el-icon-delete" title="删除" onClick={e => stop(e, this.fetchOneDelete)}></i>
                             </div>
                             <div class="row-content">{node.content ?? '空占位符'}</div>
@@ -215,6 +276,7 @@ export default {
                                     key={x.id}
                                     id={x.id}
                                     node={x}
+                                    observer={this.observer}
                                     instance={this.instance}
                                 ></n-source>
                             ))}

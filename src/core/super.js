@@ -28,7 +28,9 @@ export async function createCoreZoom(instance, option) {
         minZoom: 0.1,
         maxZoom: 10,
         initialZoom: option.core?.scale ?? 1,
-        beforeWheel: e => {},
+        beforeWheel: e => {
+            return true
+        },
         beforeMouseDown: e => e.ctrlKey
     })
     pan.moveTo(option.core?.x ?? 0, option.core?.y ?? 0)

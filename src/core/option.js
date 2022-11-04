@@ -1,10 +1,10 @@
 export const Option = {
-    grid: [10, 10],
+    grid: [5, 5],
     //动态锚点、位置自适应
     Anchor: 'TopCenter',
     Container: 'context',
     //连线的样式 Bezier(贝塞尔曲线)、Straight(直线)、Flowchart(流程图)、StateMachine(状态机)
-    Connector: ['Flowchart', { gap: 5, cornerRadius: 5, alwaysRespectStubs: true }],
+    Connector: ['Bezier', { gap: 5, cornerRadius: 5, alwaysRespectStubs: true }],
     //删除线的时候节点不删除
     DeleteEndpointsOnDetach: false,
     //鼠标不能拖动删除线

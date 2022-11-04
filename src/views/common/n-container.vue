@@ -1,10 +1,11 @@
 <script>
 import { mapState } from 'vuex'
-import { v4 as only } from 'uuid'
+import { v4 } from 'uuid'
 import { NColumn } from '@/core/common'
 import { createSuper, createCoreZoom, useScale } from '@/core/super'
 import { Option } from '@/core/option'
 import { Observer } from '@/utils/utils-observer'
+import { useClientRect } from '@/utils/utils-common'
 import * as data from './data'
 
 export default {
@@ -25,20 +26,21 @@ export default {
         return {
             loading: true,
             instance: null,
+            option: null,
             observer: new Observer()
         }
     },
     mounted() {
         this.$nextTick(() => {
-            this.$store
-                .dispatch('setInit', {
-                    column: data.column,
-                    line: data.line,
-                    core: data.core
-                })
-                .finally(() => this.initSuper())
+            // this.$store
+            //     .dispatch('setInit', {
+            //         column: data.column,
+            //         line: data.line,
+            //         core: data.core
+            //     })
+            //     .finally(() => this.initSuper())
 
-            // this.initSuper()
+            this.initSuper()
         })
     },
     methods: {
@@ -62,7 +64,7 @@ export default {
                     this.$store.dispatch('setLine', {
                         command: 'CREATE',
                         node: {
-                            id: only(),
+                            id: v4(),
                             parent,
                             source: e.sourceId,
                             target: e.targetId,
@@ -142,6 +144,38 @@ export default {
                 })
             )
         },
+        /**获取最近的出口点**/
+        onRules(e) {
+            const { instance, column, line } = this
+            const scale = useScale(instance)
+
+            const rules = column
+                .filter(x => x.rules.length > 0)
+                .reduce((curr, next) => {
+                    curr = curr.concat(next.rules)
+                    return curr
+                }, [])
+                .filter(x => {
+                    return !line.some(n => n.source === x.id)
+                })
+                .map(x => {
+                    const rect = useClientRect(document.getElementById(x.id))
+                    const a = rect.left + rect.width / 2 - e.clientX
+                    const b = rect.top - rect.height - e.clientY
+
+                    return {
+                        ...x,
+                        ...rect,
+                        distance: Math.sqrt(a * a + b * b) / scale
+                    }
+                })
+                .sort((a, b) => (a.distance ?? 0) - (b.distance ?? 0))
+            const option = rules?.shift()
+            if (option?.distance < 200) {
+                return option
+            }
+            return null
+        },
         /**拖拽添加节点**/
         onMounte(e) {
             const rect = this.instance.getContainer().getBoundingClientRect()
@@ -151,24 +185,49 @@ export default {
 
             const node = {
                 props: this.current,
-                rules: [],
-                id: only(),
+                rules: [{ content: '猪头', id: v4(), type: 'success' }],
+                id: v4(),
                 top: Math.round(top / 100) * 100 + 'px',
                 left: Math.round(left / 100) * 100 + 'px'
             }
-            this.$store.commit('SET_COLUMN', { command: 'CREATE', node })
+            //prettier-ignore
+            this.$store.dispatch('setColumn', { command: 'CREATE', node }).then(() => {
+                //此处添加连接线
+                setTimeout(() => {
+                    if (this.option) {
+                        this.instance.connect({
+                            id: v4(),
+                            source: this.option.id,
+                            target: node.id,
+                            uuids: [this.option.id, node.id],
+                            anchor: ['TopCenter', 'BottomCenter'],
+                            endpointStyle: { fill: 'transparent', outlineStroke: 'transparent' }
+                        })
+                    }
+                    this.$nextTick(() => {
+                        this.observer.emit('drag', null)
+                    })
+                }, 16)
+            })
+
+            console.log(e)
+        },
+        onDragover(e) {
+            e.preventDefault()
+            const option = this.onRules(e)
+            this.option = option
+            if (option?.distance < 300) {
+                this.observer.emit('drag', option)
+            } else {
+                this.observer.emit('drag', null)
+            }
         }
     },
     render() {
         const { axis, core, column } = this
 
         return (
-            <div
-                v-loading={this.loading}
-                class="n-container"
-                onDragover={e => e.preventDefault()}
-                onDrop={this.onMounte}
-            >
+            <div v-loading={this.loading} class="n-container" onDragover={this.onDragover} onDrop={this.onMounte}>
                 <div ref="context" id="context">
                     <div class="axis-x" v-show={axis.x} style={{ width: core.width, left: core.offsetX + 'px' }}></div>
                     <div class="axis-y" v-show={axis.y} style={{ height: core.height, top: core.offsetY + 'px' }}></div>
