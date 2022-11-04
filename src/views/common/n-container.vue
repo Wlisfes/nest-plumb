@@ -5,7 +5,7 @@ import { NColumn } from '@/core/common'
 import { createSuper, createCoreZoom, useScale } from '@/core/super'
 import { Option } from '@/core/option'
 import { Observer } from '@/utils/utils-observer'
-import { useClientRect } from '@/utils/utils-common'
+import { useClientRect, throttle } from '@/utils/utils-common'
 import * as data from './data'
 
 export default {
@@ -26,7 +26,7 @@ export default {
         return {
             loading: true,
             instance: null,
-            option: null,
+            recent: null,
             observer: new Observer()
         }
     },
@@ -115,7 +115,7 @@ export default {
                     this.$store.commit('SET_AXIS', { x: true, y: true })
                 },
                 onPanend: response => {
-                    this.$store.commit('SET_AXIS', { x: false, y: false })
+                    // this.$store.commit('SET_AXIS', { x: false, y: false })
                 },
                 onZoom: response => {
                     const { x, y, offsetX, offsetY, width, height, scale } = response
@@ -144,48 +144,20 @@ export default {
                 })
             )
         },
-        /**获取最近的出口点**/
-        onRules(e) {
-            const { instance, column, line } = this
-            const scale = useScale(instance)
-
-            const rules = column
-                .filter(x => x.rules.length > 0)
-                .reduce((curr, next) => {
-                    curr = curr.concat(next.rules)
-                    return curr
-                }, [])
-                .filter(x => {
-                    return !line.some(n => n.source === x.id)
-                })
-                .map(x => {
-                    const rect = useClientRect(document.getElementById(x.id))
-                    const a = rect.left + rect.width / 2 - e.clientX
-                    const b = rect.top - rect.height - e.clientY
-
-                    return {
-                        ...x,
-                        ...rect,
-                        distance: Math.sqrt(a * a + b * b) / scale
-                    }
-                })
-                .sort((a, b) => (a.distance ?? 0) - (b.distance ?? 0))
-            const option = rules?.shift()
-            if (option?.distance < 200) {
-                return option
-            }
-            return null
-        },
         /**拖拽添加节点**/
         onMounte(e) {
-            const rect = this.instance.getContainer().getBoundingClientRect()
-            const scale = useScale(this.instance)
+            const { instance, recent } = this
+            const rect = instance.getContainer().getBoundingClientRect()
+            const scale = useScale(instance)
             const left = (e.pageX - rect.left - 60) / scale
             const top = (e.pageY - rect.top - 20) / scale
 
             const node = {
                 props: this.current,
-                rules: [{ content: '猪头', id: v4(), type: 'success' }],
+                rules: [
+                    { content: '猪头', id: v4(), type: 'success' },
+                    { content: '笨蛋', id: v4(), type: 'danger' }
+                ],
                 id: v4(),
                 top: Math.round(top / 100) * 100 + 'px',
                 left: Math.round(left / 100) * 100 + 'px'
@@ -194,33 +166,59 @@ export default {
             this.$store.dispatch('setColumn', { command: 'CREATE', node }).then(() => {
                 //此处添加连接线
                 setTimeout(() => {
-                    if (this.option) {
-                        this.instance.connect({
+                    if (recent) {
+                        instance.connect({
                             id: v4(),
-                            source: this.option.id,
+                            source: recent.id,
                             target: node.id,
-                            uuids: [this.option.id, node.id],
+                            uuids: [recent.id, node.id],
                             anchor: ['TopCenter', 'BottomCenter'],
                             endpointStyle: { fill: 'transparent', outlineStroke: 'transparent' }
                         })
                     }
                     this.$nextTick(() => {
-                        this.observer.emit('drag', null)
+                        this.recent = null
                     })
                 }, 16)
             })
-
-            console.log(e)
         },
+        //捕获位置
+        onCapture: throttle(function (e) {
+            const { instance, column, line } = this
+            const rect = instance.getContainer().getBoundingClientRect()
+            const scale = useScale(this.instance)
+            const pageX = (e.pageX - rect.left - 60) / scale
+            const pageY = (e.pageY - rect.top - 20) / scale
+
+            const rules = column
+                .filter(x => !!x.rules.length)
+                .reduce((c, n) => {
+                    return c.concat(n.rules.map(x => ({ ...x, parent: n })))
+                }, [])
+                .filter(x => !line.some(n => n.source === x.id))
+                .map(x => {
+                    const { left, top } = x.parent
+                    const source = document.getElementById(x.id)
+                    const a = parseFloat(left) + source.offsetLeft + 22 - pageX
+                    const b = parseFloat(top) + source.offsetTop + 28 - pageY
+                    return {
+                        ...x,
+                        el: source,
+                        distance: Math.sqrt(a * a + b * b) / scale
+                    }
+                })
+                .sort((a, b) => (a.distance ?? 0) - (b.distance ?? 0))
+
+            const recent = rules?.shift()
+            if (recent && recent.distance < 200) {
+                this.recent = recent
+            } else {
+                this.recent = null
+            }
+        }, 100),
         onDragover(e) {
             e.preventDefault()
-            const option = this.onRules(e)
-            this.option = option
-            if (option?.distance < 300) {
-                this.observer.emit('drag', option)
-            } else {
-                this.observer.emit('drag', null)
-            }
+            this.onCapture(e)
         }
     },
     render() {
@@ -232,19 +230,18 @@ export default {
                     <div class="axis-x" v-show={axis.x} style={{ width: core.width, left: core.offsetX + 'px' }}></div>
                     <div class="axis-y" v-show={axis.y} style={{ height: core.height, top: core.offsetY + 'px' }}></div>
 
-                    {this.instance && (
-                        <div>
-                            {column.map(x => (
-                                <n-column
-                                    id={x.id}
-                                    key={x.id}
-                                    node={x}
-                                    instance={this.instance}
-                                    observer={this.observer}
-                                ></n-column>
-                            ))}
-                        </div>
-                    )}
+                    {this.instance &&
+                        column.map(x => (
+                            <n-column
+                                id={x.id}
+                                key={x.id}
+                                node={x}
+                                instance={this.instance}
+                                observer={this.observer}
+                                recent={this.recent}
+                                onDrag-column={e => (this.recent = e)}
+                            ></n-column>
+                        ))}
                 </div>
             </div>
         )

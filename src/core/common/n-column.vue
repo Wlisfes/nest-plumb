@@ -2,7 +2,7 @@
 import { mapState } from 'vuex'
 import { v4 } from 'uuid'
 import { useScale } from '@/core/super'
-import { stop, useClientRect } from '@/utils/utils-common'
+import { stop, useClientRect, throttle } from '@/utils/utils-common'
 import { ClickOutside } from '@/utils/utils-click-outside'
 import { fetchColumn } from '@/core/hook/fetch-column'
 import NSource from '@/core/common/n-source'
@@ -14,7 +14,8 @@ export default {
     props: {
         node: Object,
         instance: Object,
-        observer: Object
+        observer: Object,
+        recent: Object
     },
     data() {
         return {
@@ -83,47 +84,38 @@ export default {
                 endpointStyle: { fill: 'transparent', outlineStroke: 'transparent' }
             })
         },
-        /**获取最近的出口点**/
-        onRules(element) {
-            const { instance, node, column, line } = this
-            const scale = useScale(instance)
-            const current = useClientRect(element, scale)
-            const rules = column
-                .filter(x => x.id !== node.id && x.rules.length > 0)
-                .reduce((curr, next) => {
-                    curr = curr.concat(next.rules)
-                    return curr
-                }, [])
-                .filter(x => {
-                    return !line.some(n => n.source === x.id)
-                })
-                .map(x => {
-                    const rect = useClientRect(document.getElementById(x.id))
-                    const a = rect.left + rect.width / 2 - (current.left + current.width / 2)
-                    const b = rect.top - rect.height - current.top
-
-                    return {
-                        ...x,
-                        ...rect,
-                        distance: Math.sqrt(a * a + b * b) / scale
-                    }
-                })
-                .sort((a, b) => (a.distance ?? 0) - (b.distance ?? 0))
-            const option = rules?.shift()
-
-            if (option?.distance < 200) {
-                return option
-            }
-            return null
-        },
         /**绑定节点移动事件**/
         draggableNode() {
-            const { instance, node, column } = this
+            const { instance, node, column, line } = this
             instance.draggable(node.id, {
                 grid: [5, 5], //节点移动最小距离
-                drag: e => {
-                    this.observer.emit('drag', this.onRules(e.el))
-                },
+                drag: throttle(e => {
+                    const rules = column
+                        .filter(x => x.id !== node.id && !!x.rules.length)
+                        .reduce((c, n) => {
+                            return c.concat(n.rules.map(x => ({ ...x, parent: n })))
+                        }, [])
+                        .filter(x => !line.some(n => n.source === x.id || n.target === node.id))
+                        .map(x => {
+                            const { left, top } = x.parent
+                            const source = document.getElementById(x.id)
+                            const a = parseFloat(left) + source.offsetLeft + 22 - (e.pos[0] + e.el.clientWidth / 2)
+                            const b = parseFloat(top) + source.offsetTop + 28 - e.pos[1]
+                            return {
+                                ...x,
+                                el: source,
+                                distance: Math.sqrt(a * a + b * b)
+                            }
+                        })
+                        .sort((a, b) => (a.distance ?? 0) - (b.distance ?? 0))
+
+                    const recent = rules?.shift()
+                    if (recent && recent.distance < 200) {
+                        this.$emit('drag-column', recent)
+                    } else {
+                        this.$emit('drag-column', null)
+                    }
+                }, 100),
                 start: e => {},
                 stop: e => {
                     //prettier-ignore
@@ -135,16 +127,17 @@ export default {
                         })
                     }).then(() => {
                         //此处添加连接线
-                        const rule = this.onRules(e.el)
-                        if (rule) {
+                        const { recent } = this
+                        if (recent) {
                             instance.connect({
                                 id: v4(),
-                                source: rule.id,
+                                source: recent.id,
                                 target: node.id,
-                                uuids: [rule.id, node.id],
+                                uuids: [recent.id, node.id],
                                 anchor: ['TopCenter', 'BottomCenter'],
                                 endpointStyle: { fill: 'transparent', outlineStroke: 'transparent' }
                             })
+                            this.$emit('drag-column', null)
                         }
                     })
                 }
@@ -246,7 +239,7 @@ export default {
         }
     },
     render() {
-        const { node, response } = this
+        const { node } = this
 
         return (
             <div
@@ -278,6 +271,7 @@ export default {
                                     node={x}
                                     observer={this.observer}
                                     instance={this.instance}
+                                    recent={this.recent}
                                 ></n-source>
                             ))}
                         </div>
@@ -299,10 +293,12 @@ export default {
     cursor: move;
     display: flex;
     flex-direction: column;
-    padding: 16px 18px;
     box-sizing: border-box;
     &.is-active {
         box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+    }
+    &.is-option {
+        background-color: red;
     }
 }
 
@@ -310,6 +306,8 @@ export default {
     width: 100%;
     height: 100%;
     position: relative;
+    padding: 16px 18px 0;
+    box-sizing: border-box;
     .column-content {
         display: flex;
         overflow: hidden;

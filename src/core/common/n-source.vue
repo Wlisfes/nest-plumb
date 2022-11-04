@@ -4,31 +4,25 @@ export default {
     props: {
         node: Object,
         instance: Object,
-        observer: Object
-    },
-    data() {
-        return {
-            active: false
+        observer: Object,
+        recent: {
+            type: Object,
+            default: () => null
         }
     },
+
     computed: {
         stroke() {
             const colors = { success: '#67c23a', danger: '#f56c6c', info: '#909399' }
             return colors[this.node.type]
+        },
+        isActive() {
+            const { node, recent } = this
+            return recent?.id === node.id
         }
     },
     mounted() {
         this.$nextTick(() => this.initOneAfter())
-        const done = this.observer.on('drag', response => {
-            if (response && response.id === this.node.id) {
-                this.active = true
-            } else {
-                this.active = false
-            }
-        })
-        this.$once('hook:beforeDestroy', () => {
-            done()
-        })
     },
     methods: {
         /**设置出口**/
@@ -45,7 +39,7 @@ export default {
     render() {
         const { node } = this
 
-        return <div class={{ 'n-source': true, 'is-active': this.active }}>{node.content}</div>
+        return <div class={{ 'n-source': true, 'is-active': this.isActive }}>{node.content}</div>
     }
 }
 </script>
@@ -61,7 +55,7 @@ export default {
     border: none;
     box-sizing: border-box;
     white-space: nowrap;
-    margin: 0 5px;
+    margin: 0 10px;
     cursor: crosshair;
     &.is-active {
         background-color: red;

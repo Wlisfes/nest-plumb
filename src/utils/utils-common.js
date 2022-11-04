@@ -32,3 +32,22 @@ export function useClientRect(el, scale = 1) {
         y: (client?.y ?? 0) / scale
     }
 }
+
+/**
+ * 节流函数
+ * @param { Function } fn
+ * @param { Number } delay
+ * @returns Function
+ */
+export function throttle(fn, delay = 300) {
+    var prev = Date.now()
+    return function () {
+        var context = this
+        var args = arguments
+        var now = Date.now()
+        if (now - prev >= delay) {
+            fn.apply(context, args)
+            prev = Date.now()
+        }
+    }
+}

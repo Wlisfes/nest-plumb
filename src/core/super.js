@@ -29,7 +29,7 @@ export async function createCoreZoom(instance, option) {
         maxZoom: 10,
         initialZoom: option.core?.scale ?? 1,
         beforeWheel: e => {
-            return true
+            return false
         },
         beforeMouseDown: e => e.ctrlKey
     })
