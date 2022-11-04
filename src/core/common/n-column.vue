@@ -110,7 +110,7 @@ export default {
                         .sort((a, b) => (a.distance ?? 0) - (b.distance ?? 0))
 
                     const recent = rules?.shift()
-                    if (recent && recent.distance < 200) {
+                    if (recent && recent.distance < 250) {
                         this.$emit('drag-column', recent)
                     } else {
                         this.$emit('drag-column', null)
