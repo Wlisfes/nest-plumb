@@ -32,8 +32,11 @@ export default {
     },
     mounted() {
         this.$nextTick(() => {
-            this.initOneBefore()
+            this.initOneAfter()
             this.draggableNode()
+            setTimeout(() => {
+                this.initOneBefore()
+            }, 0)
 
             const done = this.observer.on('delete', response => {
                 this.fetchSubscribe(response, () => done())
@@ -66,16 +69,34 @@ export default {
                 }
             })
         },
-        /**设置入口**/
+        /**设置起点**/
+        initOneAfter() {
+            const { node, instance } = this
+            node.rules?.forEach(x => {
+                const el = document.getElementById(x.id)
+                const offsetLeft = el.offsetLeft + 22
+                const offsetTop = el.offsetTop + 28
+
+                instance.addEndpoint(node.id, {
+                    uuid: x.id,
+                    anchor: [0, 0, 0, 1, offsetLeft, offsetTop],
+                    isSource: true,
+                    maxConnections: 1,
+                    connectorStyle: { stroke: '#67c23a', strokeWidth: 5 }
+                })
+            })
+        },
+        /**设置终点**/
         initOneBefore() {
             const { node, instance } = this
-            // //起点
+            //起点
             // instance.makeSource(node.id, {
             //     filter: '.node-column',
             //     maxConnections: 1,
             //     anchor: 'BottomCenter',
             //     endpointStyle: { fill: 'transparent', outlineStroke: 'transparent' }
             // })
+
             //终点
             instance.makeTarget(node.id, {
                 filter: '.node-column',

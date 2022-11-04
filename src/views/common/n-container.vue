@@ -54,19 +54,18 @@ export default {
 
                 //完成连线前的校验
                 instance.bind('beforeDrop', e => {
-                    const parent = document.getElementById(e.sourceId)?.getAttribute('data-parent')
-                    return e.sourceId !== e.targetId && e.targetId !== parent
+                    const source = e.sourceEndpoint.getUuid()
+                    return source !== e.targetId && e.targetId !== parent
                 })
 
                 //连线完毕、维护本地数据
                 instance.bind('connection', e => {
-                    const parent = document.getElementById(e.sourceId)?.getAttribute('data-parent')
                     this.$store.dispatch('setLine', {
                         command: 'CREATE',
                         node: {
                             id: v4(),
-                            parent,
-                            source: e.sourceId,
+                            parent: e.sourceId,
+                            source: e.sourceEndpoint.getUuid(),
                             target: e.targetId,
                             label: '猪头'
                         }

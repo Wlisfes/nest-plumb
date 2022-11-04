@@ -22,7 +22,7 @@ export default {
         }
     },
     mounted() {
-        this.$nextTick(() => this.initOneAfter())
+        // this.$nextTick(() => this.initOneAfter())
     },
     methods: {
         /**设置出口**/
