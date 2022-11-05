@@ -56,7 +56,6 @@ export default {
     box-sizing: border-box;
     white-space: nowrap;
     margin: 0 10px;
-    cursor: crosshair;
     &.is-active {
         background-color: red;
     }

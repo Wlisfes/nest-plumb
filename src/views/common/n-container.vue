@@ -54,8 +54,7 @@ export default {
 
                 //完成连线前的校验
                 instance.bind('beforeDrop', e => {
-                    const source = e.sourceEndpoint.getUuid()
-                    return source !== e.targetId && e.targetId !== parent
+                    return e.sourceId !== e.targetId
                 })
 
                 //连线完毕、维护本地数据
@@ -74,7 +73,7 @@ export default {
 
                 //删除线完毕、维护本地数据
                 instance.bind('connectionDetached', e => {
-                    const node = this.line.find(x => x.source === e.sourceId && x.target === e.targetId)
+                    const node = this.line.find(x => x.source === e.sourceEndpoint.getUuid())
                     this.$store.commit('SET_LINE', {
                         command: 'DELETE',
                         node
@@ -103,7 +102,7 @@ export default {
                     }).catch(e => {})
                 })
 
-                // instance.setSuspendDrawing(false, true)
+                instance.setSuspendDrawing(false, true)
             })
         },
         /**创建画布实例**/
@@ -302,6 +301,7 @@ export default {
         }
         .jtk-endpoint {
             z-index: 5;
+            cursor: crosshair;
         }
         .jtk-overlay {
             z-index: 6;

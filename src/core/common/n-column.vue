@@ -1,8 +1,7 @@
 <script>
 import { mapState } from 'vuex'
 import { v4 } from 'uuid'
-import { useScale } from '@/core/super'
-import { stop, useClientRect, throttle } from '@/utils/utils-common'
+import { stop, throttle } from '@/utils/utils-common'
 import { ClickOutside } from '@/utils/utils-click-outside'
 import { fetchColumn } from '@/core/hook/fetch-column'
 import NSource from '@/core/common/n-source'
@@ -34,19 +33,13 @@ export default {
     mounted() {
         this.$nextTick(() => {
             this.initOneAfter()
+            this.initOneBefore()
             this.draggableNode()
-            setTimeout(() => {
-                this.initOneBefore()
-            }, 0)
 
             const done = this.observer.on('delete', response => {
                 this.fetchSubscribe(response, () => done())
             })
-            const fetchDelete = e => e.key === 'Delete' && this.active && this.fetchOneDelete()
-            window.addEventListener('keydown', fetchDelete, true)
-            this.$once('hook:beforeDestroy', () => {
-                window.removeEventListener('keydown', fetchDelete)
-            })
+            this.$once('hook:beforeDestroy', () => done())
         })
     },
     methods: {
@@ -77,7 +70,6 @@ export default {
                 const el = document.getElementById(x.id)
                 const offsetLeft = el.offsetLeft + 22
                 const offsetTop = el.offsetTop + 28
-                console.log(x)
                 instance.addEndpoint(node.id, {
                     uuid: x.id,
                     anchor: [0, 0, 0, 1, offsetLeft, offsetTop],
@@ -91,15 +83,6 @@ export default {
         /**设置终点**/
         initOneBefore() {
             const { node, instance } = this
-            //起点
-            // instance.makeSource(node.id, {
-            //     filter: '.node-column',
-            //     maxConnections: 1,
-            //     anchor: 'BottomCenter',
-            //     endpointStyle: { fill: 'transparent', outlineStroke: 'transparent' }
-            // })
-
-            //终点
             instance.makeTarget(node.id, {
                 filter: '.node-column',
                 maxConnections: -1,
@@ -237,25 +220,14 @@ export default {
                             return done()
                         }
                         el.confirmButtonLoading = true
-
-                        const bezier = instance.getAllConnections()
-                        //删除节点线条
-                        bezier.forEach(x => {
-                            if (x.targetId === node.id) {
-                                instance.deleteConnection(x)
-                            }
-                        })
-                        //向子节点发送delete事件
-                        observer.emit('delete', {
-                            id: node.id,
-                            source: bezier.filter(x => node.rules.some(k => k.id === x.sourceId)).map(x => x.sourceId),
-                            target: bezier.filter(x => node.rules.some(k => k.id === x.sourceId)).map(x => x.targetId)
-                        })
-                        this.$store.dispatch('setColumn', { command: 'DELETE', node }).then(() => {
-                            this.$message.success({ message: '删除成功', duration: 1500 })
-                            el.confirmButtonLoading = false
-                            done()
-                        })
+                        setTimeout(() => {
+                            instance.remove(node.id)
+                            this.$store.dispatch('setColumn', { command: 'DELETE', node }).then(() => {
+                                this.$message.success({ message: '删除成功', duration: 1500 })
+                                el.confirmButtonLoading = false
+                                done()
+                            })
+                        }, 1000)
                     }
                 }
             ).catch(e => {})
