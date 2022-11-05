@@ -83,12 +83,21 @@ export default {
         /**设置终点**/
         initOneBefore() {
             const { node, instance } = this
-            instance.makeTarget(node.id, {
-                filter: '.node-column',
+            const el = document.getElementById(node.id)
+            instance.addEndpoint(node.id, {
+                uuid: node.id,
+                anchor: [0, 0, 0, -1, el.clientWidth / 2, 0],
+                isTarget: true,
                 maxConnections: -1,
-                anchor: 'TopCenter',
-                endpointStyle: { fill: 'transparent', outlineStroke: 'transparent' }
+                endpointStyle: { fill: '#fc5404' }
             })
+
+            // instance.makeTarget(node.id, {
+            //     filter: '.node-column',
+            //     maxConnections: -1,
+            //     anchor: 'TopCenter',
+            //     endpointStyle: { fill: 'transparent', outlineStroke: 'transparent' }
+            // })
         },
         /**绑定节点移动事件**/
         draggableNode() {

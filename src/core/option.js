@@ -4,7 +4,8 @@ export const Option = {
     Anchor: 'TopCenter',
     Container: 'context',
     //连线的样式 Bezier(贝塞尔曲线)、Straight(直线)、Flowchart(流程图)、StateMachine(状态机)
-    Connector: ['Bezier', { gap: 5, cornerRadius: 5, alwaysRespectStubs: true }],
+    // Connector: ['Flowchart', { gap: 5, cornerRadius: 5, alwaysRespectStubs: true }],
+    Connector: ['Bezier', { gap: 5, curviness: 100 }],
     //删除线的时候节点不删除
     DeleteEndpointsOnDetach: false,
     //鼠标不能拖动删除线
