@@ -72,12 +72,12 @@ export default {
                 const offsetTop = el.offsetTop + 28
                 instance.addEndpoint(node.id, {
                     uuid: x.id,
-                    anchor: [0, 0, 0, 1, offsetLeft, offsetTop],
+                    anchor: [0, 0, 0, 1, offsetLeft, offsetTop + 5],
                     isSource: true,
                     maxConnections: 1,
-                    cssClass: 'kkkkkkkkkkkkkkkk',
-                    endpointStyle: { fill: COLORS[x.type] },
-                    connectorStyle: { stroke: COLORS[x.type], strokeWidth: 5 }
+                    endpoint: ['Rectangle', { width: 20, height: 9.5, cssClass: 'is-source' }],
+                    endpointStyle: { fill: 'rgba(0, 0, 0, 0)' },
+                    connectorStyle: { stroke: '#dbdbdb', strokeWidth: 4 }
                 })
             })
         },
@@ -87,18 +87,13 @@ export default {
             const el = document.getElementById(node.id)
             instance.addEndpoint(node.id, {
                 uuid: node.id,
-                anchor: [0, 0, 0, -1, el.clientWidth / 2, 0],
+                anchor: [0, 0, 0, -1, el.clientWidth / 2, -4],
                 isTarget: true,
                 maxConnections: -1,
-                endpointStyle: { fill: '#fc5404' }
+                endpoint: ['Rectangle', { width: 20, height: 10, cssClass: 'is-target' }],
+                endpointStyle: { fill: 'rgba(0, 0, 0, 0)' },
+                connectorStyle: { stroke: '#dbdbdb', strokeWidth: 4 }
             })
-
-            // instance.makeTarget(node.id, {
-            //     filter: '.node-column',
-            //     maxConnections: -1,
-            //     anchor: 'TopCenter',
-            //     endpointStyle: { fill: 'transparent', outlineStroke: 'transparent' }
-            // })
         },
         /**绑定节点移动事件**/
         draggableNode() {
@@ -299,6 +294,7 @@ export default {
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
+    z-index: 6;
     &.is-active {
         box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
     }

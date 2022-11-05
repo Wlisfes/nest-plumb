@@ -344,7 +344,30 @@ export default {
             cursor: crosshair;
             transition: transform 300ms;
             &.is-suspended {
-                transform: scale(1.5);
+                transform: scale(2);
+            }
+            &.is-source {
+                &::after {
+                    position: absolute;
+                    content: '';
+                    width: 100%;
+                    height: 100%;
+                    background-image: url('~@/assets/icon/caret-down.png');
+                    background-repeat: no-repeat;
+                    background-size: 20px 20px;
+                }
+            }
+            &.is-target {
+                &::after {
+                    position: absolute;
+                    content: '';
+                    width: 100%;
+                    height: 100%;
+                    background-image: url('~@/assets/icon/caret-up.png');
+                    background-repeat: no-repeat;
+                    background-size: 20px 20px;
+                    background-position-y: -2px;
+                }
             }
         }
         .jtk-overlay {
