@@ -75,6 +75,7 @@ export default {
                     anchor: [0, 0, 0, 1, offsetLeft, offsetTop],
                     isSource: true,
                     maxConnections: 1,
+                    cssClass: 'kkkkkkkkkkkkkkkk',
                     endpointStyle: { fill: COLORS[x.type] },
                     connectorStyle: { stroke: COLORS[x.type], strokeWidth: 5 }
                 })

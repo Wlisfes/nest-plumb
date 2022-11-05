@@ -1,4 +1,5 @@
 <script>
+import Vue from 'vue'
 import { mapState } from 'vuex'
 import { v4 } from 'uuid'
 import { NColumn } from '@/core/common'
@@ -6,6 +7,7 @@ import { createSuper, createCoreZoom, useScale } from '@/core/super'
 import { Option } from '@/core/option'
 import { Observer } from '@/utils/utils-observer'
 import { useAwait, throttle } from '@/utils/utils-common'
+import { fetchTooltip } from '@/core/hook/fetch-tooltip'
 import * as data from './data'
 
 export default {
@@ -52,7 +54,23 @@ export default {
             instance.ready(async () => {
                 await this.fetchConnect().then(() => (this.loading = false))
 
-                //完成连线前的校验
+                //开始连线
+                instance.bind('connectionDrag', e => {
+                    this.column.forEach(x => {
+                        if (e.sourceId !== x.id) {
+                            instance.getEndpoint(x.id).canvas.classList.add('is-suspended')
+                        }
+                    })
+                })
+
+                //结束连线
+                instance.bind('connectionDragStop', e => {
+                    this.column.forEach(x => {
+                        instance.getEndpoint(x.id).canvas.classList.remove('is-suspended')
+                    })
+                })
+
+                //两个端点完成连线前的校验
                 instance.bind('beforeDrop', e => {
                     return e.sourceId !== e.targetId
                 })
@@ -80,27 +98,49 @@ export default {
                     })
                 })
 
-                //双击连线
-                instance.bind('dblclick', e => {
-                    this.$confirm(`确定要删除连接线吗？`, '提示', {
-                        distinguishCancelAndClose: true,
-                        dangerouslyUseHTMLString: true,
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
-                        type: 'error',
-                        beforeClose: (action, el, done) => {
-                            if (['cancel', 'close'].includes(action)) {
-                                return done()
-                            }
-                            el.confirmButtonLoading = true
+                //单击连线
+                instance.bind('click', (e, evt) => {
+                    const rect = instance.getContainer().getBoundingClientRect()
+                    const scale = useScale(instance)
+                    const left = (evt.pageX - rect.left) / scale
+                    const top = (evt.pageY - rect.top) / scale
+                    fetchTooltip({
+                        left,
+                        top,
+                        container: document.getElementById('context')
+                    }).then(response => {
+                        response.instance.$once('close', ({ done }) => done())
+                        response.instance.$once('submit', ({ done, setState }) => {
+                            setState(true)
                             setTimeout(() => {
                                 instance.deleteConnection(e)
-                                el.confirmButtonLoading = false
                                 done()
                             }, 500)
-                        }
-                    }).catch(e => {})
+                        })
+                    })
                 })
+
+                //双击连线
+                // instance.bind('dblclick', e => {
+                //     this.$confirm(`确定要删除连接线吗？`, '提示', {
+                //         distinguishCancelAndClose: true,
+                //         dangerouslyUseHTMLString: true,
+                //         confirmButtonText: '确定',
+                //         cancelButtonText: '取消',
+                //         type: 'error',
+                //         beforeClose: (action, el, done) => {
+                //             if (['cancel', 'close'].includes(action)) {
+                //                 return done()
+                //             }
+                //             el.confirmButtonLoading = true
+                //             setTimeout(() => {
+                //                 instance.deleteConnection(e)
+                //                 el.confirmButtonLoading = false
+                //                 done()
+                //             }, 500)
+                //         }
+                //     }).catch(e => {})
+                // })
 
                 instance.setSuspendDrawing(false, true)
             })
@@ -302,6 +342,10 @@ export default {
         .jtk-endpoint {
             z-index: 5;
             cursor: crosshair;
+            transition: transform 300ms;
+            &.is-suspended {
+                transform: scale(1.5);
+            }
         }
         .jtk-overlay {
             z-index: 6;
