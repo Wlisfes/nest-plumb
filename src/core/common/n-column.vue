@@ -77,7 +77,7 @@ export default {
                     maxConnections: 1,
                     endpoint: ['Rectangle', { width: 20, height: 9.5, cssClass: 'is-source' }],
                     endpointStyle: { fill: 'rgba(0, 0, 0, 0)' },
-                    connectorStyle: { stroke: '#dbdbdb', strokeWidth: 4 }
+                    connectorStyle: { stroke: COLORS[x.type], strokeWidth: 4 }
                 })
             })
         },

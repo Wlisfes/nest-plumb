@@ -120,28 +120,6 @@ export default {
                     })
                 })
 
-                //双击连线
-                // instance.bind('dblclick', e => {
-                //     this.$confirm(`确定要删除连接线吗？`, '提示', {
-                //         distinguishCancelAndClose: true,
-                //         dangerouslyUseHTMLString: true,
-                //         confirmButtonText: '确定',
-                //         cancelButtonText: '取消',
-                //         type: 'error',
-                //         beforeClose: (action, el, done) => {
-                //             if (['cancel', 'close'].includes(action)) {
-                //                 return done()
-                //             }
-                //             el.confirmButtonLoading = true
-                //             setTimeout(() => {
-                //                 instance.deleteConnection(e)
-                //                 el.confirmButtonLoading = false
-                //                 done()
-                //             }, 500)
-                //         }
-                //     }).catch(e => {})
-                // })
-
                 instance.setSuspendDrawing(false, true)
             })
         },
@@ -153,7 +131,7 @@ export default {
                     this.$store.commit('SET_AXIS', { x: true, y: true })
                 },
                 onPanend: response => {
-                    // this.$store.commit('SET_AXIS', { x: false, y: false })
+                    this.$store.commit('SET_AXIS', { x: false, y: false })
                 },
                 onZoom: response => {
                     const { x, y, offsetX, offsetY, width, height, scale } = response
@@ -257,6 +235,19 @@ export default {
         onDragover(e) {
             e.preventDefault()
             this.onCapture(e)
+        },
+        /**拖拽捕获连接点**/
+        onSuspended(response) {
+            this.recent = response
+            // if (response) {
+            //     if (this.suspended) {
+            //     }
+            // } else if (this.suspended) {
+            //     this.instance.getEndpoint(suspended.id).canvas.classList.add('is-suspended')
+            // }
+            // if (response) {
+            //     this.instance.getEndpoint(response.id).canvas.classList.add('is-suspended')
+            // }
         }
     },
     render() {
@@ -277,7 +268,7 @@ export default {
                                 instance={this.instance}
                                 observer={this.observer}
                                 recent={this.recent}
-                                onDrag-column={e => (this.recent = e)}
+                                onDrag-column={this.onSuspended}
                             ></n-column>
                         ))}
                 </div>
