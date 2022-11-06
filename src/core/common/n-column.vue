@@ -70,14 +70,14 @@ export default {
             node.rules?.forEach(x => {
                 const el = document.getElementById(x.id)
                 const offsetLeft = el.offsetLeft + 22
-                const offsetTop = el.offsetTop + 28
+                const offsetTop = el.offsetTop + 44
                 instance.addEndpoint(node.id, {
                     uuid: x.id,
                     anchor: [0, 0, 0, 1, offsetLeft, offsetTop],
                     isSource: true,
                     maxConnections: 1,
                     cssClass: 'is-source',
-                    endpoint: ['Dot', { radius: 10 }],
+                    endpoint: ['Dot', { radius: 12 }],
                     endpointStyle: { fill: '#dbdbdb' },
                     connectorStyle: { stroke: COLORS[x.type], strokeWidth: 4 }
                 })
@@ -93,7 +93,7 @@ export default {
                 isTarget: true,
                 maxConnections: -1,
                 cssClass: 'is-target',
-                endpoint: ['Dot', { radius: 10 }],
+                endpoint: ['Dot', { radius: 12 }],
                 endpointStyle: { fill: '#dbdbdb' }
             })
         },
@@ -299,7 +299,7 @@ export default {
     width: 100%;
     height: 100%;
     position: relative;
-    padding: 16px 18px 0;
+    padding: 16px 18px;
     box-sizing: border-box;
     .column-content {
         display: flex;
