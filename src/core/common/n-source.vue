@@ -39,7 +39,7 @@ export default {
     render() {
         const { node } = this
 
-        return <div class={{ 'n-source': true, 'is-active': this.isActive }}>{node.content}</div>
+        return <div class={{ 'n-source': true }}>{node.content}</div>
     }
 }
 </script>

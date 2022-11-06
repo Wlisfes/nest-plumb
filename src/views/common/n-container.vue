@@ -343,6 +343,9 @@ export default {
             transition: transform 300ms;
             &.is-suspended {
                 transform: scale(1.5);
+                > svg > * {
+                    fill: #ff3d68;
+                }
             }
         }
         .jtk-overlay {

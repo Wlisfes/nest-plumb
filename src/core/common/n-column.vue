@@ -76,7 +76,7 @@ export default {
                     isSource: true,
                     maxConnections: 1,
                     cssClass: 'is-source',
-                    endpoint: ['Dot', { radius: 8 }],
+                    endpoint: ['Dot', { radius: 10 }],
                     endpointStyle: { fill: '#dbdbdb' },
                     connectorStyle: { stroke: COLORS[x.type], strokeWidth: 4 }
                 })
@@ -92,7 +92,7 @@ export default {
                 isTarget: true,
                 maxConnections: -1,
                 cssClass: 'is-target',
-                endpoint: ['Dot', { radius: 8 }],
+                endpoint: ['Dot', { radius: 10 }],
                 endpointStyle: { fill: '#dbdbdb' }
             })
         },
