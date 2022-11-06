@@ -15,7 +15,8 @@ export default {
         node: Object,
         instance: Object,
         observer: Object,
-        recent: Object
+        recent: Object,
+        delTree: { type: Boolean, default: false }
     },
     data() {
         return {
@@ -37,7 +38,7 @@ export default {
             this.draggableNode()
 
             const done = this.observer.on('delete', response => {
-                this.fetchSubscribe(response, () => done())
+                this.fetchSubscribe(response)
             })
             this.$once('hook:beforeDestroy', () => done())
         })
@@ -173,45 +174,28 @@ export default {
             })
         },
         /**监听来自父级的订阅事件**/
-        fetchSubscribe(response, done) {
-            const { node } = this
-            if (response.id === node.id) {
-                //来至当前节点的订阅事件
+        fetchSubscribe(response) {
+            const { node, instance, observer, line } = this
+            if (response.target === node.id) {
+                /**来至当前节点的订阅事件**/
                 return false
-            } else if (response.target.includes(node.id)) {
-                //来自父级的订阅事件
-                const bezier = this.instance.getAllConnections()
-                //获取当前节点为终点的线条
-                const gter = bezier.filter(x => x.targetId === node.id)
-                //检查当前节点是否存在多个父级
-                const itnc = gter.some(x => x.targetId === node.id && !response.source.includes(x.sourceId))
-                if (itnc) {
-                    //存在多个父级，不可以删除当前节点，只删除连接线
-                    gter.forEach(x => {
-                        if (!(x.targetId === node.id && !response.source.includes(x.sourceId))) {
-                            this.instance.deleteConnection(x)
-                        }
+            } else if (response.column.includes(node.id)) {
+                /**来自父级的订阅事件**/
+                const connect = line.some(x => x.target === node.id && x.parent !== response.target)
+                if (!connect) {
+                    /**不存在多个父级，可以删除当前节点**/
+                    observer.emit('delete', {
+                        target: node.id,
+                        column: line.filter(x => x.parent === node.id).map(x => x.target)
                     })
-                } else {
-                    //不存在多个父级，可以删除当前节点、连接线
-                    bezier.forEach(x => {
-                        if (x.targetId === node.id) {
-                            this.instance.deleteConnection(x)
-                        }
-                    })
-                    //向子节点发送delete事件
-                    this.observer.emit('delete', {
-                        id: node.id,
-                        source: bezier.filter(x => node.rules.some(k => k.id === x.sourceId)).map(x => x.sourceId),
-                        target: bezier.filter(x => node.rules.some(k => k.id === x.sourceId)).map(x => x.targetId)
-                    })
-                    this.$store.dispatch('setColumn', { command: 'DELETE', node }).then(() => done())
+                    instance.remove(node.id)
+                    this.$store.dispatch('setColumn', { command: 'DELETE', node })
                 }
             }
         },
         /**删除节点**/
         fetchOneDelete() {
-            const { node, instance, observer } = this
+            const { node, instance, observer, line } = this
             this.$confirm(
                 ` <div>确定要删除<a style="color: red;margin: 0 3px">${node.props.name}</a>吗？</div> `,
                 '提示',
@@ -227,13 +211,20 @@ export default {
                         }
                         el.confirmButtonLoading = true
                         setTimeout(() => {
+                            if (this.delTree) {
+                                /**开启删除树**/
+                                observer.emit('delete', {
+                                    target: node.id,
+                                    column: line.filter(x => x.parent === node.id).map(x => x.target)
+                                })
+                            }
                             instance.remove(node.id)
                             this.$store.dispatch('setColumn', { command: 'DELETE', node }).then(() => {
                                 this.$message.success({ message: '删除成功', duration: 1500 })
                                 el.confirmButtonLoading = false
                                 done()
                             })
-                        }, 1000)
+                        }, 500)
                     }
                 }
             ).catch(e => {})

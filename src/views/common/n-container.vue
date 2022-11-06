@@ -194,7 +194,7 @@ export default {
                         })
                     }
                     this.$nextTick(() => {
-                        this.recent = null
+                        this.onSuspended(null)
                     })
                 }, 16)
             })
@@ -275,6 +275,7 @@ export default {
                                 instance={this.instance}
                                 observer={this.observer}
                                 recent={this.recent}
+                                del-tree={false}
                                 onDrag-column={this.onSuspended}
                             ></n-column>
                         ))}
