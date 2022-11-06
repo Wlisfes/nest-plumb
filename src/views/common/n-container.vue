@@ -29,6 +29,7 @@ export default {
             loading: true,
             instance: null,
             recent: null,
+            target: null,
             observer: new Observer()
         }
     },
@@ -227,9 +228,9 @@ export default {
 
             const recent = rules?.shift()
             if (recent && recent.distance < 250) {
-                this.recent = recent
+                this.onSuspended(recent)
             } else {
-                this.recent = null
+                this.onSuspended(null)
             }
         }, 100),
         onDragover(e) {
@@ -238,16 +239,22 @@ export default {
         },
         /**拖拽捕获连接点**/
         onSuspended(response) {
+            this.target = response?.id || null
             this.recent = response
-            // if (response) {
-            //     if (this.suspended) {
-            //     }
-            // } else if (this.suspended) {
-            //     this.instance.getEndpoint(suspended.id).canvas.classList.add('is-suspended')
-            // }
-            // if (response) {
-            //     this.instance.getEndpoint(response.id).canvas.classList.add('is-suspended')
-            // }
+        }
+    },
+    watch: {
+        target: {
+            handler(oldVal, newVal) {
+                if (oldVal && !newVal) {
+                    this.instance.getEndpoint(oldVal).canvas.classList.add('is-suspended')
+                } else if (!oldVal && newVal) {
+                    this.instance.getEndpoint(newVal).canvas.classList.remove('is-suspended')
+                } else if (oldVal && newVal) {
+                    this.instance.getEndpoint(newVal).canvas.classList.remove('is-suspended')
+                    this.instance.getEndpoint(oldVal).canvas.classList.add('is-suspended')
+                }
+            }
         }
     },
     render() {
@@ -335,30 +342,7 @@ export default {
             cursor: crosshair;
             transition: transform 300ms;
             &.is-suspended {
-                transform: scale(2);
-            }
-            &.is-source {
-                &::after {
-                    position: absolute;
-                    content: '';
-                    width: 100%;
-                    height: 100%;
-                    background-image: url('~@/assets/icon/caret-down.png');
-                    background-repeat: no-repeat;
-                    background-size: 20px 20px;
-                }
-            }
-            &.is-target {
-                &::after {
-                    position: absolute;
-                    content: '';
-                    width: 100%;
-                    height: 100%;
-                    background-image: url('~@/assets/icon/caret-up.png');
-                    background-repeat: no-repeat;
-                    background-size: 20px 20px;
-                    background-position-y: -2px;
-                }
+                transform: scale(1.5);
             }
         }
         .jtk-overlay {
