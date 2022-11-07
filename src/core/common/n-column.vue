@@ -70,15 +70,15 @@ export default {
             node.rules?.forEach(x => {
                 const el = document.getElementById(x.id)
                 const offsetLeft = el.offsetLeft + 22
-                const offsetTop = el.offsetTop + 44
+                const offsetTop = el.offsetTop + 49
                 instance.addEndpoint(node.id, {
                     uuid: x.id,
                     anchor: [0, 0, 0, 1, offsetLeft, offsetTop],
                     isSource: true,
                     maxConnections: 1,
                     cssClass: 'is-source',
-                    endpoint: ['Dot', { radius: 12 }],
-                    endpointStyle: { fill: '#dbdbdb' },
+                    endpoint: ['Rectangle', { width: 20, height: 9.5 }],
+                    endpointStyle: { fill: 'rgba(0, 0, 0, 0)' },
                     connectorStyle: { stroke: COLORS[x.type], strokeWidth: 4 }
                 })
             })
@@ -89,12 +89,12 @@ export default {
             const el = document.getElementById(node.id)
             instance.addEndpoint(node.id, {
                 uuid: node.id,
-                anchor: [0, 0, 0, -1, el.clientWidth / 2, 0],
+                anchor: [0, 0, 0, -1, el.clientWidth / 2, -5],
                 isTarget: true,
                 maxConnections: -1,
-                cssClass: 'is-target',
-                endpoint: ['Dot', { radius: 12 }],
-                endpointStyle: { fill: '#dbdbdb' }
+                endpoint: ['Rectangle', { width: 20, height: 9.5, cssClass: 'is-target' }],
+                endpointStyle: { fill: 'rgba(0, 0, 0, 0)' },
+                connectorStyle: { stroke: '#dbdbdb', strokeWidth: 4 }
             })
         },
         /**绑定节点移动事件**/
