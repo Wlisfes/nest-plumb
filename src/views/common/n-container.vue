@@ -149,13 +149,41 @@ export default {
             const { instance, line } = this
             await useAwait(1000)
             line.forEach(x => {
-                instance.connect({
+                const connect = instance.connect({
                     id: x.id,
                     source: x.source,
                     target: x.target,
                     uuids: [x.source, x.target],
                     anchor: ['TopCenter', 'BottomCenter'],
                     endpointStyle: { fill: 'transparent', outlineStroke: 'transparent' }
+                    // overlays: [
+                    //     [
+                    //         'Label',
+                    //         {
+                    //             label: `<div class="jtk-overlay__label">
+                    //                 <i class="el-icon-delete"></i>
+                    //             </div>`,
+                    //             events: {
+                    //                 click: e => {
+                    //                     fetchTooltip({
+                    //                         left: e.canvas.offsetLeft,
+                    //                         top: e.canvas.offsetTop,
+                    //                         container: document.getElementById('context')
+                    //                     }).then(response => {
+                    //                         response.instance.$once('close', ({ done }) => done())
+                    //                         response.instance.$once('submit', ({ done, setState }) => {
+                    //                             setState(true)
+                    //                             setTimeout(() => {
+                    //                                 instance.deleteConnection(connect)
+                    //                                 done()
+                    //                             }, 500)
+                    //                         })
+                    //                     })
+                    //                 }
+                    //             }
+                    //         }
+                    //     ]
+                    // ]
                 })
             })
             return await useAwait(100)
@@ -184,13 +212,13 @@ export default {
                 //此处添加连接线
                 setTimeout(() => {
                     if (recent) {
-                        instance.connect({
+                       const connect= instance.connect({
                             id: v4(),
                             source: recent.id,
                             target: node.id,
                             uuids: [recent.id, node.id],
                             anchor: ['TopCenter', 'BottomCenter'],
-                            endpointStyle: { fill: 'transparent', outlineStroke: 'transparent' }
+                            endpointStyle: { fill: 'transparent', outlineStroke: 'transparent' },
                         })
                     }
                     this.$nextTick(() => {
@@ -351,6 +379,16 @@ export default {
         }
         .jtk-overlay {
             z-index: 6;
+            &__label {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: #ffffff;
+                i {
+                    font-size: 20px;
+                    cursor: pointer;
+                }
+            }
         }
     }
 }
