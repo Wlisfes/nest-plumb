@@ -111,6 +111,7 @@ export default {
                         fetchTooltip({
                             left,
                             top,
+                            message: '确定要删除连接吗?',
                             container: document.getElementById('context')
                         }).then(response => {
                             response.instance.$once('close', ({ done }) => done())
@@ -279,7 +280,7 @@ export default {
                         node,
                         column,
                         line,
-                        delTree: true,
+                        delTree: false,
                         setColumn: this.setColumn,
                         setSuspended: this.setSuspended
                     }

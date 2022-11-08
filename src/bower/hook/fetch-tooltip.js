@@ -48,7 +48,7 @@ export function fetchTooltip(props) {
                                 <div class={css['n-tooltip-content']}>
                                     <div class={css['n-tooltip-text']}>
                                         <i class="el-icon-warning"></i>
-                                        <span>确定要删除连接吗?</span>
+                                        <span>{props.message ?? '确定要删除吗?'}</span>
                                     </div>
                                     <div class={css['n-tooltip-footer']}>
                                         <el-button

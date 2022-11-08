@@ -1,7 +1,9 @@
 <script>
 import { v4 } from 'uuid'
+import { useScale } from '../super'
 import { ClickOutside } from '../utils/utils-click-outside'
 import { stop, throttle } from '../utils/utils-common'
+import { fetchTooltip } from '../hook/fetch-tooltip'
 
 export default {
     name: 'NCommon',
@@ -55,6 +57,10 @@ export default {
             this.initOneAfter()
             this.initOneBefore()
             this.draggableNode()
+            const done = this.observer.on('delete', response => {
+                this.fetchSubscribe(response)
+            })
+            this.$once('hook:beforeDestroy', () => done())
         })
     },
     methods: {
@@ -190,40 +196,37 @@ export default {
             }
         },
         /**删除节点**/
-        fetchOneDelete() {
-            const { node, instance, observer, line } = this
-            this.$confirm(
-                ` <div>确定要删除<a style="color: red;margin: 0 3px">${node.props.name}</a>吗？</div> `,
-                '提示',
-                {
-                    distinguishCancelAndClose: true,
-                    dangerouslyUseHTMLString: true,
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'error',
-                    beforeClose: (action, el, done) => {
-                        if (['cancel', 'close'].includes(action)) {
-                            return done()
-                        }
-                        el.confirmButtonLoading = true
-                        setTimeout(() => {
-                            if (this.delTree) {
-                                /**开启删除树**/
-                                observer.emit('delete', {
-                                    target: node.id,
-                                    column: line.filter(x => x.parent === node.id).map(x => x.target)
-                                })
-                            }
-                            instance.remove(node.id)
-                            this.setColumn({ command: 'DELETE', node }).then(() => {
-                                this.$message.success({ message: '删除成功', duration: 1500 })
-                                el.confirmButtonLoading = false
-                                done()
+        fetchOneDelete(e) {
+            const { node, instance, observer, line, delTree } = this
+            fetchTooltip({
+                left: parseFloat(node.left) + e.target.offsetLeft + e.target.clientWidth / 2,
+                top: parseFloat(node.top) + e.target.offsetTop + 10,
+                message: (
+                    <div>
+                        确定要删除<a style="color: red;margin: 0 3px">{node.props.name}</a>吗？
+                    </div>
+                ),
+                container: document.getElementById('context')
+            }).then(response => {
+                response.instance.$once('close', ({ done }) => done())
+                response.instance.$once('submit', ({ done, setState }) => {
+                    setState(true)
+                    setTimeout(() => {
+                        if (delTree) {
+                            /**开启删除树**/
+                            observer.emit('delete', {
+                                target: node.id,
+                                column: line.filter(x => x.parent === node.id).map(x => x.target)
                             })
-                        }, 500)
-                    }
-                }
-            ).catch(e => {})
+                        }
+                        instance.remove(node.id)
+                        this.setColumn({ command: 'DELETE', node }).then(() => {
+                            this.$message.success({ message: '删除成功', duration: 1500 })
+                            done()
+                        })
+                    }, 500)
+                })
+            })
         }
     },
     render() {
@@ -243,7 +246,16 @@ export default {
                         <div class="n-icon" style={node.props.style}>
                             {node.props.icon && <i class={node.props.icon}></i>}
                         </div>
-                        <div style={{ flex: 1 }}></div>
+                        <div style={{ flex: 1 }}>
+                            <div class="n-header">
+                                <div class="n-header__name">{node.props.name}</div>
+                                <i
+                                    class="el-icon-delete"
+                                    title="删除"
+                                    onClick={e => stop(e, () => this.fetchOneDelete(e))}
+                                ></i>
+                            </div>
+                        </div>
                     </div>
                     {this.isDubbo ? (
                         <div class="node-common__dubbo">

@@ -38,6 +38,33 @@
                 font-size: 28px;
             }
         }
+        .n-header {
+            height: 24px;
+            display: flex;
+            align-items: center;
+            &__name {
+                flex: 1;
+                line-height: 24px;
+                margin-right: 20px;
+                font-size: 16px;
+                color: #3b3d44;
+            }
+            i {
+                font-size: 24px;
+                margin-right: 10px;
+                cursor: pointer;
+                transition: color 300ms;
+                &:last-child {
+                    margin: 0;
+                }
+                &.el-icon-setting:hover {
+                    color: #409eff;
+                }
+                &.el-icon-delete:hover {
+                    color: #ff0000;
+                }
+            }
+        }
     }
     &__one {
         height: 20px;
