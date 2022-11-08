@@ -171,16 +171,15 @@ export default {
             const rect = instance.getContainer().getBoundingClientRect()
             const scale = useScale(instance)
             const left = (e.pageX - rect.left - 60) / scale
-            const top = (e.pageY - rect.top - 20) / scale
+            const top = (e.pageY - rect.top) / scale
 
             const node = {
                 props: currentProps,
                 rules: (currentProps.rules ?? []).map(x => ({ ...x, id: v4() })),
                 id: v4(),
-                top: Math.round(top / 100) * 100 + 'px',
-                left: Math.round(left / 100) * 100 + 'px'
+                top: top + 'px',
+                left: left + 'px'
             }
-
             this.setColumn({ command: 'CREATE', node }).then(() => {
                 /**此处添加连接线**/
                 setTimeout(() => {
@@ -216,13 +215,13 @@ export default {
                 .filter(x => !line.some(n => n.source === x.id))
                 .map(x => {
                     const { left, top } = x.parent
-                    const source = document.getElementById(x.id)
-                    const a = parseFloat(left) + source.offsetLeft + 22 - pageX
-                    const b = parseFloat(top) + source.offsetTop + 28 - pageY
+                    const el = document.getElementById(x.id)
+                    const a = parseFloat(left) + el.offsetLeft + el.clientWidth / 2 - pageX
+                    const b = parseFloat(top) + el.offsetTop + el.clientHeight - pageY
                     return {
                         ...x,
-                        el: source,
-                        distance: Math.sqrt(a * a + b * b) / scale
+                        el,
+                        distance: Math.sqrt(a * a + b * b) // scale
                     }
                 })
                 .sort((a, b) => (a.distance ?? 0) - (b.distance ?? 0))
