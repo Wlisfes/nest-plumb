@@ -120,7 +120,7 @@ export default {
                                 setTimeout(() => {
                                     instance.deleteConnection(e)
                                     done()
-                                }, 500)
+                                }, 300)
                             })
                         })
                     })

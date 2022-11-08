@@ -224,7 +224,7 @@ export default {
                             this.$message.success({ message: '删除成功', duration: 1500 })
                             done()
                         })
-                    }, 500)
+                    }, 300)
                 })
             })
         }
