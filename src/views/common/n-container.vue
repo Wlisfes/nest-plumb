@@ -1,8 +1,7 @@
 <script>
-import Vue from 'vue'
 import { mapState } from 'vuex'
 import { v4 } from 'uuid'
-import { NColumn } from '@/core/common'
+import { NEmail, NTrigger, NDelay, NTarget } from '@/core/common'
 import { createSuper, createCoreZoom, useScale } from '@/core/super'
 import { Option } from '@/core/option'
 import { Observer } from '@/utils/utils-observer'
@@ -12,7 +11,7 @@ import * as data from './data'
 
 export default {
     name: 'NContainer',
-    components: { NColumn },
+    components: { NEmail, NTrigger, NDelay, NTarget },
     props: {
         current: { type: Object, default: () => null }
     },
@@ -190,19 +189,15 @@ export default {
         },
         /**拖拽添加节点**/
         onMounte(e) {
-            const { instance, recent } = this
+            const { instance, recent, current } = this
             const rect = instance.getContainer().getBoundingClientRect()
             const scale = useScale(instance)
             const left = (e.pageX - rect.left - 60) / scale
             const top = (e.pageY - rect.top - 20) / scale
 
             const node = {
-                props: this.current,
-                rules: [
-                    { content: '猪头', id: v4(), type: 'success' },
-                    { content: '笨蛋', id: v4(), type: 'danger' },
-                    { content: '蠢货', id: v4(), type: 'info' }
-                ],
+                props: current,
+                rules: (current.rules ?? []).map(x => ({ ...x, id: v4() })),
                 id: v4(),
                 top: Math.round(top / 100) * 100 + 'px',
                 left: Math.round(left / 100) * 100 + 'px'
@@ -269,6 +264,32 @@ export default {
         onSuspended(response) {
             this.target = response?.id || null
             this.recent = response
+        },
+        /**组件聚合**/
+        initCompose() {
+            const { instance, observer, column, recent } = this
+            if (!instance) {
+                return null
+            } else {
+                return column.map(node => {
+                    const props = { instance, observer, recent, node, delTree: true }
+                    const on = {
+                        'drag-column': this.onSuspended
+                    }
+                    switch (node.props.type) {
+                        case 'MESSAGE':
+                            return <n-email {...{ props, on }}></n-email>
+                        case 'CPU':
+                            return <n-trigger {...{ props, on }}></n-trigger>
+                        case 'CLOCK':
+                            return <n-delay {...{ props, on }}></n-delay>
+                        case 'PRESENT':
+                            return <n-target {...{ props, on }}></n-target>
+                        default:
+                            return null
+                    }
+                })
+            }
         }
     },
     watch: {
@@ -286,7 +307,7 @@ export default {
         }
     },
     render() {
-        const { axis, core, column } = this
+        const { axis, core } = this
 
         return (
             <div v-loading={this.loading} class="n-container" onDragover={this.onDragover} onDrop={this.onMounte}>
@@ -294,19 +315,25 @@ export default {
                     <div class="axis-x" v-show={axis.x} style={{ width: core.width, left: core.offsetX + 'px' }}></div>
                     <div class="axis-y" v-show={axis.y} style={{ height: core.height, top: core.offsetY + 'px' }}></div>
 
-                    {this.instance &&
-                        column.map(x => (
-                            <n-column
-                                id={x.id}
-                                key={x.id}
-                                node={x}
-                                instance={this.instance}
-                                observer={this.observer}
-                                recent={this.recent}
-                                del-tree={false}
-                                onDrag-column={this.onSuspended}
-                            ></n-column>
-                        ))}
+                    {this.initCompose()}
+
+                    {/**this.instance &&
+                        column.map(node => {
+                            const prosp = { instance, observer, recent, node, id: node.id, key: node.id }
+
+                            return (
+                                <n-column
+                                    id={node.id}
+                                    key={node.id}
+                                    node={node}
+                                    instance={this.instance}
+                                    observer={this.observer}
+                                    recent={this.recent}
+                                    del-tree={true}
+                                    onDrag-column={this.onSuspended}
+                                ></n-column>
+                            )
+                        })**/}
                 </div>
             </div>
         )

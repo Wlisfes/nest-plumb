@@ -17,12 +17,21 @@ export default {
             <aside class="n-aside">
                 <el-scrollbar>
                     <div class="n-multiple">
-                        {this.dataColumn.map(x => (
-                            <div class="n-multiple__row" key={x.id} draggable onDragstart={e => this.onDragstart(x)}>
-                                <el-image src={x.cover} fit="cover"></el-image>
-                                <div class="el-content">{x.name}</div>
-                            </div>
-                        ))}
+                        {this.dataColumn.map(x => {
+                            return (
+                                <div
+                                    class="n-multiple__row"
+                                    key={x.id}
+                                    draggable
+                                    onDragstart={e => this.onDragstart(x)}
+                                >
+                                    <div class="el-icon" style={x.style}>
+                                        {x.icon && <i class={x.icon}></i>}
+                                    </div>
+                                    <div class="el-content">{x.name}</div>
+                                </div>
+                            )
+                        })}
                     </div>
                 </el-scrollbar>
             </aside>
@@ -62,11 +71,17 @@ export default {
             &:active {
                 cursor: grabbing;
             }
-            .el-image {
+            .el-icon {
                 width: 40px;
                 height: 40px;
-                display: block;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border-radius: 50%;
                 margin-right: 10px;
+                i {
+                    font-size: 20px;
+                }
             }
             .el-content {
                 flex: 1;

@@ -1,8 +1,13 @@
 <script>
-import { v4 as only } from 'uuid'
+import { v4 } from 'uuid'
 import { NAside, NChart, NContainer } from '@/views/common'
 
-const fileURL = path => require('@/assets/image/' + path)
+const STYLE = {
+    MESSAGE: { backgroundColor: '#e1f1ff', color: '#75BAF9' },
+    CPU: { backgroundColor: '#ffe1e1', color: '#F78C88' },
+    CLOCK: { backgroundColor: '#fbf1bd', color: '#EDB342' },
+    PRESENT: { backgroundColor: '#e6e0ff', color: '#8E72F7' }
+}
 
 export default {
     name: 'Home',
@@ -11,21 +16,40 @@ export default {
         return {
             current: null,
             multiple: [
-                { cover: fileURL('1663727660730.png'), name: '古奥林匹克的赫拉神庙', id: only() },
-                { cover: fileURL('1663729982819.png'), empty: true, name: '述说', id: only() },
-                { cover: fileURL('1663728520978.png'), name: '奥林匹克-篮球', id: only() },
-                { cover: fileURL('1663728531396.png'), name: '奥林匹克-游泳', id: only() },
-                { cover: fileURL('1663728536494.png'), name: '奥林匹克-击剑', id: only() },
-                { cover: fileURL('1663728542321.png'), name: '奥林匹克-足球', id: only() },
-                { cover: fileURL('1663728547283.png'), name: '奥林匹克-体操', id: only() },
-                { cover: fileURL('1663728552914.png'), name: '奥林匹克-举重', id: only() },
-                { cover: fileURL('1663728557915.png'), name: '奥林匹克-乒乓球', id: only() },
-                { cover: fileURL('1663728563798.png'), name: '奥林匹克-射箭', id: only() },
-                { cover: fileURL('1663728569332.png'), name: '奥林匹克-排球', id: only() },
-                { cover: fileURL('1663728991519.png'), name: '奥林匹克-跳水', id: only() },
-                { cover: fileURL('1663728999455.png'), name: '奥林匹克-高尔夫', id: only() },
-                { cover: fileURL('1663729006251.png'), name: '奥林匹克-曲棍球', id: only() },
-                { cover: fileURL('1663729012847.png'), name: '奥林匹克-网球', id: only() }
+                {
+                    id: v4(),
+                    name: '电子邮件',
+                    icon: 'el-icon-message',
+                    type: 'MESSAGE',
+                    style: STYLE.MESSAGE,
+                    rules: [{ id: v4(), type: 'info', content: '' }]
+                },
+                {
+                    id: v4(),
+                    name: '触发器',
+                    icon: 'el-icon-cpu',
+                    type: 'CPU',
+                    style: STYLE.CPU,
+                    rules: [
+                        { id: v4(), type: 'danger', content: 'NO' },
+                        { id: v4(), type: 'success', content: 'YES' }
+                    ]
+                },
+                {
+                    id: v4(),
+                    name: '延时',
+                    icon: 'el-icon-alarm-clock',
+                    type: 'CLOCK',
+                    style: STYLE.CLOCK,
+                    rules: [{ id: v4(), type: 'info', content: '' }]
+                },
+                {
+                    id: v4(),
+                    name: '目标',
+                    icon: 'el-icon-present',
+                    type: 'PRESENT',
+                    style: STYLE.PRESENT
+                }
             ]
         }
     },
