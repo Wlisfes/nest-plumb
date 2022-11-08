@@ -99,7 +99,7 @@ export default {
                                 { id: '43f9ffb1-8a69-4d12-9d87-ad16eb5016f4', type: 'success', content: 'YES' }
                             ],
                             id: '4e5d9cb5-65a9-4163-a723-3ed137fd9e5d',
-                            top: '400px',
+                            top: '300px',
                             left: '500px'
                         },
                         {
@@ -113,8 +113,21 @@ export default {
                             },
                             rules: [{ id: '96ebbf69-f544-4bea-ad7b-b513f0abca95', type: 'info', content: '' }],
                             id: 'c9736f2a-af8c-43f0-8d88-1c532b9c9707',
-                            top: '650px',
+                            top: '560px',
                             left: '200px'
+                        },
+                        {
+                            props: {
+                                id: 'a662ba7e-9be8-4c96-875d-c8020d77fb18',
+                                name: '目标',
+                                icon: 'el-icon-present',
+                                type: 'PRESENT',
+                                style: { backgroundColor: '#e6e0ff', color: '#8E72F7' }
+                            },
+                            rules: [],
+                            id: '110c45b9-c62e-4d08-9fac-7e384bb22a0d',
+                            top: '765px',
+                            left: '545px'
                         }
                     ]}
                     line-props={[
@@ -130,6 +143,20 @@ export default {
                             parent: '4e5d9cb5-65a9-4163-a723-3ed137fd9e5d',
                             source: '68d1ddf6-c7c8-4abb-ae47-060e7f770193',
                             target: 'c9736f2a-af8c-43f0-8d88-1c532b9c9707',
+                            label: '猪头'
+                        },
+                        {
+                            id: 'f27ec262-b0ce-418c-9b07-f40d3e1aca4e',
+                            parent: 'c9736f2a-af8c-43f0-8d88-1c532b9c9707',
+                            source: '96ebbf69-f544-4bea-ad7b-b513f0abca95',
+                            target: '110c45b9-c62e-4d08-9fac-7e384bb22a0d',
+                            label: '猪头'
+                        },
+                        {
+                            id: 'db601c22-dad9-4694-a698-9cbb9f01a8cf',
+                            parent: '4e5d9cb5-65a9-4163-a723-3ed137fd9e5d',
+                            source: '43f9ffb1-8a69-4d12-9d87-ad16eb5016f4',
+                            target: '110c45b9-c62e-4d08-9fac-7e384bb22a0d',
                             label: '猪头'
                         }
                     ]}
