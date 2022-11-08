@@ -286,13 +286,13 @@ export default {
                     }
                     switch (node.props.type) {
                         case 'MESSAGE':
-                            return <Common {...{ props }}></Common>
+                            return <Common key={node.id} {...{ props }}></Common>
                         case 'CPU':
-                            return <Common {...{ props }}></Common>
+                            return <Common key={node.id} {...{ props }}></Common>
                         case 'CLOCK':
-                            return <Common {...{ props }}></Common>
+                            return <Common key={node.id} {...{ props }}></Common>
                         case 'PRESENT':
-                            return <Common {...{ props }}></Common>
+                            return <Common key={node.id} {...{ props }}></Common>
                         default:
                             return null
                     }
