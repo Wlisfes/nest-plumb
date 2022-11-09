@@ -63,6 +63,7 @@ export default {
         box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
         display: flex;
         align-items: center;
+        background-color: #ffffff;
         &:hover {
             cursor: grab;
         }

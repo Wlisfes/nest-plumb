@@ -324,15 +324,29 @@ export default {
         }
     },
     render() {
-        const { axis, core } = this
+        const { axis, core, column, line } = this
         return (
-            <div v-loading={this.loading} class="n-container" onDragover={this.onDragover} onDrop={this.onMounte}>
-                {/**<div class="x-line" v-show={axis.x}></div>
-                <div class="y-line" v-show={axis.y}></div>**/}
-                <div ref="context" id="context">
-                    <div class="axis-x" v-show={axis.x} style={{ width: core.width, left: core.offsetX + 'px' }}></div>
-                    <div class="axis-y" v-show={axis.y} style={{ height: core.height, top: core.offsetY + 'px' }}></div>
-                    {this.initCompose()}
+            <div class="flowchart">
+                {this.$scopedSlots.better && this.$scopedSlots.better?.({ axis, core, column, line })}
+                <div
+                    v-loading={this.loading}
+                    class="flowchart-container"
+                    onDragover={this.onDragover}
+                    onDrop={this.onMounte}
+                >
+                    <div ref="context" id="context">
+                        <div
+                            class="axis-x"
+                            v-show={axis.x}
+                            style={{ width: core.width, left: core.offsetX + 'px' }}
+                        ></div>
+                        <div
+                            class="axis-y"
+                            v-show={axis.y}
+                            style={{ height: core.height, top: core.offsetY + 'px' }}
+                        ></div>
+                        {this.initCompose()}
+                    </div>
                 </div>
             </div>
         )
@@ -341,49 +355,43 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.n-container {
-    flex: 1;
+.flowchart {
+    height: 100%;
     position: relative;
     overflow: hidden;
     outline: none !important;
-    background-image: url('~@/assets/point.png');
-    &:hover {
-        cursor: grab;
-    }
-    &:active {
-        cursor: grabbing;
-    }
-    .x-line {
-        width: 100%;
-        position: absolute;
-        top: 50%;
-        border-top: 2px dashed #2ab1e8;
-    }
-    .y-line {
+    &-container {
         height: 100%;
-        position: absolute;
-        left: 50%;
-        border-left: 2px dashed #2ab1e8;
-    }
-    ::v-deep {
-        .el-loading-mask {
-            background-color: rgba(255, 255, 255, 1);
+        position: relative;
+        overflow: hidden;
+        outline: none !important;
+        background-image: url('~@/assets/point.png');
+        &:hover {
+            cursor: grab;
         }
-        .jtk-connector.is-active {
-            z-index: 9999;
-            path {
-                stroke: #150042;
-                stroke-width: 3;
-                animation: rotate 3s linear infinite;
-                stroke-dasharray: 10;
-            }
+        &:active {
+            cursor: grabbing;
         }
-        @keyframes rotate {
-            from {
-                stroke-dashoffset: 100;
+        ::v-deep {
+            .el-loading-mask {
+                background-color: rgba(255, 255, 255, 1);
             }
-            to {
-                stroke-dashoffset: 0;
+            .jtk-connector.is-active {
+                z-index: 9999;
+                path {
+                    stroke: #150042;
+                    stroke-width: 3;
+                    animation: rotate 3s linear infinite;
+                    stroke-dasharray: 10;
+                }
+            }
+            @keyframes rotate {
+                from {
+                    stroke-dashoffset: 100;
+                }
+                to {
+                    stroke-dashoffset: 0;
+                }
             }
         }
     }
