@@ -3,13 +3,16 @@ import { v4 } from 'uuid'
 import { Option } from '../option'
 import { createSuper, createCoreZoom, useScale } from '../super'
 import { useAwait, throttle } from '../utils/utils-common'
-import { Observer } from '../utils/utils-observer'
 import { fetchTooltip } from '../hook/fetch-tooltip'
 import { Common } from '../components'
 
 export default {
     name: 'NContainer',
     props: {
+        observer: {
+            type: Object,
+            required: true
+        },
         currentProps: {
             type: Object,
             default: null
@@ -37,7 +40,6 @@ export default {
             instance: null,
             recent: null,
             target: null,
-            observer: new Observer(),
             /**参数配置**/
             axis: this.axisProps,
             core: this.coreProps,

@@ -1,7 +1,7 @@
 <script>
 import { v4 } from 'uuid'
 // import { NAside, NChart, NContainer } from '@/views/common'
-import { Better, Container } from '@/bower'
+import { Better, Container, observer } from '@/bower'
 
 const STYLE = {
     MESSAGE: { backgroundColor: '#e1f1ff', color: '#75BAF9' },
@@ -64,6 +64,7 @@ export default {
             <div class="n-naive" style={{ height: '100%', display: 'flex', overflow: 'hidden' }}>
                 <Better dataSource={this.dataSource} onSelecter={this.onSelecter}></Better>
                 <Container
+                    observer={observer}
                     current-props={this.current}
                     axis-props={{ x: true, y: true }}
                     core-props={{ width: '100%', height: '100%', scale: 1, offsetX: 0, offsetY: 0, x: 0, y: 0 }}

@@ -1,6 +1,5 @@
 <script>
 import { v4 } from 'uuid'
-import { useScale } from '../super'
 import { ClickOutside } from '../utils/utils-click-outside'
 import { stop, throttle } from '../utils/utils-common'
 import { fetchTooltip } from '../hook/fetch-tooltip'
