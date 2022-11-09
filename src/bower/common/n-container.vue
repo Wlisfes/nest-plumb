@@ -309,13 +309,21 @@ export default {
         }
     },
     render() {
-        const { axis, core, column, line } = this
+        const { instance, observer, axis, core, column, line, loading } = this
 
         return (
             <div class="flowchart">
                 {this.$scopedSlots.better && (
-                    <div class="flowchart-better">{this.$scopedSlots.better?.({ axis, core, column, line })}</div>
+                    <div class="flowchart-better">
+                        {this.$scopedSlots.better?.({ instance, observer, axis, core, column, line, loading })}
+                    </div>
                 )}
+                {this.$scopedSlots.discrete && (
+                    <div class="flowchart-discrete">
+                        {this.$scopedSlots.discrete?.({ instance, observer, axis, core, column, line, loading })}
+                    </div>
+                )}
+
                 <div
                     v-loading={this.loading}
                     class="flowchart-container"
@@ -354,11 +362,6 @@ export default {
     }
     &:active {
         cursor: grabbing;
-    }
-    &-better {
-        position: absolute;
-        top: 0;
-        z-index: 29;
     }
     &-container {
         height: 100%;

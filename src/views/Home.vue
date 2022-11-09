@@ -1,5 +1,5 @@
 <script>
-import { Better, Container, observer } from '@/bower'
+import { Better, Discrete, Container, observer } from '@/bower'
 import * as data from './common/data'
 
 export default {
@@ -33,6 +33,18 @@ export default {
                 default:
                     return false
             }
+        },
+        /**保存草稿**/
+        onConserve() {},
+        /**提交工作流**/
+        onSubmit({ observer, column }) {
+            column.forEach(node => {
+                switch (node.props.type) {
+                    case 'MESSAGE':
+                        observer.emit('validator', node)
+                        break
+                }
+            })
         }
     },
     render() {
@@ -54,13 +66,30 @@ export default {
                         scale: 0.75
                     }}
                     scopedSlots={{
-                        better: ({ column }) => {
+                        better: scope => {
                             return (
                                 <Better
                                     dataSource={this.dataSource}
                                     onSelecter={this.onSelecter}
-                                    isDisable={node => this.isDisable(column, node)}
+                                    isDisable={node => this.isDisable(scope.column, node)}
+                                    style={{ height: '320px', position: 'absolute', top: 0, zIndex: 29 }}
                                 ></Better>
+                            )
+                        },
+                        discrete: scope => {
+                            return (
+                                <Discrete
+                                    loading={scope.loading}
+                                    onConserve={event => this.onConserve({ event, ...scope })}
+                                    onSubmit={event => this.onSubmit({ event, ...scope })}
+                                    style={{
+                                        position: 'absolute',
+                                        bottom: 0,
+                                        left: '50%',
+                                        zIndex: 29,
+                                        transform: 'translateX(-50%)'
+                                    }}
+                                ></Discrete>
                             )
                         }
                     }}

@@ -62,6 +62,10 @@ export default {
                 this.observer.on('delete', e => {
                     this.fetchSubscribe(e)
                 }),
+                /**参数验证**/
+                this.observer.on('validator', e => {
+                    this.fetchValidator(e)
+                }),
                 /**销毁节点**/
                 () => {
                     this.instance.removeAllEndpoints(this.node.id)
@@ -184,26 +188,6 @@ export default {
                 }
             })
         },
-        /**监听来自父级的订阅事件**/
-        fetchSubscribe(response) {
-            const { node, instance, observer, line } = this
-            if (response.target === node.id) {
-                /**来至当前节点的订阅事件**/
-                return false
-            } else if (response.column.includes(node.id)) {
-                /**来自父级的订阅事件**/
-                const connect = line.some(x => x.target === node.id && x.parent !== response.target)
-                if (!connect) {
-                    /**不存在多个父级，可以删除当前节点**/
-                    observer.emit('delete', {
-                        target: node.id,
-                        column: line.filter(x => x.parent === node.id).map(x => x.target)
-                    })
-                    instance.remove(node.id)
-                    this.setColumn({ command: 'DELETE', node })
-                }
-            }
-        },
         /**删除节点**/
         fetchOneDelete(e) {
             const { node, instance, observer, line, delTree } = this
@@ -236,6 +220,42 @@ export default {
                     }, 300)
                 })
             })
+        },
+        /**监听来自父级的订阅事件**/
+        fetchSubscribe(response) {
+            const { node, instance, observer, line } = this
+            if (response.target === node.id) {
+                /**来至当前节点的订阅事件**/
+                return false
+            } else if (response.column.includes(node.id)) {
+                /**来自父级的订阅事件**/
+                const connect = line.some(x => x.target === node.id && x.parent !== response.target)
+                if (!connect) {
+                    /**不存在多个父级，可以删除当前节点**/
+                    observer.emit('delete', {
+                        target: node.id,
+                        column: line.filter(x => x.parent === node.id).map(x => x.target)
+                    })
+                    instance.remove(node.id)
+                    this.setColumn({ command: 'DELETE', node })
+                }
+            }
+        },
+        /**监听参数验证订阅事件**/
+        fetchValidator(response) {
+            const { node } = this
+            if (response.id === node.id) {
+                const el = document.getElementById(node.id)
+                fetchTooltip({
+                    left: parseFloat(node.left) + el.clientWidth / 2,
+                    top: parseFloat(node.top),
+                    message: <div style={{ whiteSpace: 'nowrap', color: '#ff0000' }}>请完善电子邮件信息</div>,
+                    container: document.getElementById('context')
+                }).then(response => {
+                    response.instance.$once('close', ({ done }) => done())
+                    response.instance.$once('submit', ({ done }) => done())
+                })
+            }
         }
     },
     render() {
