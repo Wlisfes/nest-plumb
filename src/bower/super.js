@@ -98,3 +98,49 @@ export function useScale(instance) {
         return scale
     }
 }
+
+/**
+ * 绘制连接线
+ * @param { jsPlumb.jsPlumbInstance } instance
+ * @param { Object } option
+ */
+export function createConnect(instance, option) {
+    return new Promise(resolve => {
+        const connection = instance.connect({
+            id: option.id,
+            source: option.source,
+            target: option.target,
+            uuids: [option.source, option.target],
+            anchor: ['TopCenter', 'BottomCenter'],
+            endpointStyle: { fill: 'transparent', outlineStroke: 'transparent' }
+        })
+        const done = () => connection.canvas.setAttribute('id', option.id)
+        resolve({ instance, connection, option, done })
+    })
+}
+
+/**
+ * 批量绘制连接线
+ * @param { jsPlumb.jsPlumbInstance } instance
+ * @param { Object } option
+ */
+export function createBatchConnect(instance, option) {
+    const { update, delay, line } = option
+    return new Promise(resolve => {
+        setTimeout(() => {
+            if (update) {
+                /**数据更新**/
+                instance.deleteEveryConnection()
+                line.forEach(async x => {
+                    await createConnect(instance, x).then(({ done }) => done())
+                })
+                resolve(instance)
+            } else {
+                line.forEach(async x => {
+                    await createConnect(instance, x).then(({ done }) => done())
+                })
+                resolve(instance)
+            }
+        }, delay ?? 0)
+    })
+}

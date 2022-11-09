@@ -56,10 +56,20 @@ export default {
             this.initOneAfter()
             this.initOneBefore()
             this.draggableNode()
-            const done = this.observer.on('delete', response => {
-                this.fetchSubscribe(response)
+
+            const done = [
+                /**订阅删除事件**/
+                this.observer.on('delete', e => {
+                    this.fetchSubscribe(e)
+                }),
+                /**销毁节点**/
+                () => {
+                    this.instance.removeAllEndpoints(this.node.id)
+                }
+            ]
+            this.$once('hook:beforeDestroy', () => {
+                done.map(fn => fn())
             })
-            this.$once('hook:beforeDestroy', () => done())
         })
     },
     methods: {

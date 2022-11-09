@@ -1,8 +1,8 @@
 <script>
 import { v4 } from 'uuid'
 import { Option } from '../option'
-import { createSuper, createCoreZoom, useScale } from '../super'
-import { useAwait, throttle } from '../utils/utils-common'
+import { createSuper, createCoreZoom, createBatchConnect, useScale } from '../super'
+import { throttle } from '../utils/utils-common'
 import { fetchTooltip } from '../hook/fetch-tooltip'
 import { Common } from '../components'
 
@@ -52,6 +52,21 @@ export default {
             this.initSuper().finally(() => {
                 this.loading = false
             })
+
+            /**订阅重载事件**/
+            const done = this.observer.on('reload', props => {
+                this.column = props.column ?? []
+                this.$nextTick(async () => {
+                    await createBatchConnect(this.instance, {
+                        update: true,
+                        line: props.line ?? []
+                    })
+                })
+            })
+            this.$once('hook:beforeDestroy', () => {
+                done()
+                this.instance.reset()
+            })
         })
     },
     methods: {
@@ -61,7 +76,8 @@ export default {
                 const instance = await createSuper(Option)
                 this.instance = await this.initCoreZoom(instance)
                 instance.ready(async () => {
-                    await this.fetchConnect()
+                    /**批量绘制连接线**/
+                    await createBatchConnect(instance, { line: this.line })
 
                     /**开始连线**/
                     instance.bind('connectionDrag', e => {
@@ -95,6 +111,8 @@ export default {
                                 target: e.targetId,
                                 label: '猪头'
                             }
+                        }).then(({ props }) => {
+                            e.connection.canvas.setAttribute('id', props.node.id)
                         })
                     })
 
@@ -151,22 +169,6 @@ export default {
                     this.core = { x, y, offsetX, offsetY, width, height, scale }
                 }
             })
-        },
-        /**绘制连接线**/
-        async fetchConnect() {
-            const { instance, line } = this
-            await useAwait(500)
-            line.forEach(x => {
-                const connect = instance.connect({
-                    id: x.id,
-                    source: x.source,
-                    target: x.target,
-                    uuids: [x.source, x.target],
-                    anchor: ['TopCenter', 'BottomCenter'],
-                    endpointStyle: { fill: 'transparent', outlineStroke: 'transparent' }
-                })
-            })
-            return await useAwait(100)
         },
         /**拖拽结束添加节点**/
         onMounte(e) {
@@ -254,7 +256,7 @@ export default {
             } else if (props.command === 'DELETE' && n !== -1) {
                 this.line.splice(n, 1)
             }
-            return this.line
+            return { props, line: this.line }
         },
         /**节点数据维护**/
         async setColumn(props) {
@@ -266,7 +268,7 @@ export default {
             } else if (props.command === 'DELETE' && n !== -1) {
                 this.column.splice(n, 1)
             }
-            return this.column
+            return { props, column: this.column }
         },
         /**组件聚合**/
         initCompose() {
@@ -282,7 +284,7 @@ export default {
                         node,
                         column,
                         line,
-                        delTree: false,
+                        delTree: true,
                         setColumn: this.setColumn,
                         setSuspended: this.setSuspended
                     }
@@ -320,6 +322,8 @@ export default {
         const { axis, core } = this
         return (
             <div v-loading={this.loading} class="n-container" onDragover={this.onDragover} onDrop={this.onMounte}>
+                {/**<div class="x-line" v-show={axis.x}></div>
+                <div class="y-line" v-show={axis.y}></div>**/}
                 <div ref="context" id="context">
                     <div class="axis-x" v-show={axis.x} style={{ width: core.width, left: core.offsetX + 'px' }}></div>
                     <div class="axis-y" v-show={axis.y} style={{ height: core.height, top: core.offsetY + 'px' }}></div>
@@ -343,6 +347,18 @@ export default {
     }
     &:active {
         cursor: grabbing;
+    }
+    .x-line {
+        width: 100%;
+        position: absolute;
+        top: 50%;
+        border-top: 2px dashed #2ab1e8;
+    }
+    .y-line {
+        height: 100%;
+        position: absolute;
+        left: 50%;
+        border-left: 2px dashed #2ab1e8;
     }
     ::v-deep {
         .el-loading-mask {
