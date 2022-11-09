@@ -324,29 +324,14 @@ export default {
         }
     },
     render() {
-        const { axis, core, column, line } = this
+        const { axis, core } = this
+
         return (
-            <div class="flowchart">
-                {this.$scopedSlots.better && this.$scopedSlots.better?.({ axis, core, column, line })}
-                <div
-                    v-loading={this.loading}
-                    class="flowchart-container"
-                    onDragover={this.onDragover}
-                    onDrop={this.onMounte}
-                >
-                    <div ref="context" id="context">
-                        <div
-                            class="axis-x"
-                            v-show={axis.x}
-                            style={{ width: core.width, left: core.offsetX + 'px' }}
-                        ></div>
-                        <div
-                            class="axis-y"
-                            v-show={axis.y}
-                            style={{ height: core.height, top: core.offsetY + 'px' }}
-                        ></div>
-                        {this.initCompose()}
-                    </div>
+            <div v-loading={this.loading} class="n-container" onDragover={this.onDragover} onDrop={this.onMounte}>
+                <div ref="context" id="context">
+                    <div class="axis-x" v-show={axis.x} style={{ width: core.width, left: core.offsetX + 'px' }}></div>
+                    <div class="axis-y" v-show={axis.y} style={{ height: core.height, top: core.offsetY + 'px' }}></div>
+                    {this.initCompose()}
                 </div>
             </div>
         )
@@ -355,43 +340,37 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.flowchart {
-    height: 100%;
+.n-container {
+    flex: 1;
     position: relative;
     overflow: hidden;
     outline: none !important;
-    &-container {
-        height: 100%;
-        position: relative;
-        overflow: hidden;
-        outline: none !important;
-        background-image: url('~@/assets/point.png');
-        &:hover {
-            cursor: grab;
+    background-image: url('~@/assets/point.png');
+    &:hover {
+        cursor: grab;
+    }
+    &:active {
+        cursor: grabbing;
+    }
+    ::v-deep {
+        .el-loading-mask {
+            background-color: rgba(255, 255, 255, 1);
         }
-        &:active {
-            cursor: grabbing;
+        .jtk-connector.is-active {
+            z-index: 9999;
+            path {
+                stroke: #150042;
+                stroke-width: 3;
+                animation: rotate 3s linear infinite;
+                stroke-dasharray: 10;
+            }
         }
-        ::v-deep {
-            .el-loading-mask {
-                background-color: rgba(255, 255, 255, 1);
+        @keyframes rotate {
+            from {
+                stroke-dashoffset: 100;
             }
-            .jtk-connector.is-active {
-                z-index: 9999;
-                path {
-                    stroke: #150042;
-                    stroke-width: 3;
-                    animation: rotate 3s linear infinite;
-                    stroke-dasharray: 10;
-                }
-            }
-            @keyframes rotate {
-                from {
-                    stroke-dashoffset: 100;
-                }
-                to {
-                    stroke-dashoffset: 0;
-                }
+            to {
+                stroke-dashoffset: 0;
             }
         }
     }

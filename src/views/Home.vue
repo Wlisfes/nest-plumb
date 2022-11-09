@@ -182,7 +182,8 @@ export default {
     },
     render() {
         return (
-            <div style={{ height: '100%', overflow: 'hidden' }}>
+            <div class="n-naive" style={{ height: '100%', display: 'flex', overflow: 'hidden' }}>
+                <Better dataSource={this.dataSource} onSelecter={this.onSelecter}></Better>
                 <Container
                     observer={observer}
                     current-props={this.current}
@@ -281,17 +282,6 @@ export default {
                             label: '猪头'
                         }
                     ]}
-                    scopedSlots={{
-                        better: ({ column }) => {
-                            return (
-                                <Better
-                                    dataSource={this.dataSource}
-                                    onSelecter={this.onSelecter}
-                                    style={{ position: 'absolute', left: 0, top: 0, zIndex: 99 }}
-                                ></Better>
-                            )
-                        }
-                    }}
                 ></Container>
                 {/**<n-aside data-column={this.dataSource} onSelecter={this.onSelecter}></n-aside>**/}
                 {/**<n-container current={this.current}></n-container>**/}
