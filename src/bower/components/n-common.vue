@@ -211,7 +211,7 @@ export default {
                 left: parseFloat(node.left) + e.target.offsetLeft + e.target.clientWidth / 2,
                 top: parseFloat(node.top) + e.target.offsetTop + 10,
                 message: (
-                    <div>
+                    <div style={{ whiteSpace: 'nowrap' }}>
                         确定要删除<a style="color: red;margin: 0 3px">{node.props.name}</a>吗？
                     </div>
                 ),

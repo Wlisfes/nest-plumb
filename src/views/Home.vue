@@ -57,81 +57,6 @@ export default {
     mounted() {
         setTimeout(() => {
             const column = [
-                // {
-                //     props: {
-                //         id: '853a1b4e-f021-403a-99ba-d073dd2416cd',
-                //         name: '电子邮件',
-                //         icon: 'el-icon-message',
-                //         type: 'MESSAGE',
-                //         style: { backgroundColor: '#e1f1ff', color: '#75BAF9' },
-                //         rules: [{ id: '50803707-f0f9-468f-95a5-a0595aa31702', type: 'info', content: '' }]
-                //     },
-                //     rules: [{ id: '257b8a61-4a74-4ba0-82a7-b4c856a6c821', type: 'info', content: '' }],
-                //     id: 'd885b409-3653-4921-abfb-0f01b32d1bbc',
-                //     top: '100px',
-                //     left: '385px'
-                // },
-                // {
-                //     props: {
-                //         id: '2ff76c90-bcaf-4d90-bdf0-1e8b8f612924',
-                //         name: '触发器',
-                //         icon: 'el-icon-cpu',
-                //         type: 'CPU',
-                //         style: { backgroundColor: '#ffe1e1', color: '#F78C88' },
-                //         rules: [
-                //             { id: 'f7d51a10-30ff-443e-b497-69bd0f6d2e32', type: 'danger', content: 'NO' },
-                //             { id: '6ad73110-8ab7-4b6f-9370-6aeeec50d2ca', type: 'success', content: 'YES' }
-                //         ]
-                //     },
-                //     rules: [
-                //         { id: 'c738cd1d-43d2-4f1d-979e-6f71225b8803', type: 'danger', content: 'NO' },
-                //         { id: '0cbe5ab9-90da-4d9f-9a88-b3d7d30aac22', type: 'success', content: 'YES' }
-                //     ],
-                //     id: '15759328-adcf-4cab-a3b1-340f2201c6b7',
-                //     top: '315px',
-                //     left: '310px'
-                // },
-                // {
-                //     props: {
-                //         id: '546b9b81-ec24-43b5-8589-c44e969c6eff',
-                //         name: '延时',
-                //         icon: 'el-icon-alarm-clock',
-                //         type: 'CLOCK',
-                //         style: { backgroundColor: '#fbf1bd', color: '#EDB342' },
-                //         rules: [{ id: 'b50b5e1b-479f-43f0-91a1-e37131bb13c7', type: 'info', content: '' }]
-                //     },
-                //     rules: [{ id: 'dd40f6f7-646e-4b43-9c33-c4236f6deae1', type: 'info', content: '' }],
-                //     id: '83384ef5-6a78-49a4-875b-d9023251ce2d',
-                //     top: '570px',
-                //     left: '590px'
-                // },
-                // {
-                //     props: {
-                //         id: '53ab5de0-534b-4a4c-99fd-6e4771fd31da',
-                //         name: '目标',
-                //         icon: 'el-icon-present',
-                //         type: 'PRESENT',
-                //         style: { backgroundColor: '#e6e0ff', color: '#8E72F7' }
-                //     },
-                //     rules: [],
-                //     id: 'e5030c38-f9e4-440e-8ef2-c3950e7e867f',
-                //     top: '555px',
-                //     left: '95px'
-                // },
-                // {
-                //     props: {
-                //         id: '53ab5de0-534b-4a4c-99fd-6e4771fd31da',
-                //         name: '目标',
-                //         icon: 'el-icon-present',
-                //         type: 'PRESENT',
-                //         style: { backgroundColor: '#e6e0ff', color: '#8E72F7' }
-                //     },
-                //     rules: [],
-                //     id: '51b0cb08-7b56-4ec6-b961-643f7d12e7a8',
-                //     top: '775px',
-                //     left: '435px'
-                // }
-
                 {
                     props: {
                         id: '4d872f9c-7f65-43fc-85ae-0c01eb7323f9',
@@ -247,7 +172,7 @@ export default {
                 }
             ]
 
-            observer.emit('reload', { column, line })
+            // observer.emit('reload', { column, line })
         }, 2000)
     },
     methods: {

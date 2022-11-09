@@ -53,18 +53,23 @@ export default {
                 this.loading = false
             })
 
-            /**订阅重载事件**/
-            const done = this.observer.on('reload', props => {
-                this.column = props.column ?? []
-                this.$nextTick(async () => {
-                    await createBatchConnect(this.instance, {
-                        update: true,
-                        line: props.line ?? []
+            const done = [
+                this.observer.on('loading', value => {
+                    this.loading = value
+                }),
+                /**订阅重载事件**/
+                this.observer.on('reload', props => {
+                    this.column = props.column ?? []
+                    this.$nextTick(() => {
+                        createBatchConnect(this.instance, {
+                            update: true,
+                            line: props.line ?? []
+                        })
                     })
                 })
-            })
+            ]
             this.$once('hook:beforeDestroy', () => {
-                done()
+                done.map(fn => fn())
                 this.instance.reset()
             })
         })
