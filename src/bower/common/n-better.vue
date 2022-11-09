@@ -9,6 +9,10 @@ export default {
         dataSource: {
             type: Array,
             default: () => []
+        },
+        isDisable: {
+            type: Function,
+            required: true
         }
     },
     methods: {
@@ -22,8 +26,14 @@ export default {
                 <el-scrollbar>
                     <div class="n-scrollbar">
                         {this.dataSource.map(x => {
+                            const isDisable = this.isDisable(x)
                             return (
-                                <div class="n-source" key={x.id} draggable onDragstart={e => this.onSelecter(x, e)}>
+                                <div
+                                    class={{ 'n-source': true, 'is-disable': isDisable }}
+                                    key={x.id}
+                                    draggable={!isDisable}
+                                    onDragstart={e => this.onSelecter(x, e)}
+                                >
                                     <div class="n-source__icon" style={x.style}>
                                         {x.icon && <i class={x.icon}></i>}
                                     </div>
@@ -64,11 +74,17 @@ export default {
         display: flex;
         align-items: center;
         background-color: #ffffff;
+        color: #3b3d44;
         &:hover {
             cursor: grab;
         }
         &:active {
             cursor: grabbing;
+        }
+        &.is-disable {
+            cursor: not-allowed;
+            color: hsl(#3b3d44, 40%);
+            user-select: none;
         }
         &__icon {
             width: 40px;
@@ -85,7 +101,6 @@ export default {
         &__content {
             flex: 1;
             font-size: 14px;
-            color: #686868;
             line-height: 20px;
             display: -webkit-box;
             overflow: hidden;
