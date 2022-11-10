@@ -5,7 +5,8 @@ export const source = [
         icon: 'el-icon-message',
         type: 'MESSAGE',
         style: { backgroundColor: '#e1f1ff', color: '#75BAF9' },
-        rules: [{ id: 'be1aa742-84c2-441f-88c6-0fa93f9bd474', type: 'info', content: '' }]
+        rules: [{ id: 'be1aa742-84c2-441f-88c6-0fa93f9bd474', type: 'info', content: '' }],
+        connect: ['MESSAGE', 'CPU', 'CLOCK', 'PRESENT']
     },
     {
         id: '8a1dab33-e4ab-4830-a6ac-10aa2d86e7d2',

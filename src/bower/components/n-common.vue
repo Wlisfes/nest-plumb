@@ -3,6 +3,7 @@ import { v4 } from 'uuid'
 import { ClickOutside } from '../utils/utils-click-outside'
 import { stop, throttle } from '../utils/utils-common'
 import { fetchTooltip } from '../hook/fetch-tooltip'
+import { fetchNotice } from '../hook/fetch-notice'
 
 export default {
     name: 'NCommon',
@@ -246,7 +247,7 @@ export default {
             const { node } = this
             if (response.id === node.id) {
                 const el = document.getElementById(node.id)
-                fetchTooltip({
+                fetchNotice({
                     left: parseFloat(node.left) + el.clientWidth / 2,
                     top: parseFloat(node.top),
                     message: <div style={{ whiteSpace: 'nowrap', color: '#ff0000' }}>请完善电子邮件信息</div>,

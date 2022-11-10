@@ -12,8 +12,20 @@ export default {
     },
     mounted() {
         setTimeout(() => {
-            // observer.emit('reload', { column, line })
-        }, 2000)
+            observer.emit('reload', {
+                column: data.column,
+                line: data.line,
+                core: {
+                    x: 297.25,
+                    y: 125.75,
+                    offsetX: -396.3333333333333,
+                    offsetY: -167.66666666666666,
+                    width: '133.33333333333331%',
+                    height: '133.33333333333331%',
+                    scale: 0.75
+                }
+            })
+        })
     },
     methods: {
         onSelecter(e) {
@@ -53,45 +65,30 @@ export default {
                 <Container
                     observer={observer}
                     current-props={this.current}
-                    column-props={data.column}
-                    line-props={data.line}
                     axis-props={{ x: true, y: true }}
-                    core-props={{
-                        x: 297.25,
-                        y: 125.75,
-                        offsetX: -396.3333333333333,
-                        offsetY: -167.66666666666666,
-                        width: '133.33333333333331%',
-                        height: '133.33333333333331%',
-                        scale: 0.75
-                    }}
                     scopedSlots={{
-                        better: scope => {
-                            return (
-                                <Better
-                                    dataSource={this.dataSource}
-                                    onSelecter={this.onSelecter}
-                                    isDisable={node => this.isDisable(scope.column, node)}
-                                    style={{ height: '320px', position: 'absolute', top: 0, zIndex: 29 }}
-                                ></Better>
-                            )
-                        },
-                        discrete: scope => {
-                            return (
-                                <Discrete
-                                    loading={scope.loading}
-                                    onConserve={event => this.onConserve({ event, ...scope })}
-                                    onSubmit={event => this.onSubmit({ event, ...scope })}
-                                    style={{
-                                        position: 'absolute',
-                                        bottom: 0,
-                                        left: '50%',
-                                        zIndex: 29,
-                                        transform: 'translateX(-50%)'
-                                    }}
-                                ></Discrete>
-                            )
-                        }
+                        better: scope => (
+                            <Better
+                                dataSource={this.dataSource}
+                                onSelecter={this.onSelecter}
+                                isDisable={node => this.isDisable(scope.column, node)}
+                                style={{ height: '320px', position: 'absolute', top: 0, zIndex: 29 }}
+                            ></Better>
+                        ),
+                        discrete: scope => (
+                            <Discrete
+                                loading={scope.loading}
+                                onConserve={event => this.onConserve({ event, ...scope })}
+                                onSubmit={event => this.onSubmit({ event, ...scope })}
+                                style={{
+                                    position: 'absolute',
+                                    bottom: 0,
+                                    left: '50%',
+                                    zIndex: 29,
+                                    transform: 'translateX(-50%)'
+                                }}
+                            ></Discrete>
+                        )
                     }}
                 ></Container>
             </div>

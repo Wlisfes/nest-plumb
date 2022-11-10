@@ -1,12 +1,12 @@
 import Vue from 'vue'
 import { initMounte, done } from '../utils/utils-common'
 import { ClickOutside } from '../utils/utils-click-outside'
-import css from '../less/fetch-tooltip.module.less'
+import css from '../less/fetch-notice.module.less'
 
-export function fetchTooltip(props) {
+export function fetchNotice(props) {
     return new Promise(resolve => {
         const Component = Vue.extend({
-            name: 'FetchTooltip',
+            name: 'FetchNotice',
             directives: { ClickOutside },
             data() {
                 return {
@@ -41,26 +41,16 @@ export function fetchTooltip(props) {
                     <transition name="el-fade-in" appear>
                         {this.visible && (
                             <div
-                                class={css['fetch-tooltip']}
+                                class={css['fetch-notice']}
                                 style={{ left: props.left + 'px', top: props.top - 25 + 'px' }}
-                                v-click-outside={this.onClose}
+                                // v-click-outside={this.onClose}
                             >
-                                <div class={css['fetch-tooltip-content']}>
-                                    <div class={css['fetch-tooltip-text']}>
+                                <div class={css['fetch-notice-content']}>
+                                    <div class={css['fetch-notice-text']}>
                                         <i class="el-icon-warning"></i>
-                                        <span>{props.message ?? '确定要删除吗?'}</span>
+                                        <span>{props.message}</span>
                                     </div>
-                                    <div class={css['fetch-tooltip-footer']}>
-                                        <el-button
-                                            size="mini"
-                                            type="primary"
-                                            loading={this.loading}
-                                            onClick={this.onSubmit}
-                                        >
-                                            删除
-                                        </el-button>
-                                    </div>
-                                    <div class={css['fetch-tooltip-arrow']}></div>
+                                    <div class={css['fetch-notice-arrow']}></div>
                                 </div>
                             </div>
                         )}
