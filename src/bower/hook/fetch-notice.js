@@ -11,7 +11,8 @@ export function fetchNotice(props) {
             data() {
                 return {
                     visible: false,
-                    loading: false
+                    loading: false,
+                    message: props?.message ?? ''
                 }
             },
             mounted() {
@@ -34,6 +35,10 @@ export function fetchNotice(props) {
                             done(this.$el, delay ?? 500)
                         }
                     })
+                },
+                /**动态修改message**/
+                async fetchUpdate(message) {
+                    return (this.message = message)
                 }
             },
             render() {
@@ -48,7 +53,7 @@ export function fetchNotice(props) {
                                 <div class={css['fetch-notice-content']}>
                                     <div class={css['fetch-notice-text']}>
                                         <i class="el-icon-warning"></i>
-                                        <span>{props.message}</span>
+                                        <span>{this.message}</span>
                                     </div>
                                     <div class={css['fetch-notice-arrow']}></div>
                                 </div>

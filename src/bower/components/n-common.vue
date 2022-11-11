@@ -199,14 +199,15 @@ export default {
         fetchOneDelete(e) {
             const { node, instance, line, delTree } = this
             fetchTooltip({
-                left: parseFloat(node.left) + e.target.offsetLeft + e.target.clientWidth / 2,
-                top: parseFloat(node.top) + e.target.offsetTop + 10,
+                left: e.target.offsetLeft + e.target.clientWidth / 2,
+                top: e.target.offsetTop + 10,
                 message: (
                     <div style={{ whiteSpace: 'nowrap' }}>
                         确定要删除<a style="color: red;margin: 0 3px">{node.form.name}</a>吗？
                     </div>
                 ),
-                container: document.getElementById('context')
+                close: true,
+                container: this.$refs.node
             }).then(response => {
                 response.instance.$once('close', ({ done }) => done())
                 response.instance.$once('submit', ({ done, setState }) => {
@@ -250,17 +251,30 @@ export default {
         },
         /**监听参数验证订阅事件**/
         fetchValidator(response) {
-            const { node } = this
-            if (response.id === node.id) {
-                const el = document.getElementById(node.id)
+            if (response.id !== this.node.id) {
+                return false /**不是传递给当前组件、不需处理**/
+            }
+            if (this.notice) {
+                /**存在notice表示当前提示组件已经存在**/
+                this.notice.fetchUpdate('猪头').then(() => {
+                    setTimeout(() => this.notice.onClose(), 1000)
+                })
+            } else {
                 fetchNotice({
-                    left: parseFloat(node.left) + el.clientWidth / 2,
-                    top: parseFloat(node.top),
-                    message: <div style={{ whiteSpace: 'nowrap', color: '#ff0000' }}>{response.message}</div>,
-                    container: document.getElementById('context')
+                    top: 0,
+                    left: this.$refs.node.clientWidth / 2,
+                    container: this.$refs.node,
+                    message: <div style={{ whiteSpace: 'nowrap', color: '#ff0000' }}>{response.message}</div>
                 }).then(response => {
-                    response.instance.$once('close', ({ done }) => done())
-                    response.instance.$once('submit', ({ done }) => done())
+                    this.notice = response.instance
+                    response.instance.$once('close', ({ done }) => {
+                        this.notice = undefined
+                        done()
+                    })
+                    response.instance.$once('submit', ({ done }) => {
+                        this.notice = undefined
+                        done()
+                    })
                 })
             }
         }

@@ -114,7 +114,11 @@ export default {
                         fetchTooltip({
                             left,
                             top,
-                            message: '确定要删除连接吗?',
+                            message: (
+                                <div style={{ whiteSpace: 'nowrap' }}>
+                                    确定要删除<a style="color: red;margin: 0 3px">连接</a>吗？
+                                </div>
+                            ),
                             container: document.getElementById('context')
                         }).then(response => {
                             response.instance.$once('close', ({ done }) => done())

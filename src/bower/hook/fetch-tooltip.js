@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { initMounte, done } from '../utils/utils-common'
+import { stop, initMounte, done } from '../utils/utils-common'
 import { ClickOutside } from '../utils/utils-click-outside'
 import css from '../less/fetch-tooltip.module.less'
 
@@ -11,7 +11,8 @@ export function fetchTooltip(props) {
             data() {
                 return {
                     visible: false,
-                    loading: false
+                    loading: false,
+                    message: props?.message ?? ''
                 }
             },
             mounted() {
@@ -48,7 +49,7 @@ export function fetchTooltip(props) {
                                 <div class={css['fetch-tooltip-content']}>
                                     <div class={css['fetch-tooltip-text']}>
                                         <i class="el-icon-warning"></i>
-                                        <span>{props.message ?? '确定要删除吗?'}</span>
+                                        <span>{this.message ?? '确定要删除吗?'}</span>
                                     </div>
                                     <div class={css['fetch-tooltip-footer']}>
                                         <el-button
@@ -60,6 +61,12 @@ export function fetchTooltip(props) {
                                             删除
                                         </el-button>
                                     </div>
+                                    {props.close && (
+                                        <i
+                                            class={{ 'el-icon-error': true, [css['fetch-tooltip-close']]: true }}
+                                            onClick={e => stop(e, this.onClose)}
+                                        ></i>
+                                    )}
                                     <div class={css['fetch-tooltip-arrow']}></div>
                                 </div>
                             </div>
