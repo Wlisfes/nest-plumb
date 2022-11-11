@@ -2,6 +2,7 @@
 import { v4 } from 'uuid'
 import { Option } from '../option'
 import { createSuper, createCoreZoom, createBatchConnect, useScale } from '../super'
+import { observer } from '../utils/utils-observer'
 import { throttle } from '../utils/utils-common'
 import { fetchTooltip } from '../hook/fetch-tooltip'
 import { Common } from '../components'
@@ -9,27 +10,20 @@ import { Common } from '../components'
 export default {
     name: 'NContainer',
     props: {
-        observer: { type: Object, required: true },
-        currentProps: { type: Object, default: null },
-        axisProps: { type: Object, default: () => ({ x: true, y: true }) },
-        coreProps: {
-            type: Object,
-            default: () => ({ width: '100%', height: '100%', scale: 1, offsetX: 0, offsetY: 0, x: 0, y: 0 })
-        },
-        columnProps: { type: Array, default: () => [] },
-        lineProps: { type: Array, default: () => [] }
+        current: { type: Object, default: null }
     },
     data() {
         return {
+            observer,
             loading: true,
             instance: null,
             recent: null,
             target: null,
             /**参数配置**/
-            axis: this.axisProps,
-            core: this.coreProps,
-            column: this.columnProps,
-            line: this.lineProps
+            axis: { x: true, y: true },
+            core: { width: '100%', height: '100%', scale: 1, offsetX: 0, offsetY: 0, x: 0, y: 0 },
+            column: [],
+            line: []
         }
     },
     mounted() {
@@ -37,24 +31,23 @@ export default {
             this.initSuper().finally(() => {
                 this.loading = false
             })
-
-            const done = [
-                this.observer.on('loading', value => {
-                    this.loading = value
-                }),
+            const uninstall = [
                 /**订阅重载事件**/
-                this.observer.on('reload', props => {
-                    this.column = props.column ?? []
-                    this.$nextTick(() => {
-                        createBatchConnect(this.instance, {
+                this.observer.on('reload', ({ props, done }) => {
+                    this.setColumn({
+                        command: 'RELOAD',
+                        column: props.column ?? []
+                    }).then(async () => {
+                        await createBatchConnect(this.instance, {
                             update: true,
                             line: props.line ?? []
                         })
+                        await done()
                     })
                 })
             ]
             this.$once('hook:beforeDestroy', () => {
-                done.map(fn => fn())
+                uninstall.map(fn => fn())
                 this.instance.reset()
             })
         })
@@ -162,15 +155,15 @@ export default {
         },
         /**拖拽结束添加节点**/
         onMounte(e) {
-            const { instance, recent, currentProps } = this
+            const { instance, recent, current } = this
             const rect = instance.getContainer().getBoundingClientRect()
             const scale = useScale(instance)
             const left = (e.pageX - rect.left - 60) / scale
             const top = (e.pageY - rect.top) / scale
 
             const node = {
-                props: currentProps,
-                rules: (currentProps.rules ?? []).map(x => ({ ...x, id: v4() })),
+                props: current,
+                rules: (current.rules ?? []).map(x => ({ ...x, id: v4() })),
                 id: v4(),
                 top: top + 'px',
                 left: left + 'px'
@@ -240,23 +233,31 @@ export default {
         },
         /**连接线数据维护**/
         async setLine(props) {
-            const n = this.line.findIndex(x => x.id === props.node.id)
-            if (props.command === 'CREATE') {
-                this.line.push(props.node)
-            } else if (props.command === 'DELETE' && n !== -1) {
-                this.line.splice(n, 1)
+            if (props.command === 'RELOAD') {
+                this.line = props.line ?? []
+            } else {
+                const n = this.line.findIndex(x => x.id === props.node.id)
+                if (props.command === 'CREATE') {
+                    this.line.push(props.node)
+                } else if (props.command === 'DELETE' && n !== -1) {
+                    this.line.splice(n, 1)
+                }
             }
             return { props, line: this.line }
         },
         /**节点数据维护**/
         async setColumn(props) {
-            const n = this.column.findIndex(x => x.id === props.node.id)
-            if (props.command === 'CREATE') {
-                this.column.push(props.node)
-            } else if (props.command === 'UPDATE' && n !== -1) {
-                this.column.splice(n, 1, props.node)
-            } else if (props.command === 'DELETE' && n !== -1) {
-                this.column.splice(n, 1)
+            if (props.command === 'RELOAD') {
+                this.column = props.column ?? []
+            } else {
+                const n = this.column.findIndex(x => x.id === props.node.id)
+                if (props.command === 'CREATE') {
+                    this.column.push(props.node)
+                } else if (props.command === 'UPDATE' && n !== -1) {
+                    this.column.splice(n, 1, props.node)
+                } else if (props.command === 'DELETE' && n !== -1) {
+                    this.column.splice(n, 1)
+                }
             }
             return { props, column: this.column }
         },
@@ -278,7 +279,7 @@ export default {
                         setColumn: this.setColumn,
                         setSuspended: this.setSuspended
                     }
-                    switch (node.props.type) {
+                    switch (node.form.type) {
                         case 'MESSAGE':
                             return <Common key={node.id} {...{ props }}></Common>
                         case 'CPU':

@@ -45,7 +45,7 @@ export const source = [
 
 export const column = [
     {
-        props: {
+        form: {
             id: '72f29b4f-e7c5-4107-8447-d3a7f778e16c',
             max: -1,
             name: '电子邮件',
@@ -61,7 +61,7 @@ export const column = [
         left: '645px'
     },
     {
-        props: {
+        form: {
             id: '8a1dab33-e4ab-4830-a6ac-10aa2d86e7d2',
             max: -1,
             name: '触发器',
@@ -83,7 +83,7 @@ export const column = [
         left: '870px'
     },
     {
-        props: {
+        form: {
             id: 'f7ff1dcb-cde7-4f83-b33d-b14f913160a4',
             max: -1,
             name: '延时',
@@ -99,7 +99,7 @@ export const column = [
         left: '600px'
     },
     {
-        props: {
+        form: {
             id: '72f29b4f-e7c5-4107-8447-d3a7f778e16c',
             max: -1,
             name: '电子邮件',
@@ -115,7 +115,7 @@ export const column = [
         left: '1055px'
     },
     {
-        props: {
+        form: {
             id: '8a1dab33-e4ab-4830-a6ac-10aa2d86e7d2',
             max: -1,
             name: '触发器',
@@ -137,7 +137,7 @@ export const column = [
         left: '925px'
     },
     {
-        props: {
+        form: {
             id: '72f29b4f-e7c5-4107-8447-d3a7f778e16c',
             max: -1,
             name: '电子邮件',
@@ -153,7 +153,7 @@ export const column = [
         left: '435px'
     },
     {
-        props: {
+        form: {
             id: 'f4074fc3-b4ef-4b14-8cf9-32b00b32037e',
             max: -1,
             name: '目标',
@@ -168,7 +168,7 @@ export const column = [
         left: '215px'
     },
     {
-        props: {
+        form: {
             id: '72f29b4f-e7c5-4107-8447-d3a7f778e16c',
             max: -1,
             name: '电子邮件',
@@ -184,7 +184,7 @@ export const column = [
         left: '1115px'
     },
     {
-        props: {
+        form: {
             id: 'f4074fc3-b4ef-4b14-8cf9-32b00b32037e',
             max: -1,
             name: '目标',

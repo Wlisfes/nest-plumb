@@ -1,5 +1,5 @@
 <script>
-import { Better, Discrete, Container, observer } from '@/bower'
+import { Better, Discrete, Container, setReload } from '@/bower'
 import * as data from './common/data'
 
 export default {
@@ -12,7 +12,7 @@ export default {
     },
     mounted() {
         setTimeout(() => {
-            observer.emit('reload', {
+            setReload({
                 column: data.column,
                 line: data.line,
                 core: {
@@ -24,6 +24,8 @@ export default {
                     height: '133.33333333333331%',
                     scale: 0.75
                 }
+            }).then(() => {
+                console.log('加载完成')
             })
         })
     },
@@ -33,15 +35,15 @@ export default {
         },
         /**菜单节点状态判断**/
         isDisable(column, node) {
-            switch (node.type) {
+            switch (node.form) {
                 case 'MESSAGE':
-                    return column.filter(x => x.props.type === 'MESSAGE').length >= 6
+                    return column.filter(x => x.props.form === 'MESSAGE').length >= 6
                 case 'CPU':
-                    return column.filter(x => x.props.type === 'CPU').length >= 6
+                    return column.filter(x => x.props.form === 'CPU').length >= 6
                 case 'CLOCK':
-                    return column.filter(x => x.props.type === 'CLOCK').length >= 6
+                    return column.filter(x => x.props.form === 'CLOCK').length >= 6
                 case 'PRESENT':
-                    return column.filter(x => x.props.type === 'PRESENT').length >= 6
+                    return column.filter(x => x.props.form === 'PRESENT').length >= 6
                 default:
                     return false
             }
@@ -63,9 +65,7 @@ export default {
         return (
             <div class="n-naive" style={{ height: '100%', overflow: 'hidden' }}>
                 <Container
-                    observer={observer}
-                    current-props={this.current}
-                    axis-props={{ x: true, y: true }}
+                    current={this.current}
                     scopedSlots={{
                         better: scope => (
                             <Better

@@ -108,7 +108,7 @@ export default {
                     uuid: x.id,
                     anchor: [0, 0, 0, 1, offsetLeft, offsetTop],
                     isSource: true,
-                    maxConnections: 1,
+                    maxConnections: x.max ?? 1,
                     cssClass: 'is-source',
                     endpoint: ['Dot', { radius: 12 }],
                     endpointStyle: { fill: '#dbdbdb' },
@@ -124,10 +124,10 @@ export default {
                 uuid: node.id,
                 anchor: [0, 0, 0, -1, el.clientWidth / 2, 0],
                 isTarget: true,
-                maxConnections: -1,
+                maxConnections: node.form.max ?? -1,
                 cssClass: 'is-target',
                 endpoint: ['Dot', { radius: 12 }],
-                endpointStyle: { fill: node.props.style.backgroundColor }
+                endpointStyle: { fill: node.form.style.backgroundColor }
             })
         },
         /**绑定节点移动事件**/
@@ -197,7 +197,7 @@ export default {
                 top: parseFloat(node.top) + e.target.offsetTop + 10,
                 message: (
                     <div style={{ whiteSpace: 'nowrap' }}>
-                        确定要删除<a style="color: red;margin: 0 3px">{node.props.name}</a>吗？
+                        确定要删除<a style="color: red;margin: 0 3px">{node.form.name}</a>吗？
                     </div>
                 ),
                 container: document.getElementById('context')
@@ -273,12 +273,12 @@ export default {
             >
                 <div class="node-common">
                     <div class="node-common__content">
-                        <div class="n-icon" style={node.props.style}>
-                            {node.props.icon && <i class={node.props.icon}></i>}
+                        <div class="n-icon" style={node.form.style}>
+                            {node.form.icon && <i class={node.form.icon}></i>}
                         </div>
                         <div style={{ flex: 1 }}>
                             <div class="n-header">
-                                <div class="n-header__name">{node.props.name}</div>
+                                <div class="n-header__name">{node.form.name}</div>
                                 <i
                                     class="el-icon-delete"
                                     title="删除"
