@@ -27,13 +27,12 @@ export async function createCoreZoom(instance, option) {
         zoomDoubleClickSpeed: 1,
         minZoom: 0.1,
         maxZoom: 10,
-        initialZoom: option.core?.scale ?? 1,
+        initialZoom: 1,
         beforeWheel: e => {
             return false
         },
         beforeMouseDown: e => e.ctrlKey
     })
-    pan.moveTo(option.core?.x ?? 0, option.core?.y ?? 0)
 
     instance.mainContainerWrap = mainContainerWrap
     instance.pan = pan

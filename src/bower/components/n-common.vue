@@ -2,6 +2,7 @@
 import { v4 } from 'uuid'
 import { ClickOutside } from '../utils/utils-click-outside'
 import { stop, throttle } from '../utils/utils-common'
+import { command, setDelete } from '../utils/utils-store'
 import { fetchTooltip } from '../hook/fetch-tooltip'
 import { fetchNotice } from '../hook/fetch-notice'
 
@@ -58,14 +59,16 @@ export default {
             this.initOneBefore()
             this.draggableNode()
 
-            const done = [
+            const uninstall = [
                 /**订阅删除事件**/
-                this.observer.on('delete', e => {
-                    this.fetchSubscribe(e)
+                this.observer.on(command.delete, ({ props, done }) => {
+                    this.fetchSubscribe(props)
+                    done()
                 }),
                 /**参数验证**/
-                this.observer.on('validator', e => {
-                    this.fetchValidator(e)
+                this.observer.on(command.validator, ({ node, done }) => {
+                    this.fetchValidator(node)
+                    done()
                 }),
                 /**销毁节点**/
                 () => {
@@ -73,7 +76,7 @@ export default {
                 }
             ]
             this.$once('hook:beforeDestroy', () => {
-                done.map(fn => fn())
+                uninstall.map(fn => fn())
             })
         })
     },
@@ -191,7 +194,7 @@ export default {
         },
         /**删除节点**/
         fetchOneDelete(e) {
-            const { node, instance, observer, line, delTree } = this
+            const { node, instance, line, delTree } = this
             fetchTooltip({
                 left: parseFloat(node.left) + e.target.offsetLeft + e.target.clientWidth / 2,
                 top: parseFloat(node.top) + e.target.offsetTop + 10,
@@ -208,7 +211,7 @@ export default {
                     setTimeout(() => {
                         if (delTree) {
                             /**开启删除树**/
-                            observer.emit('delete', {
+                            setDelete({
                                 target: node.id,
                                 column: line.filter(x => x.parent === node.id).map(x => x.target)
                             })
@@ -224,7 +227,7 @@ export default {
         },
         /**监听来自父级的订阅事件**/
         fetchSubscribe(response) {
-            const { node, instance, observer, line } = this
+            const { node, instance, line } = this
             if (response.target === node.id) {
                 /**来至当前节点的订阅事件**/
                 return false
@@ -233,7 +236,7 @@ export default {
                 const connect = line.some(x => x.target === node.id && x.parent !== response.target)
                 if (!connect) {
                     /**不存在多个父级，可以删除当前节点**/
-                    observer.emit('delete', {
+                    setDelete({
                         target: node.id,
                         column: line.filter(x => x.parent === node.id).map(x => x.target)
                     })
@@ -250,7 +253,7 @@ export default {
                 fetchNotice({
                     left: parseFloat(node.left) + el.clientWidth / 2,
                     top: parseFloat(node.top),
-                    message: <div style={{ whiteSpace: 'nowrap', color: '#ff0000' }}>请完善电子邮件信息</div>,
+                    message: <div style={{ whiteSpace: 'nowrap', color: '#ff0000' }}>{response.message}</div>,
                     container: document.getElementById('context')
                 }).then(response => {
                     response.instance.$once('close', ({ done }) => done())

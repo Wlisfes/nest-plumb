@@ -1,5 +1,5 @@
 <script>
-import { Better, Discrete, Container, setReload } from '@/bower'
+import { Better, Discrete, Container, setReload, setDone, setValidator, command } from '@/bower'
 import * as data from './common/data'
 
 export default {
@@ -16,15 +16,16 @@ export default {
                 column: data.column,
                 line: data.line,
                 core: {
-                    x: 297.25,
-                    y: 125.75,
-                    offsetX: -396.3333333333333,
-                    offsetY: -167.66666666666666,
+                    x: 358.1875,
+                    y: 38.5625,
+                    offsetX: -477.5833333333333,
+                    offsetY: -51.416666666666664,
                     width: '133.33333333333331%',
                     height: '133.33333333333331%',
                     scale: 0.75
                 }
-            }).then(() => {
+            }).then(async () => {
+                await setDone(false)
                 console.log('加载完成')
             })
         })
@@ -51,11 +52,17 @@ export default {
         /**保存草稿**/
         onConserve() {},
         /**提交工作流**/
-        onSubmit({ observer, column }) {
+        onSubmit({ column }) {
             column.forEach(node => {
-                switch (node.props.type) {
+                switch (node.form.type) {
                     case 'MESSAGE':
-                        observer.emit('validator', node)
+                        setValidator({ ...node, message: '请完善电子邮件' })
+                        break
+                    case 'CPU':
+                        setValidator({ ...node, message: '请设置触发器' })
+                        break
+                    case 'CLOCK':
+                        setValidator({ ...node, message: '请设置延时' })
                         break
                 }
             })

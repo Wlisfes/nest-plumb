@@ -2,6 +2,7 @@
 import { v4 } from 'uuid'
 import { Option } from '../option'
 import { createSuper, createCoreZoom, createBatchConnect, useScale } from '../super'
+import { command } from '../utils/utils-store'
 import { observer } from '../utils/utils-observer'
 import { throttle } from '../utils/utils-common'
 import { fetchTooltip } from '../hook/fetch-tooltip'
@@ -28,20 +29,17 @@ export default {
     },
     mounted() {
         this.$nextTick(() => {
-            this.initSuper().finally(() => {
-                this.loading = false
-            })
+            this.initSuper()
             const uninstall = [
+                /**订阅删除事件**/
+                this.observer.on(command.loading, ({ loading, done }) => {
+                    done((this.loading = loading))
+                }),
                 /**订阅重载事件**/
-                this.observer.on('reload', ({ props, done }) => {
-                    this.setColumn({
-                        command: 'RELOAD',
-                        column: props.column ?? []
-                    }).then(async () => {
-                        await createBatchConnect(this.instance, {
-                            update: true,
-                            line: props.line ?? []
-                        })
+                this.observer.on(command.reload, ({ props, done }) => {
+                    this.setCore(props.core ?? this.core).then(async () => {
+                        await this.setColumn({ command: 'RELOAD', column: props.column ?? [] })
+                        await createBatchConnect(this.instance, { update: true, line: props.line ?? [] })
                         await done()
                     })
                 })
@@ -138,10 +136,10 @@ export default {
             return await createCoreZoom(instance, {
                 core: this.core,
                 onPanstart: e => {
-                    this.axis = { x: true, y: true }
+                    this.setAxis({ x: true, y: true })
                 },
                 onPanend: e => {
-                    this.axis = { x: false, y: false }
+                    this.setAxis({ x: false, y: false })
                 },
                 onZoom: e => {
                     const { x, y, offsetX, offsetY, width, height, scale } = e
@@ -231,6 +229,17 @@ export default {
             this.target = response?.id || null
             this.recent = response
         },
+        /**十字交叉线数据维护**/
+        async setAxis(axis) {
+            return (this.axis = axis)
+        },
+        /**画布坐标位置数据维护**/
+        async setCore(core) {
+            this.core = core
+            this.instance.pan.moveTo(core.x ?? 0, core.y ?? 0)
+            this.instance.pan.zoomTo(0, 0, core.scale ?? 1)
+            return this.instance.setZoom(core.scale ?? 1)
+        },
         /**连接线数据维护**/
         async setLine(props) {
             if (props.command === 'RELOAD') {
@@ -313,7 +322,7 @@ export default {
         const { instance, observer, axis, core, column, line, loading } = this
 
         return (
-            <div class="flowchart">
+            <div class="flowchart" v-loading={this.loading}>
                 {this.$scopedSlots.better && (
                     <div class="flowchart-better">
                         {this.$scopedSlots.better?.({ instance, observer, axis, core, column, line, loading })}
@@ -324,13 +333,7 @@ export default {
                         {this.$scopedSlots.discrete?.({ instance, observer, axis, core, column, line, loading })}
                     </div>
                 )}
-
-                <div
-                    v-loading={this.loading}
-                    class="flowchart-container"
-                    onDragover={this.onDragover}
-                    onDrop={this.onMounte}
-                >
+                <div class="flowchart-container" onDragover={this.onDragover} onDrop={this.onMounte}>
                     <div ref="context" id="context">
                         <div
                             class="axis-x"
