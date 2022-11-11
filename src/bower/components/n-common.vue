@@ -103,7 +103,7 @@ export default {
         /**设置起点**/
         initOneAfter() {
             const { node, instance } = this
-            node.rules.forEach(x => {
+            node.rules?.forEach(x => {
                 const el = document.getElementById(x.id)
                 const offsetLeft = el.offsetLeft + el.clientWidth / 2
                 const offsetTop = el.offsetTop + el.clientHeight
@@ -122,16 +122,19 @@ export default {
         /**设置终点**/
         initOneBefore() {
             const { node, instance } = this
-            const el = document.getElementById(node.id)
-            instance.addEndpoint(node.id, {
-                uuid: node.id,
-                anchor: [0, 0, 0, -1, el.clientWidth / 2, 0],
-                isTarget: true,
-                maxConnections: node.form.max ?? -1,
-                cssClass: 'is-target',
-                endpoint: ['Dot', { radius: 12 }],
-                endpointStyle: { fill: node.form.style.backgroundColor }
-            })
+            if (node.form.max != 0) {
+                //max不等于0才添加终点标志
+                const el = document.getElementById(node.id)
+                instance.addEndpoint(node.id, {
+                    uuid: node.id,
+                    anchor: [0, 0, 0, -1, el.clientWidth / 2, 0],
+                    isTarget: true,
+                    maxConnections: node.form.max ?? -1,
+                    cssClass: 'is-target',
+                    endpoint: ['Dot', { radius: 12 }],
+                    endpointStyle: { fill: node.form.style.backgroundColor }
+                })
+            }
         },
         /**绑定节点移动事件**/
         draggableNode() {

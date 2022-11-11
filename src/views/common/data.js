@@ -47,7 +47,7 @@ export const column = [
     {
         form: {
             id: '72f29b4f-e7c5-4107-8447-d3a7f778e16c',
-            max: -1,
+            max: 0,
             name: '电子邮件',
             icon: 'el-icon-message',
             type: 'MESSAGE',
@@ -175,10 +175,10 @@ export const column = [
             icon: 'el-icon-message',
             type: 'MESSAGE',
             style: { backgroundColor: '#e1f1ff', color: '#75BAF9' },
-            rules: [{ id: 'be1aa742-84c2-441f-88c6-0fa93f9bd474', max: 2, type: 'info', content: '' }],
+            rules: [],
             connect: ['MESSAGE', 'CPU', 'CLOCK', 'PRESENT']
         },
-        rules: [{ id: '303435bf-eeec-4f2c-b808-5fdebb3af1f4', max: 2, type: 'info', content: '' }],
+        rules: [],
         id: '9f676d77-d432-4d52-9c00-9baef041b38e',
         top: '980px',
         left: '1115px'

@@ -29,7 +29,9 @@ export default {
     },
     mounted() {
         this.$nextTick(() => {
-            this.initSuper()
+            this.initSuper().then(instance => {
+                this.$emit('ready', instance)
+            })
             const uninstall = [
                 /**订阅删除事件**/
                 this.observer.on(command.loading, ({ loading, done }) => {
@@ -158,9 +160,8 @@ export default {
             const scale = useScale(instance)
             const left = (e.pageX - rect.left - 60) / scale
             const top = (e.pageY - rect.top) / scale
-
             const node = {
-                props: current,
+                form: current,
                 rules: (current.rules ?? []).map(x => ({ ...x, id: v4() })),
                 id: v4(),
                 top: top + 'px',
@@ -367,12 +368,12 @@ export default {
     &:active {
         cursor: grabbing;
     }
+    ::v-deep .el-loading-mask {
+        background-color: rgba(255, 255, 255, 1);
+    }
     &-container {
         height: 100%;
         ::v-deep {
-            .el-loading-mask {
-                background-color: rgba(255, 255, 255, 1);
-            }
             .jtk-connector.is-active {
                 z-index: 9999;
                 path {

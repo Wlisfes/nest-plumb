@@ -10,8 +10,11 @@ export default {
             dataSource: data.source
         }
     },
-    mounted() {
-        setTimeout(() => {
+    methods: {
+        onSelecter(e) {
+            this.current = e
+        },
+        onReady() {
             setReload({
                 column: data.column,
                 line: data.line,
@@ -24,15 +27,13 @@ export default {
                     height: '133.33333333333331%',
                     scale: 0.75
                 }
-            }).then(async () => {
-                await setDone(false)
-                console.log('加载完成')
+            }).then(() => {
+                setTimeout(() => {
+                    setDone(false).then(() => {
+                        console.log('加载完成')
+                    })
+                }, 500)
             })
-        })
-    },
-    methods: {
-        onSelecter(e) {
-            this.current = e
         },
         /**菜单节点状态判断**/
         isDisable(column, node) {
@@ -50,7 +51,11 @@ export default {
             }
         },
         /**保存草稿**/
-        onConserve() {},
+        onConserve() {
+            setDone(true).then(() => {
+                setTimeout(() => setDone(false), 500)
+            })
+        },
         /**提交工作流**/
         onSubmit({ column }) {
             column.forEach(node => {
@@ -73,6 +78,7 @@ export default {
             <div class="n-naive" style={{ height: '100%', overflow: 'hidden' }}>
                 <Container
                     current={this.current}
+                    onReady={this.onReady}
                     scopedSlots={{
                         better: scope => (
                             <Better
