@@ -143,29 +143,70 @@ export default {
                 grid: [5, 5], //节点移动最小距离
                 start: e => {},
                 drag: throttle(e => {
+                    /**根据条件筛选出可连接node节点的rules规则**/
                     const rules = column
-                        .filter(x => x.id !== node.id && !!x.rules.length)
-                        .reduce((c, n) => {
-                            return c.concat(n.rules.map(x => ({ ...x, parent: n })))
-                        }, [])
-                        .filter(x => !line.some(n => n.source === x.id || n.target === node.id))
-                        .map(x => {
-                            const { left, top } = x.parent
-                            const el = document.getElementById(x.id)
-                            //prettier-ignore
-                            const a = parseFloat(left) + el.offsetLeft + el.clientWidth / 2 - (e.pos[0] + e.el.clientWidth / 2)
-                            const b = parseFloat(top) + el.offsetTop + el.clientHeight - e.pos[1]
-                            return {
-                                ...x,
-                                el,
-                                distance: Math.sqrt(a * a + b * b)
+                        .filter(x => {
+                            if (node.form.max === 0 || x.id === node.id || !node.form.connect.includes(x.form.type)) {
+                                /**
+                                 * 1:当前node节点禁止连接
+                                 * 2:当前排除当前node节点
+                                 * 3:上层节点禁止与当前node节点建立连接
+                                 */
+                                return false
+                            } else {
+                                if (x.rules?.length === 0) {
+                                    /**上层节点没有起点规则**/
+                                    return false
+                                } else if (line.some(n => n.target === node.id)) {
+                                    /**当前node节点已经与某一个节点建立连接**/
+                                    return false
+                                }
                             }
+                            return true
                         })
-                        .sort((a, b) => (a.distance ?? 0) - (b.distance ?? 0))
+                        .reduce((c, n) => c.concat(n.rules.map(x => ({ ...x, parent: n }))), [])
 
-                    const recent = rules?.shift()
-                    if (recent && recent.distance < 250) {
-                        this.setSuspended(recent)
+                    if (rules?.length > 0) {
+                        /**筛选可连接的Endpoint**/
+                        const connect = rules
+                            .filter(x => {
+                                if (x.max === 0) {
+                                    /**当前Endpoint禁止连接**/
+                                    return false
+                                } else if (x.max === -1) {
+                                    /**1:当前Endpoint可以无限连接**/
+                                    return true
+                                } else {
+                                    /**获取以当前Endpoint为起点的连接线**/
+                                    const total = line.filter(n => n.source === x.id)?.length ?? 0
+                                    if (total >= x.max) {
+                                        /**当前Endpoint连接数量不足**/
+                                        return false
+                                    } else {
+                                        return true
+                                    }
+                                }
+                            })
+                            .map(x => {
+                                const { left, top } = x.parent
+                                const el = document.getElementById(x.id)
+                                //prettier-ignore
+                                const a = parseFloat(left) + el.offsetLeft + el.clientWidth / 2 - (e.pos[0] + e.el.clientWidth / 2)
+                                const b = parseFloat(top) + el.offsetTop + el.clientHeight - e.pos[1]
+                                return {
+                                    ...x,
+                                    el,
+                                    distance: Math.sqrt(a * a + b * b)
+                                }
+                            })
+                            .sort((a, b) => (a.distance ?? 0) - (b.distance ?? 0))
+
+                        const recent = connect[0] ?? null
+                        if (recent?.distance < 250) {
+                            this.setSuspended(recent)
+                        } else {
+                            this.setSuspended(null)
+                        }
                     } else {
                         this.setSuspended(null)
                     }
@@ -180,7 +221,7 @@ export default {
                         setTimeout(() => {
                             const { recent } = this
                             if (recent) {
-                                const connect = instance.connect({
+                                instance.connect({
                                     id: v4(),
                                     source: recent.id,
                                     target: node.id,

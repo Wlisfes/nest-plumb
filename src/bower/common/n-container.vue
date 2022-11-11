@@ -40,6 +40,7 @@ export default {
                 /**订阅重载事件**/
                 this.observer.on(command.reload, ({ props, done }) => {
                     this.setCore(props.core ?? this.core).then(async () => {
+                        await this.setAxis(props.axis ?? this.axis)
                         await this.setColumn({ command: 'RELOAD', column: props.column ?? [] })
                         await createBatchConnect(this.instance, { update: true, line: props.line ?? [] })
                         await done()
@@ -85,6 +86,7 @@ export default {
 
                     /**连线完毕、维护本地数据**/
                     instance.bind('connection', e => {
+                        // const node = this.column.find(x => x.id === e.sourceId)
                         this.setLine({
                             command: 'CREATE',
                             node: {
@@ -192,34 +194,71 @@ export default {
         },
         /**节流持续拖拽捕获可连接点位置**/
         onCapture: throttle(function (e) {
-            const { instance, column, line } = this
+            const { instance, current, column, line } = this
             const rect = instance.getContainer().getBoundingClientRect()
             const scale = useScale(this.instance)
             const pageX = (e.pageX - rect.left - 60) / scale
             const pageY = (e.pageY - rect.top - 20) / scale
 
+            /**根据条件筛选出可连接node节点的rules规则**/
             const rules = column
-                .filter(x => !!x.rules.length)
-                .reduce((c, n) => {
-                    return c.concat(n.rules.map(x => ({ ...x, parent: n })))
-                }, [])
-                .filter(x => !line.some(n => n.source === x.id))
-                .map(x => {
-                    const { left, top } = x.parent
-                    const el = document.getElementById(x.id)
-                    const a = parseFloat(left) + el.offsetLeft + el.clientWidth / 2 - pageX
-                    const b = parseFloat(top) + el.offsetTop + el.clientHeight - pageY
-                    return {
-                        ...x,
-                        el,
-                        distance: Math.sqrt(a * a + b * b) // scale
+                .filter(x => {
+                    if (current.max === 0 || !current.connect.includes(x.form.type)) {
+                        /**
+                         * 1:当前node节点禁止连接
+                         * 3:上层节点禁止与当前node节点建立连接
+                         */
+                        return false
+                    } else {
+                        if (x.rules?.length === 0) {
+                            /**上层节点没有起点规则**/
+                            return false
+                        }
                     }
+                    return true
                 })
-                .sort((a, b) => (a.distance ?? 0) - (b.distance ?? 0))
+                .reduce((c, n) => c.concat(n.rules.map(x => ({ ...x, parent: n }))), [])
 
-            const recent = rules?.shift()
-            if (recent && recent.distance < 250) {
-                this.setSuspended(recent)
+            if (rules?.length > 0) {
+                /**筛选可连接的Endpoint**/
+                const connect = rules
+                    .filter(x => {
+                        if (x.max === 0) {
+                            /**当前Endpoint禁止连接**/
+                            return false
+                        } else if (x.max === -1) {
+                            /**1:当前Endpoint可以无限连接**/
+                            return true
+                        } else {
+                            /**获取以当前Endpoint为起点的连接线**/
+                            const total = line.filter(n => n.source === x.id)?.length ?? 0
+                            if (total >= x.max) {
+                                /**当前Endpoint连接数量不足**/
+                                return false
+                            } else {
+                                return true
+                            }
+                        }
+                    })
+                    .map(x => {
+                        const { left, top } = x.parent
+                        const el = document.getElementById(x.id)
+                        const a = parseFloat(left) + el.offsetLeft + el.clientWidth / 2 - pageX
+                        const b = parseFloat(top) + el.offsetTop + el.clientHeight - pageY
+                        return {
+                            ...x,
+                            el,
+                            distance: Math.sqrt(a * a + b * b) // scale
+                        }
+                    })
+                    .sort((a, b) => (a.distance ?? 0) - (b.distance ?? 0))
+
+                const recent = connect[0] ?? null
+                if (recent?.distance < 250) {
+                    this.setSuspended(recent)
+                } else {
+                    this.setSuspended(null)
+                }
             } else {
                 this.setSuspended(null)
             }
