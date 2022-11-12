@@ -79,3 +79,27 @@ export function throttle(fn, delay = 300) {
         }
     }
 }
+
+/**
+ * 开始连接
+ * @param { Object } option
+ */
+export function startConnect(option) {
+    const { e, column, line, instance, observer } = option
+}
+
+/**
+ * 结束连接
+ * @param { Object } option
+ */
+export function endConnect(option) {
+    const { e, column, line, instance, observer } = option
+}
+
+/**
+ * 判断是否可以连接
+ * @param { Object } option
+ */
+export function isConnect(option) {
+    const { e, column, line, instance, observer } = option
+}
