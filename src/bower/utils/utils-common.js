@@ -85,7 +85,36 @@ export function throttle(fn, delay = 300) {
  * @param { Object } option
  */
 export function startConnect(option) {
-    const { e, column, line, instance, observer } = option
+    const { e, column, line, instance } = option
+    const current = column.find(x => x.id === e.sourceId)
+    for (const node of column) {
+        if (
+            node.form.max === 0 ||
+            node.id === current.id ||
+            !node.form.connect.includes(current.form.type) ||
+            line.some(x => x.parent === current.id && x.target === node.id)
+        ) {
+            /**
+             * 1:当前node节点禁止连接
+             * 2:排除当前node节点
+             * 3:上层节点禁止与当前node节点建立连接
+             * 4:上层节点与当前节点已建立连接关系
+             */
+            continue
+        } else if (node.form.max === -1) {
+            /**当前node可以无限连接**/
+            instance.getEndpoint(node.id)?.canvas?.classList.add('is-suspended')
+        } else {
+            /**获取以当前node节点为起点的连接线**/
+            const total = line.filter(n => n.target === node.id).length ?? 0
+            if (total >= node.form.max) {
+                /**当前node节点连接数量不足**/
+                continue
+            } else {
+                instance.getEndpoint(node.id)?.canvas?.classList.add('is-suspended')
+            }
+        }
+    }
 }
 
 /**
@@ -93,7 +122,10 @@ export function startConnect(option) {
  * @param { Object } option
  */
 export function endConnect(option) {
-    const { e, column, line, instance, observer } = option
+    const { column, instance } = option
+    column.forEach(x => {
+        instance.getEndpoint(x.id)?.canvas?.classList.remove('is-suspended')
+    })
 }
 
 /**
@@ -102,4 +134,19 @@ export function endConnect(option) {
  */
 export function isConnect(option) {
     const { e, column, line, instance, observer } = option
+    if (e.sourceId === e.targetId) {
+        /**起点==终点**/
+        return '起点不能与终点连接'
+    } else {
+        const sourceNode = column.find(x => x.id === e.sourceId)
+        const targetNode = column.find(x => x.id === e.targetId)
+        if (!targetNode.form.connect.includes(sourceNode.form.type)) {
+            /**终点禁止连接起点节点**/
+            return '终点禁止连接起点节点'
+        } else if (line.some(x => x.parent === e.sourceId && x.target === e.targetId)) {
+            /**上层节点与当前节点已建立连接关系**/
+            return '上层节点与当前节点已建立连接关系'
+        }
+    }
+    return undefined
 }

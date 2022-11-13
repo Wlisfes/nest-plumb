@@ -4,7 +4,7 @@ import { Option } from '../option'
 import { createSuper, createCoreZoom, createBatchConnect, useScale } from '../super'
 import { command } from '../utils/utils-store'
 import { observer } from '../utils/utils-observer'
-import { throttle } from '../utils/utils-common'
+import { throttle, isConnect, startConnect, endConnect } from '../utils/utils-common'
 import { fetchTooltip } from '../hook/fetch-tooltip'
 import { Common } from '../components'
 
@@ -65,23 +65,28 @@ export default {
 
                     /**开始连线**/
                     instance.bind('connectionDrag', e => {
-                        this.column.forEach(x => {
-                            if (e.sourceId !== x.id) {
-                                instance.getEndpoint(x.id).canvas.classList.add('is-suspended')
-                            }
-                        })
+                        return startConnect({ e, column: this.column, line: this.line, instance: this.instance })
                     })
 
                     /**结束连线**/
                     instance.bind('connectionDragStop', e => {
-                        this.column.forEach(x => {
-                            instance.getEndpoint(x.id).canvas.classList.remove('is-suspended')
-                        })
+                        return endConnect({ column: this.column, instance: this.instance })
                     })
 
                     /**两个端点完成连线前的校验**/
                     instance.bind('beforeDrop', e => {
-                        return e.sourceId !== e.targetId
+                        const message = isConnect({
+                            e,
+                            column: this.column,
+                            line: this.line,
+                            instance: this.instance,
+                            observer: this.observer
+                        })
+                        if (message) {
+                            this.$message.error(message)
+                            return false
+                        }
+                        return true
                     })
 
                     /**连线完毕、维护本地数据**/
@@ -97,7 +102,7 @@ export default {
                                 label: '猪头'
                             }
                         }).then(({ props }) => {
-                            e.connection.canvas.setAttribute('id', props.node.id)
+                            e.connection.canvas?.setAttribute('id', props.node.id)
                         })
                     })
 

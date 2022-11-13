@@ -16,18 +16,18 @@ export default {
         },
         onReady() {
             setReload({
-                // column: data.column,
-                // line: data.line,
-                // axis: { x: false, y: false },
-                // core: {
-                //     x: 358.1875,
-                //     y: 38.5625,
-                //     offsetX: -477.5833333333333,
-                //     offsetY: -51.416666666666664,
-                //     width: '133.33333333333331%',
-                //     height: '133.33333333333331%',
-                //     scale: 0.75
-                // }
+                column: data.column,
+                line: data.line,
+                axis: { x: false, y: false },
+                core: {
+                    x: 358.1875,
+                    y: 38.5625,
+                    offsetX: -477.5833333333333,
+                    offsetY: -51.416666666666664,
+                    width: '133.33333333333331%',
+                    height: '133.33333333333331%',
+                    scale: 0.75
+                }
             }).then(() => {
                 setTimeout(() => {
                     setDone(false).then(() => {

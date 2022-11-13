@@ -39,6 +39,7 @@ export const source = [
         icon: 'el-icon-present',
         type: 'PRESENT',
         style: { backgroundColor: '#e6e0ff', color: '#8E72F7' },
+        rules: [],
         connect: ['MESSAGE', 'CPU', 'CLOCK', 'PRESENT']
     }
 ]
