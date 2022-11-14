@@ -259,13 +259,20 @@ export default {
                             setDelete({
                                 target: node.id,
                                 column: line.filter(x => x.parent === node.id).map(x => x.target)
+                            }).then(() => {
+                                instance.remove(node.id)
+                                this.setColumn({ command: 'DELETE', node }).then(() => {
+                                    this.$message.success({ message: '删除成功', duration: 1500 })
+                                    done()
+                                })
+                            })
+                        } else {
+                            instance.remove(node.id)
+                            this.setColumn({ command: 'DELETE', node }).then(() => {
+                                this.$message.success({ message: '删除成功', duration: 1500 })
+                                done()
                             })
                         }
-                        instance.remove(node.id)
-                        this.setColumn({ command: 'DELETE', node }).then(() => {
-                            this.$message.success({ message: '删除成功', duration: 1500 })
-                            done()
-                        })
                     }, 300)
                 })
             })
@@ -285,8 +292,10 @@ export default {
                         target: node.id,
                         column: line.filter(x => x.parent === node.id).map(x => x.target)
                     })
-                    instance.remove(node.id)
-                    this.setColumn({ command: 'DELETE', node })
+                    setTimeout(() => {
+                        instance.remove(node.id)
+                        this.setColumn({ command: 'DELETE', node })
+                    }, 16)
                 }
             }
         },
