@@ -141,8 +141,8 @@ export function isConnect(option) {
         const sourceNode = column.find(x => x.id === e.sourceId)
         const targetNode = column.find(x => x.id === e.targetId)
         if (!targetNode.form.connect.includes(sourceNode.form.type)) {
-            /**终点禁止连接起点节点**/
-            return '终点禁止连接起点节点'
+            /**上层节点禁止与当前node节点建立连接**/
+            return '上层节点禁止与当前node节点建立连接'
         } else if (line.some(x => x.parent === e.sourceId && x.target === e.targetId)) {
             /**上层节点与当前节点已建立连接关系**/
             return '上层节点与当前节点已建立连接关系'

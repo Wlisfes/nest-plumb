@@ -301,31 +301,30 @@ export default {
         },
         /**监听参数验证订阅事件**/
         fetchValidator(response) {
-            if (response.id !== this.node.id) {
-                return false /**不是传递给当前组件、不需处理**/
-            }
-            if (this.notice) {
-                /**存在notice表示当前提示组件已经存在**/
-                this.notice.fetchUpdate('猪头').then(() => {
-                    setTimeout(() => this.notice.onClose(), 1000)
-                })
-            } else {
-                fetchNotice({
-                    top: 0,
-                    left: this.$refs.node.clientWidth / 2,
-                    container: this.$refs.node,
-                    message: <div style={{ whiteSpace: 'nowrap', color: '#ff0000' }}>{response.message}</div>
-                }).then(response => {
-                    this.notice = response.instance
-                    response.instance.$once('close', ({ done }) => {
-                        this.notice = undefined
-                        done()
+            if (response.id === this.node.id) {
+                if (this.notice) {
+                    /**存在notice表示当前提示组件已经存在**/
+                    this.notice.fetchUpdate('猪头').then(() => {
+                        setTimeout(() => this.notice.onClose(), 1000)
                     })
-                    response.instance.$once('submit', ({ done }) => {
-                        this.notice = undefined
-                        done()
+                } else {
+                    fetchNotice({
+                        top: 0,
+                        left: this.$refs.node.clientWidth / 2,
+                        container: this.$refs.node,
+                        message: <div style={{ whiteSpace: 'nowrap', color: '#ff0000' }}>{response.message}</div>
+                    }).then(response => {
+                        this.notice = response.instance
+                        response.instance.$once('close', ({ done }) => {
+                            this.notice = undefined
+                            done()
+                        })
+                        response.instance.$once('submit', ({ done }) => {
+                            this.notice = undefined
+                            done()
+                        })
                     })
-                })
+                }
             }
         }
     },
