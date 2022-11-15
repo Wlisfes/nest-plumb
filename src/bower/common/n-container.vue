@@ -460,7 +460,7 @@ export default {
             z-index: 4;
         }
         .jtk-endpoint {
-            z-index: 5;
+            z-index: 6;
             cursor: crosshair;
             transition: transform 300ms;
             &.is-suspended {
