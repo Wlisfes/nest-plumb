@@ -13,7 +13,8 @@ export default {
         isDisable: {
             type: Function,
             required: true
-        }
+        },
+        setSuspended: { type: Function, required: true }
     },
     methods: {
         onSelecter(e) {
@@ -22,7 +23,7 @@ export default {
     },
     render() {
         return (
-            <div class="n-better" style={{ width: this.width }}>
+            <div class="n-better" style={{ width: this.width }} onDragend={e => this.setSuspended(null)}>
                 <el-scrollbar>
                     <div class="n-scrollbar">
                         {this.dataSource.map(x => {

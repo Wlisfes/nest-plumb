@@ -1,5 +1,6 @@
 <script>
 import { v4 } from 'uuid'
+import { createConnect } from '../super'
 import { ClickOutside } from '../utils/utils-click-outside'
 import { stop, throttle } from '../utils/utils-common'
 import { command, setDelete } from '../utils/utils-store'
@@ -10,38 +11,15 @@ export default {
     name: 'NCommon',
     directives: { ClickOutside },
     props: {
-        node: {
-            type: Object
-        },
-        instance: {
-            type: Object
-        },
-        observer: {
-            type: Object
-        },
-        recent: {
-            type: Object
-        },
-        delTree: {
-            type: Boolean,
-            default: false
-        },
-        column: {
-            type: Array,
-            default: () => []
-        },
-        line: {
-            type: Array,
-            default: () => []
-        },
-        setColumn: {
-            type: Function,
-            required: true
-        },
-        setSuspended: {
-            type: Function,
-            required: true
-        }
+        node: { type: Object },
+        instance: { type: Object },
+        observer: { type: Object },
+        recent: { type: Object },
+        delTree: { type: Boolean, default: false },
+        column: { type: Array, default: () => [] },
+        line: { type: Array, default: () => [] },
+        setColumn: { type: Function, required: true },
+        setSuspended: { type: Function, required: true }
     },
     computed: {
         isDubbo() {
@@ -216,23 +194,17 @@ export default {
                     /**拖动结束维护当前节点数据**/
                     this.setColumn({
                         command: 'UPDATE',
-                        node: Object.assign(node, { left: e.pos[0] + 'px', top: e.pos[1] + 'px' })
-                    }).then(() => {
-                        /**此处添加连接线**/
-                        setTimeout(() => {
-                            const { recent } = this
-                            if (recent) {
-                                instance.connect({
-                                    id: v4(),
-                                    source: recent.id,
-                                    target: node.id,
-                                    uuids: [recent.id, node.id],
-                                    anchor: ['TopCenter', 'BottomCenter'],
-                                    endpointStyle: { fill: 'transparent', outlineStroke: 'transparent' }
-                                })
-                                this.$nextTick(() => this.setSuspended(null))
-                            }
-                        }, 16)
+                        node: { ...node, left: e.pos[0] + 'px', top: e.pos[1] + 'px' }
+                    }).then(async () => {
+                        if (this.recent) {
+                            const { done } = await createConnect(instance, {
+                                id: v4(),
+                                source: this.recent.id,
+                                target: node.id
+                            })
+                            await done()
+                            this.setSuspended(null)
+                        }
                     })
                 }
             })

@@ -1,7 +1,7 @@
 <script>
 import { v4 } from 'uuid'
 import { Option } from '../option'
-import { createSuper, createCoreZoom, createBatchConnect, useScale } from '../super'
+import { createSuper, createCoreZoom, createBatchConnect, createConnect, useScale } from '../super'
 import { command } from '../utils/utils-store'
 import { observer } from '../utils/utils-observer'
 import { throttle, isConnect, startConnect, endConnect } from '../utils/utils-common'
@@ -166,7 +166,7 @@ export default {
         },
         /**拖拽结束添加节点**/
         onMounte(e) {
-            const { instance, recent, current } = this
+            const { instance, current } = this
             const rect = instance.getContainer().getBoundingClientRect()
             const scale = useScale(instance)
             const left = (e.pageX - rect.left - 60) / scale
@@ -178,23 +178,16 @@ export default {
                 top: top + 'px',
                 left: left + 'px'
             }
-            this.setColumn({ command: 'CREATE', node }).then(() => {
-                /**此处添加连接线**/
-                setTimeout(() => {
-                    if (recent) {
-                        const connect = instance.connect({
-                            id: v4(),
-                            source: recent.id,
-                            target: node.id,
-                            uuids: [recent.id, node.id],
-                            anchor: ['TopCenter', 'BottomCenter'],
-                            endpointStyle: { fill: 'transparent', outlineStroke: 'transparent' }
-                        })
-                        this.$nextTick(() => {
-                            this.setSuspended(null)
-                        })
-                    }
-                }, 16)
+            this.setColumn({ command: 'CREATE', node }).then(async () => {
+                if (this.recent) {
+                    const { done } = await createConnect(instance, {
+                        id: v4(),
+                        source: this.recent.id,
+                        target: node.id
+                    })
+                    await done()
+                    this.setSuspended(null)
+                }
             })
         },
         /**节流持续拖拽捕获可连接点位置**/
@@ -368,13 +361,22 @@ export default {
         }
     },
     render() {
-        const { instance, observer, axis, core, column, line, loading } = this
+        const { instance, observer, axis, core, column, line, loading, setSuspended } = this
 
         return (
             <div class="flowchart" v-loading={this.loading}>
                 {this.$scopedSlots.better && (
                     <div class="flowchart-better">
-                        {this.$scopedSlots.better?.({ instance, observer, axis, core, column, line, loading })}
+                        {this.$scopedSlots.better?.({
+                            instance,
+                            observer,
+                            axis,
+                            core,
+                            column,
+                            line,
+                            loading,
+                            setSuspended
+                        })}
                     </div>
                 )}
                 {this.$scopedSlots.discrete && (

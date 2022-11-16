@@ -85,6 +85,7 @@ export default {
                             <Better
                                 dataSource={this.dataSource}
                                 onSelecter={this.onSelecter}
+                                setSuspended={scope.setSuspended}
                                 isDisable={node => this.isDisable(scope.column, node)}
                                 style={{ height: '320px', position: 'absolute', top: 0, zIndex: 29 }}
                             ></Better>
