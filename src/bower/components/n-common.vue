@@ -92,8 +92,8 @@ export default {
                     maxConnections: x.max ?? 1,
                     cssClass: 'is-source',
                     endpoint: ['Dot', { radius: 6 }],
-                    endpointStyle: { fill: '#dbdbdb', strokeWidth: 2, stroke: '#ff0000' },
-                    connectorStyle: { stroke: '#dbdbdb', strokeWidth: 3 }
+                    endpointStyle: { fill: '#ffffff', strokeWidth: 2, stroke: '#dbdbdb' },
+                    connectorStyle: { stroke: '#dbdbdb', strokeWidth: 2 }
                 })
             })
         },
@@ -110,8 +110,7 @@ export default {
                     maxConnections: node.form.max ?? -1,
                     cssClass: 'is-target',
                     endpoint: ['Dot', { radius: 6 }],
-                    endpointStyle: { fill: '#dbdbdb', strokeWidth: 2, stroke: '#ff0000' }
-                    // endpointStyle: { fill: node.form.style.backgroundColor }
+                    endpointStyle: { fill: '#ffffff', strokeWidth: 2, stroke: '#dbdbdb' }
                 })
             }
         },
