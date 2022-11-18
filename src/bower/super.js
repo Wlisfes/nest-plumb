@@ -25,8 +25,8 @@ export async function createCoreZoom(instance, option) {
         smoothScroll: false,
         bounds: false,
         zoomDoubleClickSpeed: 1,
-        minZoom: 0.1,
-        maxZoom: 10,
+        minZoom: 0.25,
+        maxZoom: 3,
         initialZoom: 1,
         beforeWheel: e => {
             return false

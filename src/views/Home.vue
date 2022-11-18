@@ -1,13 +1,13 @@
 <script>
-import { Better, Discrete, Container, setReload, setDone, setValidator } from '@/bower'
-import * as data from './common/data'
+import { Better, Zoom, Discrete, Container, setReload, setDone, setValidator } from '@/bower'
+import * as common from './common/data'
 
 export default {
     name: 'Home',
     data() {
         return {
             current: null,
-            dataSource: data.source
+            dataSource: common.better
         }
     },
     methods: {
@@ -16,18 +16,18 @@ export default {
         },
         onReady() {
             setReload({
-                column: data.column,
-                line: data.line,
-                axis: { x: false, y: false },
-                core: {
-                    x: 358.1875,
-                    y: 38.5625,
-                    offsetX: -477.5833333333333,
-                    offsetY: -51.416666666666664,
-                    width: '133.33333333333331%',
-                    height: '133.33333333333331%',
-                    scale: 0.75
-                }
+                // column: data.column,
+                // line: data.line,
+                // axis: { x: false, y: false },
+                // core: {
+                //     x: 358.1875,
+                //     y: 38.5625,
+                //     offsetX: -477.5833333333333,
+                //     offsetY: -51.416666666666664,
+                //     width: '133.33333333333331%',
+                //     height: '133.33333333333331%',
+                //     scale: 0.75
+                // }
             }).then(() => {
                 setTimeout(() => {
                     setDone(false).then(() => {
@@ -81,13 +81,15 @@ export default {
                     current={this.current}
                     onReady={this.onReady}
                     scopedSlots={{
+                        zoom: scope => (
+                            <Zoom core={scope.core} instance={scope.instance} observer={scope.observer}></Zoom>
+                        ),
                         better: scope => (
                             <Better
                                 dataSource={this.dataSource}
                                 onSelecter={this.onSelecter}
                                 setSuspended={scope.setSuspended}
                                 isDisable={node => this.isDisable(scope.column, node)}
-                                style={{ height: '320px', position: 'absolute', top: 0, zIndex: 29 }}
                             ></Better>
                         ),
                         discrete: scope => (
@@ -95,13 +97,6 @@ export default {
                                 loading={scope.loading}
                                 onConserve={event => this.onConserve({ event, ...scope })}
                                 onSubmit={event => this.onSubmit({ event, ...scope })}
-                                style={{
-                                    position: 'absolute',
-                                    bottom: 0,
-                                    left: '50%',
-                                    zIndex: 29,
-                                    transform: 'translateX(-50%)'
-                                }}
                             ></Discrete>
                         )
                     }}

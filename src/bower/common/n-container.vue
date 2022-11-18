@@ -365,25 +365,10 @@ export default {
 
         return (
             <div class="flowchart" v-loading={this.loading}>
-                {this.$scopedSlots.better && (
-                    <div class="flowchart-better">
-                        {this.$scopedSlots.better?.({
-                            instance,
-                            observer,
-                            axis,
-                            core,
-                            column,
-                            line,
-                            loading,
-                            setSuspended
-                        })}
-                    </div>
-                )}
-                {this.$scopedSlots.discrete && (
-                    <div class="flowchart-discrete">
-                        {this.$scopedSlots.discrete?.({ instance, observer, axis, core, column, line, loading })}
-                    </div>
-                )}
+                {this.$scopedSlots.zoom?.({ instance, observer, axis, core, column, line, loading })}
+                {this.$scopedSlots.better?.({ instance, observer, axis, core, column, line, loading, setSuspended })}
+                {this.$scopedSlots.discrete?.({ instance, observer, axis, core, column, line, loading })}
+
                 <div class="flowchart-container" onDragover={this.onDragover} onDrop={this.onMounte}>
                     <div ref="context" id="context">
                         <div

@@ -2,10 +2,6 @@
 export default {
     name: 'NBetter',
     props: {
-        width: {
-            type: String,
-            default: '200px'
-        },
         dataSource: {
             type: Array,
             default: () => []
@@ -14,7 +10,10 @@ export default {
             type: Function,
             required: true
         },
-        setSuspended: { type: Function, required: true }
+        setSuspended: {
+            type: Function,
+            required: true
+        }
     },
     methods: {
         onSelecter(e) {
@@ -23,27 +22,29 @@ export default {
     },
     render() {
         return (
-            <div class="n-better" style={{ width: this.width }} onDragend={e => this.setSuspended(null)}>
-                <el-scrollbar>
-                    <div class="n-scrollbar">
-                        {this.dataSource.map(x => {
-                            const isDisable = this.isDisable(x)
-                            return (
-                                <div
-                                    class={{ 'n-source': true, 'is-disable': isDisable }}
-                                    key={x.id}
-                                    draggable={!isDisable}
-                                    onDragstart={e => this.onSelecter(x, e)}
-                                >
-                                    <div class="n-source__icon" style={x.style}>
-                                        {x.icon && <i class={x.icon}></i>}
+            <div class="n-better" onDragend={e => this.setSuspended(null)}>
+                <div class="n-better__scrollbar" onDragend={e => this.setSuspended(null)}>
+                    <el-scrollbar>
+                        <div>
+                            {this.dataSource.map(x => {
+                                const isDisable = this.isDisable(x)
+                                return (
+                                    <div
+                                        class={{ 'n-source': true }}
+                                        key={x.id}
+                                        draggable={!isDisable}
+                                        onDragstart={event => this.onSelecter(x, event)}
+                                    >
+                                        <div class="n-source__icon">
+                                            <el-image width={40} src={x.icon} style={{ display: 'block' }}></el-image>
+                                        </div>
+                                        <div class="n-source__content">{x.name}</div>
                                     </div>
-                                    <div class="n-source__content">{x.name}</div>
-                                </div>
-                            )
-                        })}
-                    </div>
-                </el-scrollbar>
+                                )
+                            })}
+                        </div>
+                    </el-scrollbar>
+                </div>
             </div>
         )
     }
@@ -52,62 +53,49 @@ export default {
 
 <style lang="less" scoped>
 .n-better {
-    position: relative;
-    ::v-deep .el-scrollbar {
-        height: 100%;
-        .el-scrollbar__wrap {
-            overflow-x: hidden;
-        }
-        .el-scrollbar__view {
-            min-height: 100%;
-        }
-    }
-    .n-scrollbar {
-        position: relative;
+    position: absolute;
+    top: 10%;
+    right: 16px;
+    width: 120px;
+    max-height: 65%;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 15px;
+    border-radius: 8px;
+    background-color: #ffffff;
+    z-index: 29;
+    display: flex;
+    flex-direction: column;
+    &__scrollbar {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
         overflow: hidden;
+        position: relative;
+        ::v-deep .el-scrollbar {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
     }
     .n-source {
-        margin: 15px;
-        padding: 10px;
-        border-radius: 6px;
-        box-sizing: border-box;
-        box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+        width: 96px;
+        height: 96px;
+        margin: 12px;
+        border-radius: 8px;
+        background-color: #f7f7f7;
         display: flex;
+        flex-direction: column;
+        justify-content: center;
         align-items: center;
-        background-color: #ffffff;
-        color: #3b3d44;
-        &:hover {
-            cursor: grab;
-        }
-        &:active {
-            cursor: grabbing;
-        }
-        &.is-disable {
-            cursor: not-allowed;
-            color: hsl(#3b3d44, 40%);
-            user-select: none;
-        }
         &__icon {
             width: 40px;
             height: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 50%;
-            margin-right: 10px;
-            i {
-                font-size: 20px;
-            }
+            margin-bottom: 3px;
         }
         &__content {
-            flex: 1;
             font-size: 14px;
+            color: #3f3f44;
             line-height: 20px;
-            display: -webkit-box;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
         }
     }
 }

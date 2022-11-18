@@ -28,20 +28,16 @@ export default {
         return (
             <div class="n-zoom">
                 <div class="n-zoom__back" onClick={e => stop(e, () => this.$router.back())}>
-                    <el-image width={24} src={require('@/assets/images/flowchart-back.png')}></el-image>
-                    <div>返回</div>
+                    <i class="el-icon-back" style={{ fontSize: '20px', marginRight: '3px' }}></i>
+                    <div>Back</div>
                 </div>
                 <div class="n-zoom__scope">
                     <div class="scope-column" onClick={e => stop(e, () => this.onCoreZoom('large'))}>
-                        <el-image width={24} src={require('@/assets/images/flowchart-large.png')}></el-image>
+                        <i class="el-icon-plus" style={{ fontSize: '16px' }}></i>
                     </div>
                     <el-divider direction="horizontal"></el-divider>
                     <div class="scope-column" onClick={e => stop(e, () => this.onCoreZoom('small'))}>
-                        <el-image width={24} src={require('@/assets/images/flowchart-small.png')}></el-image>
-                    </div>
-                    <el-divider direction="horizontal"></el-divider>
-                    <div class="scope-column" style={{ height: '24px' }}>
-                        {this.scale}
+                        <i class="el-icon-minus" style={{ fontSize: '16px' }}></i>
                     </div>
                 </div>
             </div>
@@ -52,23 +48,18 @@ export default {
 
 <style lang="less" scoped>
 .n-zoom {
-    .el-image {
-        width: 24px;
-        height: 24px;
-        display: block;
-    }
     .el-divider {
         margin: 0;
         background-color: #efefef;
     }
     &__back {
-        height: 40px;
+        height: 32px;
         display: flex;
         align-items: center;
         background-color: #ffffff;
         font-size: 14px;
         color: #6b6c72;
-        padding: 0 12px;
+        padding: 0 8px;
         border-radius: 4px;
         cursor: pointer;
         user-select: none;
@@ -76,9 +67,10 @@ export default {
         top: 16px;
         left: 16px;
         z-index: 29;
+        box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 15px;
     }
     &__scope {
-        width: 40px;
+        width: 32px;
         border-radius: 4px;
         user-select: none;
         position: absolute;
@@ -86,9 +78,10 @@ export default {
         left: 16px;
         z-index: 29;
         background-color: #ffffff;
+        box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 15px;
         .scope-column {
-            width: 40px;
-            height: 40px;
+            width: 32px;
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
