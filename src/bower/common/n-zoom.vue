@@ -39,6 +39,10 @@ export default {
                     <div class="scope-column" onClick={e => stop(e, () => this.onCoreZoom('small'))}>
                         <i class="el-icon-minus" style={{ fontSize: '16px' }}></i>
                     </div>
+                    <el-divider direction="horizontal"></el-divider>
+                    <div class="scope-column" style={{ height: '30px' }}>
+                        {this.scale}
+                    </div>
                 </div>
             </div>
         )
@@ -53,13 +57,13 @@ export default {
         background-color: #efefef;
     }
     &__back {
-        height: 32px;
+        height: 40px;
         display: flex;
         align-items: center;
         background-color: #ffffff;
         font-size: 14px;
         color: #6b6c72;
-        padding: 0 8px;
+        padding: 0 10px;
         border-radius: 4px;
         cursor: pointer;
         user-select: none;
@@ -70,7 +74,7 @@ export default {
         box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 15px;
     }
     &__scope {
-        width: 32px;
+        width: 40px;
         border-radius: 4px;
         user-select: none;
         position: absolute;
@@ -80,8 +84,8 @@ export default {
         background-color: #ffffff;
         box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 15px;
         .scope-column {
-            width: 32px;
-            height: 32px;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
