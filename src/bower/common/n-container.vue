@@ -6,7 +6,7 @@ import { command } from '../utils/utils-store'
 import { observer } from '../utils/utils-observer'
 import { throttle, isConnect, startConnect, endConnect } from '../utils/utils-common'
 import { fetchTooltip } from '../hook/fetch-tooltip'
-import { Common } from '../components'
+import { Common, Scence } from '../components'
 
 export default {
     name: 'NContainer',
@@ -330,7 +330,13 @@ export default {
                         setColumn: this.setColumn,
                         setSuspended: this.setSuspended
                     }
-                    switch (node.form.type) {
+                    switch (node.current.type) {
+                        case 'BINDTASK':
+                            return (
+                                <Common key={node.id} {...{ props }}>
+                                    <Scence {...{ props }}></Scence>
+                                </Common>
+                            )
                         case 'MESSAGE':
                             return <Common key={node.id} {...{ props }}></Common>
                         case 'CPU':

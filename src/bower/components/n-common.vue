@@ -22,8 +22,8 @@ export default {
         setSuspended: { type: Function, required: true }
     },
     computed: {
-        isDubbo() {
-            return this.node?.rules?.length > 1
+        isStence() {
+            return (this.node.rules ?? []).some(x => !!x.visible)
         }
     },
     data() {
@@ -35,7 +35,7 @@ export default {
         this.$nextTick(() => {
             this.initOneAfter()
             this.initOneBefore()
-            this.draggableNode()
+            // this.draggableNode()
 
             const uninstall = [
                 /**订阅删除事件**/
@@ -81,36 +81,43 @@ export default {
         /**设置起点**/
         initOneAfter() {
             const { node, instance } = this
-            node.rules?.forEach(x => {
-                const el = document.getElementById(x.id)
-                const offsetLeft = el.offsetLeft + el.clientWidth / 2
-                const offsetTop = el.offsetTop + el.clientHeight
-                instance.addEndpoint(node.id, {
-                    uuid: x.id,
-                    anchor: [0, 0, 0, 1, offsetLeft, offsetTop],
-                    isSource: true,
-                    maxConnections: x.max ?? 1,
-                    cssClass: 'is-source',
-                    endpoint: ['Dot', { radius: 6 }],
-                    endpointStyle: { fill: '#ffffff', strokeWidth: 2, stroke: '#dbdbdb' },
-                    connectorStyle: { stroke: '#dbdbdb', strokeWidth: 2 }
+            if (node.rules?.length === 0) {
+                /**当前节点禁止添加起点标志**/
+                return false
+            } else {
+                node.rules.forEach(x => {
+                    const el = document.getElementById(x.id)
+                    const offsetLeft = el.offsetLeft + el.clientWidth / 2
+                    const offsetTop = el.offsetTop + el.clientHeight
+                    instance.addEndpoint(node.id, {
+                        uuid: x.id,
+                        anchor: [0, 0, 0, 1, offsetLeft, offsetTop],
+                        isSource: true,
+                        maxConnections: x.max ?? 1,
+                        cssClass: 'is-source',
+                        endpoint: ['Dot', { radius: 6 }],
+                        endpointStyle: { fill: '#FFFFFF', strokeWidth: 2, stroke: '#DBDBDB' },
+                        connectorStyle: { stroke: '#DBDBDB', strokeWidth: 2 }
+                    })
                 })
-            })
+            }
         },
         /**设置终点**/
         initOneBefore() {
             const { node, instance } = this
-            if (node.form.max != 0) {
-                //max不等于0才添加终点标志
+            if (node.current?.max === 0) {
+                /**当前节点禁止添加终点标志**/
+                return false
+            } else {
                 const el = document.getElementById(node.id)
                 instance.addEndpoint(node.id, {
                     uuid: node.id,
-                    anchor: [0, 0, 0, -1, el.clientWidth / 2, 0],
+                    anchor: [0, 0, 0, -1, el.clientWidth / 2, -20],
                     isTarget: true,
-                    maxConnections: node.form.max ?? -1,
+                    maxConnections: node.current.max ?? -1,
                     cssClass: 'is-target',
                     endpoint: ['Dot', { radius: 6 }],
-                    endpointStyle: { fill: '#ffffff', strokeWidth: 2, stroke: '#dbdbdb' }
+                    endpointStyle: { fill: '#FFFFFF', strokeWidth: 2, stroke: '#DBDBDB' }
                 })
             }
         },
@@ -304,45 +311,27 @@ export default {
         const { node } = this
 
         return (
-            <div
-                ref="node"
-                id={node.id}
-                class={{ 'fetch-common': true, 'is-active': this.active }}
-                style={{ top: node.top, left: node.left }}
-                onClick={e => this.onSelecter(true)}
-                v-click-outside={e => this.onSelecter(false)}
-            >
-                <div class="node-common">
-                    <div class="node-common__content">
-                        <div class="n-icon" style={node.form.style}>
-                            {node.form.icon && <i class={node.form.icon}></i>}
+            <div ref="node" id={node.id} class={{ 'n-common': true }} style={{ top: node.top, left: node.left }}>
+                <div class="n-context ">
+                    <div class="n-bower">
+                        <div class="n-bower__icon">
+                            <el-image width={33} src={node.current.icon} style={{ display: 'block' }}></el-image>
                         </div>
-                        <div style={{ flex: 1 }}>
-                            <div class="n-header">
-                                <div class="n-header__name">{node.form.name}</div>
-                                <i
-                                    class="el-icon-delete"
-                                    title="删除"
-                                    onClick={e => stop(e, () => this.fetchOneDelete(e))}
-                                ></i>
-                            </div>
-                        </div>
+                        <div class="n-bower__title">{node.current.name}</div>
                     </div>
-                    {this.isDubbo ? (
-                        <div class="node-common__dubbo">
-                            {node.rules.map(x => (
-                                <div class="dubbo-source" key={x.id} id={x.id}>
-                                    <div class="dubbo-source__content">{x.content}</div>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div class="node-common__one">
-                            {node.rules.map(x => (
-                                <div class="one-source" key={x.id} id={x.id}></div>
-                            ))}
-                        </div>
-                    )}
+                    {this.$slots.default}
+                    <div class={{ 'n-rules': true }} style={{ paddingTop: this.isStence ? '12px' : '0px' }}>
+                        {node.rules?.map(x => (
+                            <div
+                                class={{ 'n-rules__source': true }}
+                                style={{ opacity: x.visible ? 1 : 0, paddingBottom: this.isStence ? '16px' : '0px' }}
+                                key={x.id}
+                                id={x.id}
+                            >
+                                <div class="n-rules__content">{x.content}</div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         )
@@ -351,5 +340,69 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import url('../less/fetch-common.less');
+.n-common {
+    position: absolute;
+    cursor: move;
+    .n-context {
+        width: 330px;
+        position: relative;
+        background-color: #ffffff;
+        filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.1));
+        transition: filter 300ms;
+        border-radius: 8px;
+        padding: 32px 0 0;
+        box-sizing: border-box;
+        transform: translate3d(0, 0, 0);
+        z-index: 5;
+        &:hover {
+            filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.2));
+        }
+    }
+    .n-bower {
+        position: absolute;
+        top: -22px;
+        left: 50%;
+        transform: translateX(-50%);
+        height: 44px;
+        background-color: #ffffff;
+        border-radius: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-left: 6px;
+        padding-right: 10px;
+        &__icon {
+            width: 32px;
+            height: 32px;
+        }
+        &__title {
+            font-size: 14px;
+            color: #3f3f44;
+            line-height: 20px;
+            margin-left: 10px;
+        }
+    }
+    .n-rules {
+        min-height: 20px;
+        padding: 0 12px;
+        display: flex;
+        justify-content: space-around;
+        &__source {
+            min-width: 24px;
+            max-width: 50%;
+            padding: 0 10px;
+            user-select: none;
+            overflow: hidden;
+        }
+        &__content {
+            font-size: 14px;
+            color: #3f3f44;
+            height: 20px;
+            line-height: 20px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+}
 </style>

@@ -1,3 +1,4 @@
+import { v4 } from 'uuid'
 import { observer } from './utils-observer'
 
 export const command = {
@@ -40,5 +41,32 @@ export function setDelete(props) {
             props,
             done: () => resolve(props)
         })
+    })
+}
+
+/**
+ * 创建初始化节点
+ * @param { Array } data
+ * @param { String } type
+ */
+export function createNode(props) {
+    const { data = [], type, el, locale = 'cn' } = props
+    const MARK = {
+        BINDTASK: { cn: '绑定发送任务', en: '绑定发送任务' },
+        MESSAGE: { cn: '自动营销', en: '自动营销' },
+        CPU: { cn: '创建触发器', en: '创建触发器' }
+    }
+    //prettier-ignore
+    return data.filter(x => x.type === type).map(x => {
+        return {
+            current: x,
+            rules: (x.rules ?? []).map(x => ({ ...x, id: v4() })),
+            name: MARK[x.type][locale],
+            root: 1,
+            delete: 0,
+            id: v4(),
+            top: '100px',
+            left: el.clientWidth / 2 - 165 +'px'
+        }
     })
 }

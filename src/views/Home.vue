@@ -1,5 +1,5 @@
 <script>
-import { Better, Zoom, Discrete, Container, setReload, setDone, setValidator } from '@/bower'
+import { Better, Zoom, Discrete, Container, createNode, setReload, setDone, setValidator } from '@/bower'
 import * as common from './common/data'
 
 export default {
@@ -14,20 +14,20 @@ export default {
         onSelecter(e) {
             this.current = e
         },
-        onReady() {
+        onReady(instance) {
+            console.log(
+                createNode({
+                    data: common.better,
+                    type: 'BINDTASK',
+                    el: instance.mainContainerWrap
+                })
+            )
             setReload({
-                // column: data.column,
-                // line: data.line,
-                // axis: { x: false, y: false },
-                // core: {
-                //     x: 358.1875,
-                //     y: 38.5625,
-                //     offsetX: -477.5833333333333,
-                //     offsetY: -51.416666666666664,
-                //     width: '133.33333333333331%',
-                //     height: '133.33333333333331%',
-                //     scale: 0.75
-                // }
+                column: createNode({
+                    data: common.better,
+                    type: 'BINDTASK',
+                    el: instance.mainContainerWrap
+                })
             }).then(() => {
                 setTimeout(() => {
                     setDone(false).then(() => {

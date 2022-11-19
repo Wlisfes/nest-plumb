@@ -2,6 +2,16 @@ import { v4 } from 'uuid'
 
 export const better = [
     {
+        id: '8e8a9c60-8d22-4538-aa55-e79c07facdf5',
+        max: 0,
+        name: '绑定发送任务',
+        icon: 'https://oss.lisfes.cn/cloud/avatar/2022-11/1668565939464.png',
+        type: 'BINDTASK',
+        style: { backgroundColor: '#e1f1ff', color: '#75BAF9' },
+        rules: [{ id: 'e7375f64-c3a0-4222-9e1f-8369f637545d', max: 1, visible: 1, content: '起点' }],
+        connect: []
+    },
+    {
         id: '72f29b4f-e7c5-4107-8447-d3a7f778e16c',
         max: -1,
         name: '电子邮件',
