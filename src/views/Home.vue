@@ -31,15 +31,15 @@ export default {
         },
         /**菜单节点状态判断**/
         isDisable(column, node) {
-            switch (node.form) {
+            switch (node.type) {
                 case 'MESSAGE':
-                    return column.filter(x => x.props.form === 'MESSAGE').length >= 6
+                    return column.filter(x => x.current.type === 'MESSAGE').length >= 6
                 case 'CPU':
-                    return column.filter(x => x.props.form === 'CPU').length >= 6
+                    return column.filter(x => x.current.type === 'CPU').length >= 6
                 case 'CLOCK':
-                    return column.filter(x => x.props.form === 'CLOCK').length >= 6
+                    return column.filter(x => x.current.type === 'CLOCK').length >= 6
                 case 'PRESENT':
-                    return column.filter(x => x.props.form === 'PRESENT').length >= 6
+                    return column.filter(x => x.current.type === 'PRESENT').length >= 6
                 default:
                     return false
             }
@@ -53,7 +53,7 @@ export default {
         /**提交工作流**/
         onSubmit({ column }) {
             column.forEach(node => {
-                switch (node.form.type) {
+                switch (node.current.type) {
                     case 'MESSAGE':
                         setValidator({ ...node, message: '请完善电子邮件' })
                         break
