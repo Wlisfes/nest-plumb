@@ -148,19 +148,13 @@ export default {
         async initCoreZoom(instance) {
             return await createCoreZoom(instance, {
                 core: this.core,
-                onPanstart: e => {
-                    this.setAxis({ x: true, y: true })
+                onPanstart: e => this.setAxis({ x: true, y: true }),
+                onPanend: e => this.setAxis({ x: false, y: false }),
+                onZoom: ({ x, y, offsetX, offsetY, width, height, scale }) => {
+                    this.setCore({ x, y, offsetX, offsetY, width, height, scale })
                 },
-                onPanend: e => {
-                    this.setAxis({ x: false, y: false })
-                },
-                onZoom: e => {
-                    const { x, y, offsetX, offsetY, width, height, scale } = e
-                    this.core = { x, y, offsetX, offsetY, width, height, scale }
-                },
-                onTransform: e => {
-                    const { x, y, offsetX, offsetY, width, height, scale } = e
-                    this.core = { x, y, offsetX, offsetY, width, height, scale }
+                onTransform: ({ x, y, offsetX, offsetY, width, height, scale }) => {
+                    this.setCore({ x, y, offsetX, offsetY, width, height, scale })
                 }
             })
         },
@@ -172,7 +166,7 @@ export default {
             const left = (e.pageX - rect.left - 60) / scale
             const top = (e.pageY - rect.top) / scale
             const node = {
-                form: current,
+                current,
                 rules: (current.rules ?? []).map(x => ({ ...x, id: v4() })),
                 id: v4(),
                 top: top + 'px',
@@ -201,7 +195,7 @@ export default {
             /**根据条件筛选出可连接node节点的rules规则**/
             const rules = column
                 .filter(x => {
-                    if (current.max === 0 || !current.connect.includes(x.form.type)) {
+                    if (current.max === 0 || !current.connect.includes(x.current.type)) {
                         /**
                          * 1:当前node节点禁止连接
                          * 3:上层节点禁止与当前node节点建立连接
@@ -276,10 +270,12 @@ export default {
             return (this.axis = axis)
         },
         /**画布坐标位置数据维护**/
-        async setCore(core) {
+        async setCore(core, reload) {
             this.core = core
-            this.instance.pan.moveTo(core.x ?? 0, core.y ?? 0)
-            this.instance.pan.zoomTo(0, 0, core.scale ?? 1)
+            if (reload) {
+                this.instance.pan.moveTo(core.x ?? 0, core.y ?? 0)
+                this.instance.pan.zoomTo(0, 0, core.scale ?? 1)
+            }
             return this.instance.setZoom(core.scale ?? 1)
         },
         /**连接线数据维护**/

@@ -89,9 +89,9 @@ export function startConnect(option) {
     const current = column.find(x => x.id === e.sourceId)
     for (const node of column) {
         if (
-            node.form.max === 0 ||
+            node.current.max === 0 ||
             node.id === current.id ||
-            !node.form.connect.includes(current.form.type) ||
+            !node.current.connect.includes(current.current.type) ||
             line.some(x => x.parent === current.id && x.target === node.id)
         ) {
             /**
@@ -101,13 +101,13 @@ export function startConnect(option) {
              * 4:上层节点与当前节点已建立连接关系
              */
             continue
-        } else if (node.form.max === -1) {
+        } else if (node.current.max === -1) {
             /**当前node可以无限连接**/
             instance.getEndpoint(node.id)?.canvas?.classList.add('is-suspended')
         } else {
             /**获取以当前node节点为起点的连接线**/
             const total = line.filter(n => n.target === node.id).length ?? 0
-            if (total >= node.form.max) {
+            if (total >= node.current.max) {
                 /**当前node节点连接数量不足**/
                 continue
             } else {
@@ -140,7 +140,7 @@ export function isConnect(option) {
     } else {
         const sourceNode = column.find(x => x.id === e.sourceId)
         const targetNode = column.find(x => x.id === e.targetId)
-        if (!targetNode.form.connect.includes(sourceNode.form.type)) {
+        if (!targetNode.current.connect.includes(sourceNode.current.type)) {
             /**上层节点禁止与当前node节点建立连接**/
             return '上层节点禁止与当前node节点建立连接'
         } else if (line.some(x => x.parent === e.sourceId && x.target === e.targetId)) {

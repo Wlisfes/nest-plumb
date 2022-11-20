@@ -15,13 +15,6 @@ export default {
             this.current = e
         },
         onReady(instance) {
-            console.log(
-                createNode({
-                    data: common.better,
-                    type: 'BINDTASK',
-                    el: instance.mainContainerWrap
-                })
-            )
             setReload({
                 column: createNode({
                     data: common.better,
