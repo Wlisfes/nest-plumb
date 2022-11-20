@@ -66,14 +66,12 @@ export async function createCoreZoom(instance, option) {
     //缩放事件
     pan.on('zoom', e => {
         const response = useTransform(e)
-        instance.setZoom(response.scale)
         option?.onZoom?.(response)
     })
 
     //拖动事件
     pan.on('transform', e => {
         const response = useTransform(e)
-        instance.setZoom(response.scale)
         option?.onTransform?.(response)
     })
 
