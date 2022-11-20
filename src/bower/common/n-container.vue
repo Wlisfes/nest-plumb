@@ -6,7 +6,7 @@ import { command } from '../utils/utils-store'
 import { observer } from '../utils/utils-observer'
 import { throttle, isConnect, startConnect, endConnect } from '../utils/utils-common'
 import { fetchTooltip } from '../hook/fetch-tooltip'
-import { Common, Scence } from '../components'
+import { Common, Scence, Email, Trigger } from '../components'
 
 export default {
     name: 'NContainer',
@@ -334,11 +334,17 @@ export default {
                                 </Common>
                             )
                         case 'MESSAGE':
-                            return <Common key={node.id} {...{ props }}></Common>
+                            return (
+                                <Common key={node.id} {...{ props }}>
+                                    <Email {...{ props }}></Email>
+                                </Common>
+                            )
                         case 'CPU':
-                            return <Common key={node.id} {...{ props }}></Common>
-                        case 'CLOCK':
-                            return <Common key={node.id} {...{ props }}></Common>
+                            return (
+                                <Common key={node.id} {...{ props }}>
+                                    <Trigger {...{ props }}></Trigger>
+                                </Common>
+                            )
                         case 'PRESENT':
                             return <Common key={node.id} {...{ props }}></Common>
                         default:

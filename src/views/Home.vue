@@ -90,6 +90,13 @@ export default {
                                 loading={scope.loading}
                                 onConserve={event => this.onConserve({ event, ...scope })}
                                 onSubmit={event => this.onSubmit({ event, ...scope })}
+                                style={{
+                                    backgroundColor: 'transparent',
+                                    transform: 'translateX(-50%)',
+                                    left: '50%',
+                                    right: 'inherit',
+                                    padding: '0 20px'
+                                }}
                             ></Discrete>
                         )
                     }}
