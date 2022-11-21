@@ -1,8 +1,16 @@
-.n-tooltip {
+.fetch-tooltip {
     position: absolute;
     z-index: 6;
     transform: translate3d(-50%, -100%, 0);
-    .n-tooltip-arrow {
+    .fetch-tooltip-close {
+        position: absolute;
+        right: -8px;
+        top: -8px;
+        font-size: 16px;
+        color: #666666;
+        cursor: pointer;
+    }
+    .fetch-tooltip-arrow {
         position: absolute;
         bottom: -19px;
         left: 50%;
@@ -13,7 +21,7 @@
         border: 10px solid transparent;
         border-top-color: #fff;
     }
-    .n-tooltip-content {
+    .fetch-tooltip-content {
         min-width: 140px;
         position: relative;
         padding: 8px;
@@ -22,7 +30,7 @@
         filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.2));
         box-sizing: border-box;
     }
-    .n-tooltip-text {
+    .fetch-tooltip-text {
         display: flex;
         align-items: center;
         font-size: 12px;
@@ -33,7 +41,7 @@
             color: #ff9900;
         }
     }
-    .n-tooltip-footer {
+    .fetch-tooltip-footer {
         display: flex;
         align-items: center;
         justify-content: flex-end;

@@ -1,5 +1,5 @@
 <script>
-import { Better, Zoom, Discrete, Container, createNode, setReload, setDone, setValidator } from '@/bower'
+import { Better, Zoom, Discrete, Container, createNode, setReload, setDone, setValidator } from '@/core'
 import * as common from './common/data'
 
 export default {

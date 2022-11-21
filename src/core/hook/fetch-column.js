@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import { v4 as only } from 'uuid'
-import { initMounte, done } from '@/utils/utils-common'
+import { initMounte, done } from '../utils/utils-common'
 
 export function fetchColumn(props) {
     return new Promise(resolve => {

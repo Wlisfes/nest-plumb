@@ -4,7 +4,7 @@ import { jsPlumb } from 'jsplumb'
 /**
  * 创建实例
  * @param { Object } option
- * @returns Super
+ * @returns { jsPlumb.jsPlumbInstance }
  */
 export async function createSuper(option) {
     const instance = jsPlumb.getInstance()
@@ -14,9 +14,9 @@ export async function createSuper(option) {
 
 /**
  * 创建画布实例
- * @param { Super } instance
+ * @param { jsPlumb.jsPlumbInstance } instance
  * @param { Object } option
- * @returns Super
+ * @returns { jsPlumb.jsPlumbInstance }
  */
 export async function createCoreZoom(instance, option) {
     const mainContainer = instance.getContainer()
@@ -25,15 +25,14 @@ export async function createCoreZoom(instance, option) {
         smoothScroll: false,
         bounds: false,
         zoomDoubleClickSpeed: 1,
-        minZoom: 0.1,
-        maxZoom: 10,
-        initialZoom: option.core?.scale ?? 1,
+        minZoom: 0.25,
+        maxZoom: 3,
+        initialZoom: 1,
         beforeWheel: e => {
             return false
         },
         beforeMouseDown: e => e.ctrlKey
     })
-    pan.moveTo(option.core?.x ?? 0, option.core?.y ?? 0)
 
     instance.mainContainerWrap = mainContainerWrap
     instance.pan = pan
@@ -67,21 +66,23 @@ export async function createCoreZoom(instance, option) {
     //缩放事件
     pan.on('zoom', e => {
         const response = useTransform(e)
-        instance.setZoom(response.scale)
         option?.onZoom?.(response)
     })
 
     //拖动事件
     pan.on('transform', e => {
         const response = useTransform(e)
-        instance.setZoom(response.scale)
         option?.onTransform?.(response)
     })
 
     return instance
 }
 
-//获取比例
+/**
+ * 获取比例
+ * @param { jsPlumb.jsPlumbInstance } instance
+ * @returns { Number }
+ */
 export function useScale(instance) {
     if (instance.pan) {
         const { scale } = instance.pan.getTransform()
@@ -95,4 +96,48 @@ export function useScale(instance) {
     }
 }
 
-export function fetchConnect() {}
+/**
+ * 绘制连接线
+ * @param { jsPlumb.jsPlumbInstance } instance
+ * @param { Object } option
+ */
+export function createConnect(instance, option) {
+    return new Promise(resolve => {
+        const connection = instance.connect({
+            id: option.id,
+            source: option.source,
+            target: option.target,
+            uuids: [option.source, option.target],
+            anchor: ['TopCenter', 'BottomCenter'],
+            endpointStyle: { fill: 'transparent', outlineStroke: 'transparent' }
+        })
+        const done = () => connection.canvas.setAttribute('id', option.id)
+        resolve({ instance, connection, option, done })
+    })
+}
+
+/**
+ * 批量绘制连接线
+ * @param { jsPlumb.jsPlumbInstance } instance
+ * @param { Object } option
+ */
+export function createBatchConnect(instance, option) {
+    const { update, delay, line } = option
+    return new Promise(resolve => {
+        setTimeout(() => {
+            if (update) {
+                /**数据更新**/
+                instance.deleteEveryConnection()
+                line.forEach(async x => {
+                    await createConnect(instance, x).then(({ done }) => done())
+                })
+                resolve(instance)
+            } else {
+                line.forEach(async x => {
+                    await createConnect(instance, x).then(({ done }) => done())
+                })
+                resolve(instance)
+            }
+        }, delay ?? 0)
+    })
+}
