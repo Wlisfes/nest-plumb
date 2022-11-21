@@ -112,7 +112,7 @@ export default {
                 const el = document.getElementById(node.id)
                 instance.addEndpoint(node.id, {
                     uuid: node.id,
-                    anchor: [0, 0, 0, -1, el.clientWidth / 2, -20],
+                    anchor: [0, 0, 0, -1, el.clientWidth / 2, -22],
                     isTarget: true,
                     maxConnections: node.current.max ?? -1,
                     cssClass: 'is-target',
