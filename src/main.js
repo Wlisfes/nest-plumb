@@ -6,7 +6,7 @@ import store from '@/store'
 import '@/style/index.less'
 
 Vue.config.productionTip = false
-Vue.use(ElementUI)
+Vue.use(ElementUI, { size: 'medium' })
 
 new Vue({
     router,
