@@ -27,7 +27,7 @@ export default {
                         </el-menu-item>
                     </el-menu>
                 </el-aside>
-                <el-container direction="vertical">
+                <el-container direction="vertical" style={{ backgroundColor: 'rgb(244, 246, 248)' }}>
                     <router-view key={this.$route.path} />
                 </el-container>
             </el-container>
