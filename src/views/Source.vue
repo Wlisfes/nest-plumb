@@ -1,5 +1,6 @@
 <script>
 import { fetchSource } from '@/fetch/fetch-source'
+import { httpColumnNode } from '@/api/service'
 
 export default {
     name: 'Source',
@@ -16,11 +17,25 @@ export default {
             dataSource: []
         }
     },
+    created() {
+        this.fetchColumnNode()
+    },
     methods: {
+        /**节点列表**/
+        async fetchColumnNode() {
+            try {
+                const { data } = await httpColumnNode({
+                    page: this.page,
+                    size: this.size
+                })
+                console.let(data)
+            } catch (e) {}
+        },
         fetchOneSource() {
             fetchSource().then(response => {
                 response.instance.$once('close', ({ done }) => done())
                 response.instance.$once('submit', ({ done }) => {
+                    console.log(done)
                     done()
                 })
             })

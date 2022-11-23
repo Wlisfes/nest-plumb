@@ -1,6 +1,6 @@
 import Vue from 'vue'
-import { v4 as only } from 'uuid'
 import { initMounte, done } from '@/utils/utils-common'
+import { httpCreateNode } from '@/api/service'
 
 export function fetchSource(props) {
     return new Promise(resolve => {
@@ -11,20 +11,21 @@ export function fetchSource(props) {
                     visible: false,
                     loading: true,
                     form: {
-                        name: undefined,
-                        icon: undefined,
-                        type: undefined,
+                        name: '绑定发送任务',
+                        icon: 'https://oss.lisfes.cn/cloud/avatar/2021-09/1632984086053.png',
+                        type: 'BIND_TASK',
                         connect: [],
                         delete: 1,
                         root: 1,
+                        max: 1,
+                        status: 1,
                         rules: []
                     },
                     rules: {
                         name: { required: true, message: '请输入节点名称', trigger: 'blur' },
                         icon: { required: true, message: '上传节点图标', trigger: 'blur' },
                         type: { required: true, message: '请选择节点类型', trigger: 'blur' },
-                        connect: { required: true, message: '请选择节点连接类型', trigger: 'blur' }
-                        // rules: { required: true, message: '上传节点图标', trigger: 'blur' }
+                        max: { required: true, message: '请输入最大连接数', trigger: 'blur' }
                     },
                     column: [
                         { label: '绑定发送任务', value: 'BIND_TASK' },
@@ -41,19 +42,48 @@ export function fetchSource(props) {
                     this.visible = true
                     const done = this.$watch('$route', () => this.onClose())
                     this.$once('hook:beforeDestroy', () => done())
+                    this.fetchOneNode().finally(() => {
+                        this.loading = false
+                    })
                 })
             },
             methods: {
+                fetchOneNode() {
+                    return new Promise(async resolve => {
+                        resolve()
+                    })
+                },
+                setRules(command, index) {
+                    if (command === 'CREATE') {
+                        this.form.rules.push({ max: 1, visible: 1, content: undefined })
+                    } else {
+                        this.form.rules.splice(index, 1)
+                    }
+                },
                 onClose() {
                     this.visible = false
                     this.$emit('close', { done: delay => done(this.$el, delay ?? 500) })
                 },
                 onSubmit() {
-                    this.$emit('submit', {
-                        setState: loading => (this.loading = loading),
-                        done: delay => {
-                            this.visible = false
-                            done(this.$el, delay ?? 500)
+                    this.$refs.formRef.validate(async valid => {
+                        if (!valid) return false
+
+                        try {
+                            this.loading = true
+                            const { data } = await httpCreateNode({ ...this.form })
+                            console.log(data)
+                            this.$message.success(data.message)
+                            // this.$emit('submit', {
+                            //     done: delay => {
+                            //         this.visible = false
+                            //         done(this.$el, delay ?? 500)
+                            //     }
+                            // })
+
+                            this.loading = false
+                        } catch (e) {
+                            console.log(e)
+                            this.loading = false
                         }
                     })
                 }
@@ -63,6 +93,7 @@ export function fetchSource(props) {
 
                 return (
                     <el-dialog
+                        top="10vh"
                         width="840px"
                         class="el-customize"
                         destroy-on-close
@@ -105,7 +136,7 @@ export function fetchSource(props) {
                                         </el-form-item>
                                     </el-col>
                                     <el-col span={12}>
-                                        <el-form-item label="节点连接类型" prop="connect">
+                                        <el-form-item label="节点连接类型">
                                             <el-select
                                                 v-model={form.connect}
                                                 multiple
@@ -147,49 +178,106 @@ export function fetchSource(props) {
                                             </el-select>
                                         </el-form-item>
                                     </el-col>
+                                    <el-col span={12}>
+                                        <el-form-item label="最大连接数" prop="max">
+                                            <el-input-number
+                                                v-model={form.max}
+                                                min={-1}
+                                                step-strictly
+                                                placeholder="请输入最大连接数"
+                                                style={{ width: '100%' }}
+                                            ></el-input-number>
+                                        </el-form-item>
+                                    </el-col>
+                                    <el-col span={12}>
+                                        <el-form-item label="节点状态" required>
+                                            <el-select
+                                                v-model={form.status}
+                                                placeholder="请选择节点状态"
+                                                style={{ width: '100%' }}
+                                            >
+                                                <el-option label="启用" value={1}></el-option>
+                                                <el-option label="禁用" value={0}></el-option>
+                                            </el-select>
+                                        </el-form-item>
+                                    </el-col>
                                     <el-col span={24}>
                                         <el-form-item label="规则列表">
-                                            <el-row gutter={16}>
-                                                <el-col span={6} style={{ paddingLeft: 0 }}>
-                                                    <el-form-item>
-                                                        <el-input v-model={form.icon} placeholder="规则名称"></el-input>
-                                                    </el-form-item>
-                                                </el-col>
-                                                <el-col span={6}>
-                                                    <el-form-item>
-                                                        <el-input-number
-                                                            min={-1}
-                                                            step-strictly
-                                                            placeholder="最大连接数"
-                                                            style={{ width: '100%' }}
-                                                        ></el-input-number>
-                                                    </el-form-item>
-                                                </el-col>
-                                                <el-col span={6}>
-                                                    <el-form-item>
-                                                        <el-select
-                                                            v-model={form.root}
-                                                            placeholder="规则状态"
-                                                            style={{ width: '100%' }}
+                                            {form.rules.map((x, index) => (
+                                                <el-row
+                                                    type="flex"
+                                                    key={index}
+                                                    gutter={16}
+                                                    style={{ marginBottom: '22px' }}
+                                                >
+                                                    <el-col span={8}>
+                                                        <el-form-item
+                                                            prop={'rules.' + index + '.content'}
+                                                            rules={{
+                                                                required: true,
+                                                                message: '请输入规则名称',
+                                                                trigger: 'blur'
+                                                            }}
                                                         >
-                                                            <el-option label="显示" value={1}></el-option>
-                                                            <el-option label="隐藏" value={0}></el-option>
-                                                        </el-select>
-                                                    </el-form-item>
-                                                </el-col>
-                                                <el-col span={5}>
-                                                    <el-button
-                                                        type="danger"
-                                                        icon="el-icon-delete"
-                                                        style={{ width: '40px', padding: '10px 0' }}
-                                                    ></el-button>
-                                                    <el-button
-                                                        type="success"
-                                                        icon="el-icon-plus"
-                                                        style={{ width: '40px', padding: '10px 0' }}
-                                                    ></el-button>
-                                                </el-col>
-                                            </el-row>
+                                                            <el-input
+                                                                v-model={x.content}
+                                                                placeholder="规则名称"
+                                                            ></el-input>
+                                                        </el-form-item>
+                                                    </el-col>
+                                                    <el-col span={8}>
+                                                        <el-form-item
+                                                            prop={'rules.' + index + '.max'}
+                                                            rules={{
+                                                                required: true,
+                                                                message: '请输入最大分支',
+                                                                trigger: 'blur'
+                                                            }}
+                                                        >
+                                                            <el-input-number
+                                                                v-model={x.max}
+                                                                min={-1}
+                                                                step-strictly
+                                                                placeholder="最大分支"
+                                                                style={{ width: '100%' }}
+                                                            ></el-input-number>
+                                                        </el-form-item>
+                                                    </el-col>
+                                                    <el-col span={6}>
+                                                        <el-form-item>
+                                                            <el-select
+                                                                v-model={x.visible}
+                                                                placeholder="规则状态"
+                                                                style={{ width: '100%' }}
+                                                            >
+                                                                <el-option label="显示" value={1}></el-option>
+                                                                <el-option label="隐藏" value={0}></el-option>
+                                                            </el-select>
+                                                        </el-form-item>
+                                                    </el-col>
+                                                    <el-col span={2}>
+                                                        <el-button
+                                                            type="danger"
+                                                            icon="el-icon-delete"
+                                                            style={{ width: '40px', padding: '10px 0' }}
+                                                            onClick={e => this.setRules('DELETE', index)}
+                                                        ></el-button>
+                                                    </el-col>
+                                                </el-row>
+                                            ))}
+                                            <div
+                                                class="el-upload el-upload--picture-card"
+                                                style={{
+                                                    width: '100%',
+                                                    height: '50px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center'
+                                                }}
+                                                onClick={e => this.setRules('CREATE')}
+                                            >
+                                                <i class="el-icon-plus avatar-uploader-icon"></i>
+                                            </div>
                                         </el-form-item>
                                     </el-col>
                                 </el-row>
@@ -197,8 +285,8 @@ export function fetchSource(props) {
                         </el-scrollbar>
                         <div slot="footer">
                             <el-button onClick={this.onClose}>取消</el-button>
-                            <el-button type="primary" onClick={this.onSubmit}>
-                                保存
+                            <el-button type="primary" loading={this.loading} onClick={this.onSubmit}>
+                                提交
                             </el-button>
                         </div>
                     </el-dialog>
