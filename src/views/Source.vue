@@ -1,4 +1,6 @@
 <script>
+import { fetchSource } from '@/fetch/fetch-source'
+
 export default {
     name: 'Source',
     data() {
@@ -14,6 +16,16 @@ export default {
             dataSource: []
         }
     },
+    methods: {
+        fetchOneSource() {
+            fetchSource().then(response => {
+                response.instance.$once('close', ({ done }) => done())
+                response.instance.$once('submit', ({ done }) => {
+                    done()
+                })
+            })
+        }
+    },
     render() {
         const { form } = this
 
@@ -21,14 +33,17 @@ export default {
             <el-container direction="vertical">
                 <el-form class="el-customize" inline>
                     <el-form-item>
+                        <el-button icon="el-icon-plus" type="success" onClick={this.fetchOneSource}>
+                            创建节点
+                        </el-button>
+                    </el-form-item>
+                    <el-form-item>
                         <el-select v-model={form.type} placeholder="节点类型"></el-select>
                     </el-form-item>
                     <el-form-item>
-                        <el-input v-model={form.name} placeholder="节点名称" clearable></el-input>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button type="primary">查询</el-button>
-                        <el-button>重置</el-button>
+                        <el-input v-model={form.name} placeholder="节点名称" clearable>
+                            <el-button slot="append" icon="el-icon-search"></el-button>
+                        </el-input>
                     </el-form-item>
                 </el-form>
                 <el-container direction="vertical" style={{ padding: '15px' }}>

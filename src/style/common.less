@@ -6,3 +6,34 @@
         margin-bottom: 15px;
     }
 }
+
+.el-dialog__wrapper.el-customize {
+    > .el-dialog {
+        max-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        .el-dialog__body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            overflow: hidden;
+        }
+    }
+}
+
+.el-scrollbar.el-customize {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    .el-scrollbar__wrap {
+        margin-right: 0 !important;
+        margin-bottom: 0 !important;
+        &::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+        }
+    }
+}
