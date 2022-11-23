@@ -326,58 +326,30 @@ export default {
                         setColumn: this.setColumn,
                         setSuspended: this.setSuspended
                     }
+                    //prettier-ignore
                     return (
-                        <Common
-                            key={node.id}
-                            {...{ props: IProps }}
-                            scopedSlots={{
-                                content: ({ __SOURCE__VNode__, draggable }) => {
-                                    const props = { ...IProps, draggable: draggable }
-                                    switch (node.current.type) {
-                                        case 'BIND_TASK':
-                                            return <Scence {...{ props }}>{__SOURCE__VNode__}</Scence>
-                                        case 'AUTO_MATIC':
-                                            return <Matic {...{ props }}>{__SOURCE__VNode__}</Matic>
-                                        case 'CREATE_TRIGGER':
-                                            return <Touch {...{ props }}>{__SOURCE__VNode__}</Touch>
-                                        case 'EMAIL':
-                                            return <Email {...{ props }}>{__SOURCE__VNode__}</Email>
-                                        case 'TRIGGER':
-                                            return <Trigger {...{ props }}>{__SOURCE__VNode__}</Trigger>
-                                        case 'TARGET':
-                                            return <Target {...{ props }}>{__SOURCE__VNode__}</Target>
-                                        default:
-                                            return <div class="n-common__content">{__SOURCE__VNode__}</div>
-                                    }
+                        <Common key={node.id} {...{ props: IProps }} scopedSlots={{
+                            content: ({ __SOURCE__VNode__, draggable }) => {
+                                const props = { ...IProps, draggable: draggable }
+                                switch (node.current.type) {
+                                    case 'BIND_TASK':
+                                        return <Scence {...{ props }}>{__SOURCE__VNode__}</Scence>
+                                    case 'AUTO_MATIC':
+                                        return <Matic {...{ props }}>{__SOURCE__VNode__}</Matic>
+                                    case 'CREATE_TRIGGER':
+                                        return <Touch {...{ props }}>{__SOURCE__VNode__}</Touch>
+                                    case 'EMAIL':
+                                        return <Email {...{ props }}>{__SOURCE__VNode__}</Email>
+                                    case 'TRIGGER':
+                                        return <Trigger {...{ props }}>{__SOURCE__VNode__}</Trigger>
+                                    case 'TARGET':
+                                        return <Target {...{ props }}>{__SOURCE__VNode__}</Target>
+                                    default:
+                                        return <div class="n-common__content">{__SOURCE__VNode__}</div>
                                 }
-                            }}
-                        ></Common>
+                            }
+                        }}></Common>
                     )
-
-                    // switch (node.current.type) {
-                    //     case 'BINDTASK':
-                    //         return (
-                    //             <Common key={node.id} {...{ props }}>
-                    //                 <Scence {...{ props }}></Scence>
-                    //             </Common>
-                    //         )
-                    //     case 'MESSAGE':
-                    //         return (
-                    //             <Common key={node.id} {...{ props }}>
-                    //                 <Email {...{ props }}></Email>
-                    //             </Common>
-                    //         )
-                    //     case 'CPU':
-                    //         return (
-                    //             <Common key={node.id} {...{ props }}>
-                    //                 <Trigger {...{ props }}></Trigger>
-                    //             </Common>
-                    //         )
-                    //     case 'PRESENT':
-                    //         return <Common key={node.id} {...{ props }}></Common>
-                    //     default:
-                    //         return null
-                    // }
                 })
             }
         }

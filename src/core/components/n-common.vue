@@ -370,7 +370,7 @@ export default {
         }
     }
     &__content {
-        padding-top: 42px;
+        padding-top: 32px;
     }
     .n-bower {
         position: absolute;
