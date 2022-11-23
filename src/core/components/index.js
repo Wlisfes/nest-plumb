@@ -1,4 +1,7 @@
 export { default as Common } from './n-common'
 export { default as Scence } from './n-scence'
+export { default as Matic } from './n-matic'
+export { default as Touch } from './n-touch'
 export { default as Email } from './n-email'
 export { default as Trigger } from './n-trigger'
+export { default as Target } from './n-target'

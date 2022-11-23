@@ -17,8 +17,9 @@ export default {
         onReady(instance) {
             setReload({
                 column: createNode({
-                    data: common.better,
-                    type: 'BINDTASK',
+                    data: this.dataSource,
+                    type: 'BIND_TASK',
+                    locale: 'cn',
                     el: instance.mainContainerWrap
                 })
             }).then(() => {

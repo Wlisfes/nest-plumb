@@ -52,9 +52,9 @@ export function setDelete(props) {
 export function createNode(props) {
     const { data = [], type, el, locale = 'cn' } = props
     const MARK = {
-        BINDTASK: { cn: '绑定发送任务', en: '绑定发送任务' },
-        MESSAGE: { cn: '自动营销', en: '自动营销' },
-        CPU: { cn: '创建触发器', en: '创建触发器' }
+        BIND_TASK: { cn: '绑定发送任务', en: '绑定发送任务' },
+        AUTO_MATIC: { cn: '自动营销', en: '自动营销' },
+        CREATE_TRIGGER: { cn: '创建触发器', en: '创建触发器' }
     }
     //prettier-ignore
     return data.filter(x => x.type === type).map(x => {

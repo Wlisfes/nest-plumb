@@ -3,8 +3,11 @@ export default {
     name: 'NEmail',
     render() {
         return (
-            <div class="n-email">
-                <div class="n-email__notice">请设置邮件内容</div>
+            <div class="n-common__content">
+                <div class="n-email">
+                    <div class="n-email__notice">请设置邮件内容</div>
+                </div>
+                {this.$slots.default}
             </div>
         )
     }

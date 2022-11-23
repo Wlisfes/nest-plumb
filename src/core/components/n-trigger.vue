@@ -3,8 +3,11 @@ export default {
     name: 'NTrigger',
     render() {
         return (
-            <div class="n-trigger">
-                <div class="n-trigger__notice">请设置触发器</div>
+            <div class="n-common__content">
+                <div class="n-trigger">
+                    <div class="n-trigger__notice">请设置触发器</div>
+                </div>
+                {this.$slots.default}
             </div>
         )
     }

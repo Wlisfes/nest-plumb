@@ -28,7 +28,8 @@ export default {
     },
     data() {
         return {
-            active: false
+            active: false,
+            draggable: false
         }
     },
     mounted() {
@@ -317,30 +318,33 @@ export default {
         }
     },
     render() {
-        const { node } = this
+        const { node, draggable } = this
+
+        const __SOURCE__VNode__ = (
+            <div class={{ 'n-rules': true }} style={{ paddingTop: this.isStence ? '12px' : '0px' }}>
+                {node.rules?.map(x => (
+                    <div
+                        class={{ 'n-rules__source': true }}
+                        style={{ opacity: x.visible ? 1 : 0, paddingBottom: this.isStence ? '16px' : '0px' }}
+                        key={x.id}
+                        id={x.id}
+                    >
+                        <div class="n-rules__content">{x.content}</div>
+                    </div>
+                ))}
+            </div>
+        )
 
         return (
             <div ref="node" id={node.id} class={{ 'n-common': true }} style={{ top: node.top, left: node.left }}>
-                <div class="n-context ">
+                <div class="n-context">
                     <div class="n-bower">
                         <div class="n-bower__icon">
                             <el-image width={33} src={node.current.icon} style={{ display: 'block' }}></el-image>
                         </div>
                         <div class="n-bower__title">{node.current.name}</div>
                     </div>
-                    {this.$slots.default}
-                    <div class={{ 'n-rules': true }} style={{ paddingTop: this.isStence ? '12px' : '0px' }}>
-                        {node.rules?.map(x => (
-                            <div
-                                class={{ 'n-rules__source': true }}
-                                style={{ opacity: x.visible ? 1 : 0, paddingBottom: this.isStence ? '16px' : '0px' }}
-                                key={x.id}
-                                id={x.id}
-                            >
-                                <div class="n-rules__content">{x.content}</div>
-                            </div>
-                        ))}
-                    </div>
+                    {this.$scopedSlots.content?.({ __SOURCE__VNode__, draggable })}
                 </div>
             </div>
         )
@@ -351,7 +355,6 @@ export default {
 <style lang="less" scoped>
 .n-common {
     position: absolute;
-    cursor: move;
     .n-context {
         width: 330px;
         position: relative;
@@ -359,13 +362,15 @@ export default {
         filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.1));
         transition: filter 300ms;
         border-radius: 8px;
-        padding: 32px 0 0;
         box-sizing: border-box;
         transform: translate3d(0, 0, 0);
         z-index: 5;
         &:hover {
             filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.2));
         }
+    }
+    &__content {
+        padding-top: 42px;
     }
     .n-bower {
         position: absolute;
