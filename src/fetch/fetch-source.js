@@ -11,21 +11,22 @@ export function fetchSource(props) {
                     visible: false,
                     loading: true,
                     form: {
-                        name: '绑定发送任务',
-                        icon: 'https://oss.lisfes.cn/cloud/avatar/2021-09/1632984086053.png',
-                        type: 'BIND_TASK',
+                        name: undefined,
+                        icon: undefined,
+                        type: undefined,
                         connect: [],
-                        delete: 1,
-                        root: 1,
-                        max: 1,
-                        status: 1,
+                        delete: 0,
+                        root: undefined,
+                        max: 0,
+                        status: 'ENABLE',
                         rules: []
                     },
                     rules: {
                         name: { required: true, message: '请输入节点名称', trigger: 'blur' },
                         icon: { required: true, message: '上传节点图标', trigger: 'blur' },
                         type: { required: true, message: '请选择节点类型', trigger: 'blur' },
-                        max: { required: true, message: '请输入最大连接数', trigger: 'blur' }
+                        max: { required: true, message: '请输入最大连接数', trigger: 'blur' },
+                        root: { required: true, message: '请选择节点层级', trigger: 'blur' }
                     },
                     column: [
                         { label: '绑定发送任务', value: 'BIND_TASK' },
@@ -71,18 +72,14 @@ export function fetchSource(props) {
                         try {
                             this.loading = true
                             const { data } = await httpCreateNode({ ...this.form })
-                            console.log(data)
                             this.$message.success(data.message)
-                            // this.$emit('submit', {
-                            //     done: delay => {
-                            //         this.visible = false
-                            //         done(this.$el, delay ?? 500)
-                            //     }
-                            // })
-
-                            this.loading = false
+                            this.$emit('submit', {
+                                done: delay => {
+                                    this.visible = false
+                                    done(this.$el, delay ?? 500)
+                                }
+                            })
                         } catch (e) {
-                            console.log(e)
                             this.loading = false
                         }
                     })
@@ -167,7 +164,7 @@ export function fetchSource(props) {
                                         </el-form-item>
                                     </el-col>
                                     <el-col span={12}>
-                                        <el-form-item label="节点层级" required>
+                                        <el-form-item label="节点层级" prop="root">
                                             <el-select
                                                 v-model={form.root}
                                                 placeholder="节点层级"
@@ -196,8 +193,8 @@ export function fetchSource(props) {
                                                 placeholder="请选择节点状态"
                                                 style={{ width: '100%' }}
                                             >
-                                                <el-option label="启用" value={1}></el-option>
-                                                <el-option label="禁用" value={0}></el-option>
+                                                <el-option label="启用" value="ENABLE"></el-option>
+                                                <el-option label="禁用" value="DISABLE"></el-option>
                                             </el-select>
                                         </el-form-item>
                                     </el-col>
