@@ -21,7 +21,7 @@ export default {
             recent: null,
             target: null,
             /**参数配置**/
-            axis: { x: true, y: true },
+            axis: { x: false, y: false },
             core: { width: '100%', height: '100%', scale: 1, offsetX: 0, offsetY: 0, x: 0, y: 0 },
             column: [],
             line: []

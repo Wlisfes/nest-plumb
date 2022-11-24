@@ -9,3 +9,13 @@ export function httpCreateNode(params) {
 export function httpColumnNode(params) {
     return request({ method: 'GET', url: `/api/flow-chart/column-node`, params })
 }
+
+/**工作流列表**/
+export function httpColumnChart(params) {
+    return request({ method: 'GET', url: `/api/flow-chart/column`, params })
+}
+
+/**工作流详情**/
+export function httpOneChart(params) {
+    return request({ method: 'GET', url: `/api/flow-chart/one`, params })
+}
