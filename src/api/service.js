@@ -19,3 +19,18 @@ export function httpColumnChart(params) {
 export function httpOneChart(params) {
     return request({ method: 'GET', url: `/api/flow-chart/one`, params })
 }
+
+/**创建节点块**/
+export function httpCreateColumn(params) {
+    return request({ method: 'POST', url: `/api/flow-chart/create-column`, data: params })
+}
+
+/**修改节点块**/
+export function httpUpdateColumn(params) {
+    return request({ method: 'PUT', url: `/api/flow-chart/update-column`, data: params })
+}
+
+/**创建连接线**/
+export function httpCreateBezier(params) {
+    return request({ method: 'POST', url: `/api/flow-chart/create-bezier`, data: params })
+}

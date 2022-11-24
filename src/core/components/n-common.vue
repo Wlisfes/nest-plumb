@@ -6,6 +6,7 @@ import { stop, throttle } from '../utils/utils-common'
 import { command, setDelete } from '../utils/utils-store'
 import { fetchTooltip } from '../hook/fetch-tooltip'
 import { fetchNotice } from '../hook/fetch-notice'
+import { httpUpdateColumn } from '@/api/service'
 
 export default {
     name: 'NCommon',
@@ -51,7 +52,7 @@ export default {
                 }),
                 /**销毁节点**/
                 () => {
-                    this.instance.removeAllEndpoints(this.node.id)
+                    this.instance.removeAllEndpoints(this.node.uid)
                 }
             ]
             this.$once('hook:beforeDestroy', () => {
@@ -67,10 +68,10 @@ export default {
         /**切换连接线状态**/
         inConnect(active) {
             const { node, instance } = this
-            const rules = node.rules.map(x => x.id)
+            const rules = node.rules.map(x => x.uid)
             const bezier = instance.getAllConnections()
             bezier.forEach(x => {
-                if (x.targetId === node.id || rules.includes(x.sourceId)) {
+                if (x.targetId === node.uid || rules.includes(x.sourceId)) {
                     if (active) {
                         x.canvas.classList.add('is-active')
                     } else {
@@ -87,11 +88,11 @@ export default {
                 return false
             } else {
                 node.rules.forEach(x => {
-                    const el = document.getElementById(x.id)
+                    const el = document.getElementById(x.uid)
                     const offsetLeft = el.offsetLeft + el.clientWidth / 2
                     const offsetTop = el.offsetTop + el.clientHeight
-                    instance.addEndpoint(node.id, {
-                        uuid: x.id,
+                    instance.addEndpoint(node.uid, {
+                        uuid: x.uid,
                         anchor: [0, 0, 0, 1, offsetLeft, offsetTop],
                         isSource: true,
                         maxConnections: x.max ?? 1,
@@ -110,9 +111,9 @@ export default {
                 /**当前节点禁止添加终点标志**/
                 return false
             } else {
-                const el = document.getElementById(node.id)
-                instance.addEndpoint(node.id, {
-                    uuid: node.id,
+                const el = document.getElementById(node.uid)
+                instance.addEndpoint(node.uid, {
+                    uuid: node.uid,
                     anchor: [0, 0, 0, -1, el.clientWidth / 2, -22],
                     isTarget: true,
                     maxConnections: node.current.max ?? -1,
@@ -129,7 +130,7 @@ export default {
                 /**顶层节点禁止拖拽**/
                 return false
             } else {
-                instance.draggable(node.id, {
+                instance.draggable(node.uid, {
                     grid: [5, 5], //节点移动最小距离
                     start: e => {},
                     drag: throttle(e => {
@@ -138,7 +139,7 @@ export default {
                             .filter(x => {
                                 if (
                                     node.current.max === 0 ||
-                                    x.id === node.id ||
+                                    x.uid === node.uid ||
                                     !node.current.connect.includes(x.current.type)
                                 ) {
                                     /**
@@ -151,7 +152,7 @@ export default {
                                     if (x.rules?.length === 0) {
                                         /**上层节点没有起点规则**/
                                         return false
-                                    } else if (line.some(n => n.target === node.id)) {
+                                    } else if (line.some(n => n.target === node.uid)) {
                                         /**当前node节点已经与某一个节点建立连接**/
                                         return false
                                     }
@@ -172,7 +173,7 @@ export default {
                                         return true
                                     } else {
                                         /**获取以当前Endpoint为起点的连接线**/
-                                        const total = line.filter(n => n.source === x.id)?.length ?? 0
+                                        const total = line.filter(n => n.source === x.uid)?.length ?? 0
                                         if (total >= x.max) {
                                             /**当前Endpoint连接数量不足**/
                                             return false
@@ -183,7 +184,7 @@ export default {
                                 })
                                 .map(x => {
                                     const { left, top } = x.parent
-                                    const el = document.getElementById(x.id)
+                                    const el = document.getElementById(x.uid)
                                     //prettier-ignore
                                     const a = parseFloat(left) + el.offsetLeft + el.clientWidth / 2 - (e.pos[0] + e.el.clientWidth / 2)
                                     const b = parseFloat(top) + el.offsetTop + el.clientHeight - e.pos[1]
@@ -211,11 +212,17 @@ export default {
                             command: 'UPDATE',
                             node: { ...node, left: e.pos[0] + 'px', top: e.pos[1] + 'px' }
                         }).then(async () => {
+                            await httpUpdateColumn({
+                                uid: node.uid,
+                                left: e.pos[0] + 'px',
+                                top: e.pos[1] + 'px'
+                            }).catch(e => {})
+
                             if (this.recent) {
                                 const { done } = await createConnect(instance, {
-                                    id: v4(),
-                                    source: this.recent.id,
-                                    target: node.id
+                                    uid: v4(),
+                                    source: this.recent.uid,
+                                    target: node.uid
                                 })
                                 await done()
                                 this.setSuspended(null)
@@ -246,17 +253,17 @@ export default {
                         if (delTree) {
                             /**开启删除树**/
                             setDelete({
-                                target: node.id,
-                                column: line.filter(x => x.parent === node.id).map(x => x.target)
+                                target: node.uid,
+                                column: line.filter(x => x.parent === node.uid).map(x => x.target)
                             }).then(() => {
-                                instance.remove(node.id)
+                                instance.remove(node.uid)
                                 this.setColumn({ command: 'DELETE', node }).then(() => {
                                     this.$message.success({ message: '删除成功', duration: 1500 })
                                     done()
                                 })
                             })
                         } else {
-                            instance.remove(node.id)
+                            instance.remove(node.uid)
                             this.setColumn({ command: 'DELETE', node }).then(() => {
                                 this.$message.success({ message: '删除成功', duration: 1500 })
                                 done()
@@ -269,20 +276,20 @@ export default {
         /**监听来自父级的订阅事件**/
         fetchSubscribe(response) {
             const { node, instance, line } = this
-            if (response.target === node.id) {
+            if (response.target === node.uid) {
                 /**来至当前节点的订阅事件**/
                 return false
-            } else if (response.column.includes(node.id)) {
+            } else if (response.column.includes(node.uid)) {
                 /**来自父级的订阅事件**/
-                const connect = line.some(x => x.target === node.id && x.parent !== response.target)
+                const connect = line.some(x => x.target === node.uid && x.parent !== response.target)
                 if (!connect) {
                     /**不存在多个父级，可以删除当前节点**/
                     setDelete({
-                        target: node.id,
-                        column: line.filter(x => x.parent === node.id).map(x => x.target)
+                        target: node.uid,
+                        column: line.filter(x => x.parent === node.uid).map(x => x.target)
                     })
                     setTimeout(() => {
-                        instance.remove(node.id)
+                        instance.remove(node.uid)
                         this.setColumn({ command: 'DELETE', node })
                     }, 16)
                 }
@@ -290,7 +297,7 @@ export default {
         },
         /**监听参数验证订阅事件**/
         fetchValidator(response) {
-            if (response.id === this.node.id) {
+            if (response.uid === this.node.uid) {
                 if (this.notice) {
                     /**存在notice表示当前提示组件已经存在**/
                     this.notice.fetchUpdate('猪头').then(() => {
@@ -326,8 +333,8 @@ export default {
                     <div
                         class={{ 'n-rules__source': true }}
                         style={{ opacity: x.visible ? 1 : 0, paddingBottom: this.isStence ? '16px' : '0px' }}
-                        key={x.id}
-                        id={x.id}
+                        key={x.uid}
+                        id={x.uid}
                     >
                         <div class="n-rules__content">{x.content}</div>
                     </div>
@@ -336,7 +343,7 @@ export default {
         )
 
         return (
-            <div ref="node" id={node.id} class={{ 'n-common': true }} style={{ top: node.top, left: node.left }}>
+            <div ref="node" id={node.uid} class={{ 'n-common': true }} style={{ top: node.top, left: node.left }}>
                 <div class="n-context">
                     <div class="n-bower">
                         <div class="n-bower__icon">

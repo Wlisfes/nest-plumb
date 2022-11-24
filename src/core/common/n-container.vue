@@ -7,6 +7,7 @@ import { observer } from '../utils/utils-observer'
 import { throttle, isConnect, startConnect, endConnect } from '../utils/utils-common'
 import { fetchTooltip } from '../hook/fetch-tooltip'
 import { Common, Scence, Matic, Touch, Email, Trigger, Target } from '../components'
+import { httpCreateColumn, httpCreateBezier } from '@/api/service'
 
 export default {
     name: 'NContainer',
@@ -91,18 +92,25 @@ export default {
 
                     /**连线完毕、维护本地数据**/
                     instance.bind('connection', e => {
-                        // const node = this.column.find(x => x.id === e.sourceId)
                         this.setLine({
                             command: 'CREATE',
                             node: {
-                                id: v4(),
+                                uid: v4(),
                                 parent: e.sourceId,
                                 source: e.sourceEndpoint.getUuid(),
                                 target: e.targetId,
                                 label: '猪头'
                             }
-                        }).then(({ props }) => {
-                            e.connection.canvas?.setAttribute('id', props.node.id)
+                        }).then(async ({ props }) => {
+                            e.connection.canvas?.setAttribute('id', props.node.uid)
+                            await httpCreateBezier({
+                                uid: props.node.uid,
+                                parent: props.node.parent,
+                                source: props.node.source,
+                                target: props.node.target,
+                                label: props.node.label,
+                                flow: this.$route.query.uid
+                            }).catch(e => {})
                         })
                     })
 
@@ -167,21 +175,33 @@ export default {
             const top = (e.pageY - rect.top) / scale
             const node = {
                 current,
-                rules: (current.rules ?? []).map(x => ({ ...x, id: v4() })),
-                id: v4(),
+                uid: v4(),
                 top: top + 'px',
-                left: left + 'px'
+                left: left + 'px',
+                flow: this.$route.query.uid,
+                rules: (current.rules ?? []).map(x => ({
+                    uid: v4(),
+                    max: x.max,
+                    visible: x.visible,
+                    content: x.content
+                }))
             }
             this.setColumn({ command: 'CREATE', node }).then(async () => {
-                if (this.recent) {
-                    const { done } = await createConnect(instance, {
-                        id: v4(),
-                        source: this.recent.id,
-                        target: node.id
-                    })
-                    await done()
-                    this.setSuspended(null)
+                try {
+                    const { data } = await httpCreateColumn(node)
+                    console.log(data)
+                } catch (e) {
+                    console.log(e)
                 }
+                // if (this.recent) {
+                //     const { done } = await createConnect(instance, {
+                //         id: v4(),
+                //         source: this.recent.id,
+                //         target: node.id
+                //     })
+                //     await done()
+                //     this.setSuspended(null)
+                // }
             })
         },
         /**节流持续拖拽捕获可连接点位置**/
@@ -223,7 +243,7 @@ export default {
                             return true
                         } else {
                             /**获取以当前Endpoint为起点的连接线**/
-                            const total = line.filter(n => n.source === x.id)?.length ?? 0
+                            const total = line.filter(n => n.source === x.uid)?.length ?? 0
                             if (total >= x.max) {
                                 /**当前Endpoint连接数量不足**/
                                 return false
@@ -234,7 +254,7 @@ export default {
                     })
                     .map(x => {
                         const { left, top } = x.parent
-                        const el = document.getElementById(x.id)
+                        const el = document.getElementById(x.uid)
                         const a = parseFloat(left) + el.offsetLeft + el.clientWidth / 2 - pageX
                         const b = parseFloat(top) + el.offsetTop + el.clientHeight - pageY
                         return {
@@ -262,7 +282,7 @@ export default {
         },
         /**拖拽捕获连接点**/
         setSuspended(response) {
-            this.target = response?.id || null
+            this.target = response?.uid || null
             this.recent = response
         },
         /**十字交叉线数据维护**/
@@ -283,7 +303,7 @@ export default {
             if (props.command === 'RELOAD') {
                 this.line = props.line ?? []
             } else {
-                const n = this.line.findIndex(x => x.id === props.node.id)
+                const n = this.line.findIndex(x => x.uid === props.node.uid)
                 if (props.command === 'CREATE') {
                     this.line.push(props.node)
                 } else if (props.command === 'DELETE' && n !== -1) {
@@ -297,7 +317,7 @@ export default {
             if (props.command === 'RELOAD') {
                 this.column = props.column ?? []
             } else {
-                const n = this.column.findIndex(x => x.id === props.node.id)
+                const n = this.column.findIndex(x => x.uid === props.node.uid)
                 if (props.command === 'CREATE') {
                     this.column.push(props.node)
                 } else if (props.command === 'UPDATE' && n !== -1) {
@@ -328,7 +348,7 @@ export default {
                     }
                     //prettier-ignore
                     return (
-                        <Common key={node.id} {...{ props: IProps }} scopedSlots={{
+                        <Common key={node.uid} {...{ props: IProps }} scopedSlots={{
                             content: ({ __SOURCE__VNode__, draggable }) => {
                                 const props = { ...IProps, draggable: draggable }
                                 switch (node.current.type) {

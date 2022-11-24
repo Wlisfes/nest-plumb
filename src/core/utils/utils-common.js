@@ -86,13 +86,13 @@ export function throttle(fn, delay = 300) {
  */
 export function startConnect(option) {
     const { e, column, line, instance } = option
-    const current = column.find(x => x.id === e.sourceId)
+    const current = column.find(x => x.uid === e.sourceId)
     for (const node of column) {
         if (
             node.current.max === 0 ||
-            node.id === current.id ||
+            node.uid === current.uid ||
             !node.current.connect.includes(current.current.type) ||
-            line.some(x => x.parent === current.id && x.target === node.id)
+            line.some(x => x.parent === current.uid && x.target === node.uid)
         ) {
             /**
              * 1:当前node节点禁止连接
@@ -103,15 +103,15 @@ export function startConnect(option) {
             continue
         } else if (node.current.max === -1) {
             /**当前node可以无限连接**/
-            instance.getEndpoint(node.id)?.canvas?.classList.add('is-suspended')
+            instance.getEndpoint(node.uid)?.canvas?.classList.add('is-suspended')
         } else {
             /**获取以当前node节点为起点的连接线**/
-            const total = line.filter(n => n.target === node.id).length ?? 0
+            const total = line.filter(n => n.target === node.uid).length ?? 0
             if (total >= node.current.max) {
                 /**当前node节点连接数量不足**/
                 continue
             } else {
-                instance.getEndpoint(node.id)?.canvas?.classList.add('is-suspended')
+                instance.getEndpoint(node.uid)?.canvas?.classList.add('is-suspended')
             }
         }
     }
@@ -124,7 +124,7 @@ export function startConnect(option) {
 export function endConnect(option) {
     const { column, instance } = option
     column.forEach(x => {
-        instance.getEndpoint(x.id)?.canvas?.classList.remove('is-suspended')
+        instance.getEndpoint(x.uid)?.canvas?.classList.remove('is-suspended')
     })
 }
 
@@ -138,8 +138,8 @@ export function isConnect(option) {
         /**起点==终点**/
         return '起点不能与终点连接'
     } else {
-        const sourceNode = column.find(x => x.id === e.sourceId)
-        const targetNode = column.find(x => x.id === e.targetId)
+        const sourceNode = column.find(x => x.uid === e.sourceId)
+        const targetNode = column.find(x => x.uid === e.targetId)
         if (!targetNode.current.connect.includes(sourceNode.current.type)) {
             /**上层节点禁止与当前node节点建立连接**/
             return '上层节点禁止与当前node节点建立连接'

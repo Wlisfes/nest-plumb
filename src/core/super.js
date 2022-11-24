@@ -104,14 +104,14 @@ export function useScale(instance) {
 export function createConnect(instance, option) {
     return new Promise(resolve => {
         const connection = instance.connect({
-            id: option.id,
+            id: option.uid,
             source: option.source,
             target: option.target,
             uuids: [option.source, option.target],
             anchor: ['TopCenter', 'BottomCenter'],
             endpointStyle: { fill: 'transparent', outlineStroke: 'transparent' }
         })
-        const done = () => connection.canvas.setAttribute('id', option.id)
+        const done = () => connection.canvas.setAttribute('id', option.uid)
         resolve({ instance, connection, option, done })
     })
 }

@@ -1,22 +1,28 @@
 <script>
 import { Better, Zoom, Discrete, Container, createNode, setReload, setDone, setValidator } from '@/core'
-import * as common from './common/data'
-import { httpOneChart } from '@/api/service'
+import { httpOneChart, httpColumnNode } from '@/api/service'
 
 export default {
     name: 'Chunk',
     data() {
         return {
             current: null,
-            dataSource: common.better
+            dataSource: []
         }
     },
     methods: {
         onSelecter(e) {
             this.current = e
+        } /**节点列表**/,
+        fetchColumnNode() {
+            return new Promise(async resolve => {
+                const { data } = await httpColumnNode({ page: 1, size: 10 }).catch(e => resolve(e))
+                resolve((this.dataSource = data.list))
+            })
         },
         async onReady(instance) {
             try {
+                await this.fetchColumnNode()
                 const { data } = await httpOneChart({ uid: this.$route.query.uid })
                 setReload({
                     core: data.core,
