@@ -1,2 +1,5 @@
 export { default as Scale } from './n-scale'
 export { default as Auto } from './n-auto'
+export { default as Icon } from './n-icon'
+export { default as Divine } from './n-divine'
+export { default as Column } from './n-column'
