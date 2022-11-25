@@ -47,7 +47,12 @@ export default {
                         )
                     }
                 },
-                { label: '节点可连接类型', prop: 'connect', minWidth: '130px', align: 'center' },
+                {
+                    label: '节点可连接类型',
+                    minWidth: '130px',
+                    align: 'center',
+                    scopedSlots: { default: scope => <n-divine value={scope.row.connect.join('、')}></n-divine> }
+                },
                 { label: '节点MAX连接数', prop: 'max', minWidth: '130px', align: 'center' },
                 {
                     label: '节点状态',
