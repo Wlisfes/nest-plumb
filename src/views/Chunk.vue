@@ -73,13 +73,13 @@ export default {
         onSubmit({ column }) {
             column.forEach(node => {
                 switch (node.current.type) {
-                    case 'MESSAGE':
+                    case 'EMAIL':
                         setValidator({ ...node, message: '请完善电子邮件' })
                         break
-                    case 'CPU':
+                    case 'AUTO_MATIC':
                         setValidator({ ...node, message: '请设置触发器' })
                         break
-                    case 'CLOCK':
+                    case 'TARGET':
                         setValidator({ ...node, message: '请设置延时' })
                         break
                 }

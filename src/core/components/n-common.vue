@@ -5,7 +5,6 @@ import { ClickOutside } from '../utils/utils-click-outside'
 import { stop, throttle } from '../utils/utils-common'
 import { command, setDelete } from '../utils/utils-store'
 import { fetchTooltip } from '../hook/fetch-tooltip'
-import { fetchNotice } from '../hook/fetch-notice'
 import { httpUpdateColumn } from '@/api/service'
 
 export default {
@@ -43,11 +42,6 @@ export default {
                 /**订阅删除事件**/
                 this.observer.on(command.delete, ({ props, done }) => {
                     this.fetchSubscribe(props)
-                    done()
-                }),
-                /**参数验证**/
-                this.observer.on(command.validator, ({ node, done }) => {
-                    this.fetchValidator(node)
                     done()
                 }),
                 /**销毁节点**/
@@ -292,34 +286,6 @@ export default {
                         instance.remove(node.uid)
                         this.setColumn({ command: 'DELETE', node })
                     }, 16)
-                }
-            }
-        },
-        /**监听参数验证订阅事件**/
-        fetchValidator(response) {
-            if (response.uid === this.node.uid) {
-                if (this.notice) {
-                    /**存在notice表示当前提示组件已经存在**/
-                    this.notice.fetchUpdate('猪头').then(() => {
-                        setTimeout(() => this.notice.onClose(), 1000)
-                    })
-                } else {
-                    fetchNotice({
-                        top: 0,
-                        left: this.$refs.node.clientWidth / 2,
-                        container: this.$refs.node,
-                        message: <div style={{ whiteSpace: 'nowrap', color: '#ff0000' }}>{response.message}</div>
-                    }).then(response => {
-                        this.notice = response.instance
-                        response.instance.$once('close', ({ done }) => {
-                            this.notice = undefined
-                            done()
-                        })
-                        response.instance.$once('submit', ({ done }) => {
-                            this.notice = undefined
-                            done()
-                        })
-                    })
                 }
             }
         }
