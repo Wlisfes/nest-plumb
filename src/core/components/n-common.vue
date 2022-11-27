@@ -2,7 +2,7 @@
 import { v4 } from 'uuid'
 import { createConnect } from '../super'
 import { ClickOutside } from '../utils/utils-click-outside'
-import { stop, throttle } from '../utils/utils-common'
+import { throttle } from '../utils/utils-common'
 import { command, setDelete } from '../utils/utils-store'
 import { fetchTooltip } from '../hook/fetch-tooltip'
 import { httpUpdateColumn } from '@/api/service'

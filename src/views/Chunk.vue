@@ -51,14 +51,12 @@ export default {
         /**菜单节点状态判断**/
         isDisable(column, node) {
             switch (node.type) {
-                case 'MESSAGE':
-                    return column.filter(x => x.current.type === 'MESSAGE').length >= 6
-                case 'CPU':
-                    return column.filter(x => x.current.type === 'CPU').length >= 6
-                case 'CLOCK':
-                    return column.filter(x => x.current.type === 'CLOCK').length >= 6
-                case 'PRESENT':
-                    return column.filter(x => x.current.type === 'PRESENT').length >= 6
+                case 'EMAIL':
+                    return column.filter(x => x.current.type === 'EMAIL').length >= 6
+                case 'AUTO_MATIC':
+                    return column.filter(x => x.current.type === 'AUTO_MATIC').length >= 6
+                case 'TARGET':
+                    return column.filter(x => x.current.type === 'TARGET').length >= 6
                 default:
                     return false
             }
