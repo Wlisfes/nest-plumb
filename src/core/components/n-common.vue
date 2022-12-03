@@ -59,6 +59,9 @@ export default {
             this.active = active
             this.inConnect(active)
         },
+        onChnage(active) {
+            this.active = active
+        },
         /**切换连接线状态**/
         inConnect(active) {
             const { node, instance } = this
