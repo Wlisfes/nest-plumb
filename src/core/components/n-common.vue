@@ -344,6 +344,9 @@ export default {
         &:hover {
             filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.2));
         }
+        &.is-active {
+            filter: drop-shadow(0 0 5px rgba(13, 76, 237, 0.5));
+        }
     }
     &__content {
         padding-top: 32px;
