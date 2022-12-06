@@ -105,8 +105,8 @@ export default {
                         discrete: scope => (
                             <Discrete
                                 loading={scope.loading}
-                                onConserve={event => this.onConserve({ event, ...scope })}
-                                onSubmit={event => this.onSubmit({ event, ...scope })}
+                                onSave={event => this.onSubmit({ event, ...scope }, 0)}
+                                onSubmit={event => this.onSubmit({ event, ...scope }, 1)}
                                 style={{
                                     backgroundColor: 'transparent',
                                     transform: 'translateX(-50%)',

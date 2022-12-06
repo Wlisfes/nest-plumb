@@ -10,7 +10,7 @@ export default {
     render() {
         return (
             <div class="n-discrete">
-                <el-button type="primary" loading={this.loading} onClick={e => this.$emit('conserve', e)}>
+                <el-button type="primary" loading={this.loading} onClick={e => this.$emit('save', e)}>
                     保存草稿
                 </el-button>
                 <el-button type="success" loading={this.loading} onClick={e => this.$emit('submit', e)}>
