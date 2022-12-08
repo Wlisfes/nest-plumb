@@ -47,7 +47,7 @@ export function fetchNotice(props) {
                         <div
                             class={css['fetch-notice']}
                             style={{ left: props.left + 'px', top: props.top - 25 + 'px' }}
-                            // v-click-outside={this.onClose}
+                            v-click-outside={{ handler: this.onClose, option: { catch: true } }}
                         >
                             <div class={css['fetch-notice-content']}>
                                 <div class={css['fetch-notice-text']}>

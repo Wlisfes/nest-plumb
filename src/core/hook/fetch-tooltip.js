@@ -43,7 +43,7 @@ export function fetchTooltip(props) {
                         <div
                             class={css['fetch-tooltip']}
                             style={{ left: props.left + 'px', top: props.top - 25 + 'px' }}
-                            v-click-outside={this.onClose}
+                            v-click-outside={{ handler: this.onClose, option: { catch: true } }}
                         >
                             <div class={css['fetch-tooltip-content']}>
                                 <div class={css['fetch-tooltip-text']}>
